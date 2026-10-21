@@ -24,7 +24,7 @@
 
 - [x] 4.1 Write `.githooks/pre-commit` per D4 and verify it blocks a staged fake credential, passes a clean commit, and fails closed when gitleaks is not on PATH
 - [x] 4.2 Verify the CI gitleaks step fails when the expected checksum is altered (run the download-and-verify script locally with a wrong checksum)
-- [ ] 4.3 Write `.github/dependabot.yml` per D5 and verify GitHub accepts it (no Dependabot configuration error reported for the repository)
+- [x] 4.3 Write `.github/dependabot.yml` per D5 and verify GitHub accepts it (no Dependabot configuration error reported for the repository). Verified after merge on `56975b7`: check run [`.github/dependabot.yml`](https://github.com/OutcomefocusAi/repo-template/runs/119472374367) success; first version-update job [run 39672115567](https://github.com/OutcomefocusAi/repo-template/actions/runs/39672115567) success, no updates needed; evidence on #4
 - [x] 4.4 Write `.env.example` and `.gitignore` per D10 and verify `git check-ignore .env .env.local` matches and `.env.example` is tracked
 - [x] 4.5 Write `SECURITY.md` and verify it covers private reporting and revoke-then-rotate
 
@@ -78,7 +78,7 @@
 ## 11. Woody's decisions on the QA follow-ups (2026-10-21 1:25 PM MST)
 
 - [x] 11.1 Pin the `qa-gate` required check in ruleset `protect-main` to integration 15368 and set `require_extra_approval_for_unattributed_changes` to false, keeping every other rule; save before and after in `evidence/settings-2026-10-21/`
-- [ ] 11.2 Turn on the repository's "Allow GitHub Actions to create and approve pull requests" (blocked: HTTP 409, the organization setting is off; needs an org owner with the `admin:org` scope, and stays off until Woody approves the organization change)
+- [ ] 11.2 Turn on the repository's "Allow GitHub Actions to create and approve pull requests" (blocked: HTTP 409, the organization setting is off; needs an org owner with the `admin:org` scope). **Deferred to #3**, with Woody's approval to close out with 11.2 deferred (2026-10-21 1:45 PM MST, `proposal.md`); left unchecked on purpose
 - [x] 11.3 Enable private vulnerability reporting
 - [x] 11.4 Enable secret scanning and push protection
 - [x] 11.5 Keep Decision 3 as written and record Woody's approval in `proposal.md`
