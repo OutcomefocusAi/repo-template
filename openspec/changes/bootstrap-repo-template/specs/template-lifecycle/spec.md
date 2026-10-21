@@ -6,12 +6,20 @@ Defines how the template is published, how a new repository is started from it, 
 
 ## ADDED Requirements
 
-### Requirement: Repository is a private GitHub template
-`OutcomefocusAi/repo-template` SHALL be marked as a template repository, with visibility per Decision 1, and SHALL have its own history unrelated to openspec-sandbox.
+### Requirement: Repository is a public GitHub template
+`OutcomefocusAi/repo-template` SHALL be public, marked as a template repository, and have its own history unrelated to openspec-sandbox. It SHALL be made public only after a privacy check of every file, every commit, and every issue and pull request body finds nothing private.
 
 #### Scenario: Template flag
 - **WHEN** `gh api repos/OutcomefocusAi/repo-template --jq .is_template` runs
 - **THEN** it prints `true`
+
+#### Scenario: Visibility
+- **WHEN** `gh api repos/OutcomefocusAi/repo-template --jq .visibility` runs
+- **THEN** it prints `public`
+
+#### Scenario: Privacy check before publishing
+- **WHEN** the privacy check finds a private item
+- **THEN** the repository stays private until the item is removed from history
 
 #### Scenario: Fresh history
 - **WHEN** a reviewer runs `git log` on the template
@@ -43,7 +51,11 @@ The template SHALL ship a drift check that compares a derived repository's templ
 - **THEN** the check prints that nothing differs and exits zero
 
 ### Requirement: Repository hygiene files
-The template SHALL include `.editorconfig` (UTF-8, LF line endings, final newline, trimmed trailing whitespace except in Markdown) and `CODEOWNERS` per Decision 4.
+The template SHALL include `.editorconfig` (UTF-8, LF line endings, final newline, trimmed trailing whitespace except in Markdown) and `CODEOWNERS` naming `@AgileKnow23` as owner of every path.
+
+#### Scenario: CODEOWNERS valid
+- **WHEN** `gh api repos/OutcomefocusAi/repo-template/codeowners/errors` runs
+- **THEN** it reports no errors
 
 #### Scenario: Editor settings
 - **WHEN** an editor that honors EditorConfig opens a file

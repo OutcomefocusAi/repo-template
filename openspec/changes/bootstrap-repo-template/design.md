@@ -4,7 +4,7 @@
 
 See proposal.md for why. Current state on branch `1-bootstrap-repo-template`:
 
-- `OutcomefocusAi/repo-template` exists, private, `is_template: true`, org plan `free` (from `gh api orgs/OutcomefocusAi`: `"plan":{"name":"free"}`). The only GitHub identity is `AgileKnow23` (org admin), shared by every agent.
+- `OutcomefocusAi/repo-template` exists, `is_template: true`, private until the pre-publication privacy check passes (Decision 1 = B makes it public), org plan `free` (from `gh api orgs/OutcomefocusAi`: `"plan":{"name":"free"}`). The only GitHub identity is `AgileKnow23` (org admin), shared by every agent.
 - `main` has one commit, `33bae47`, a README stub. OpenSpec 1.14.3 was initialized with `openspec init --tools agents`; the generated `openspec/config.yaml` and six skills are byte-identical to openspec-sandbox.
 - Source for `AGENTS.md`: openspec-sandbox PR #1, head `ff86c64` at the time of writing (it includes the Principal QA fixes: verdict comment format, order of authority with generated skills, `git diff main...HEAD`, relayed-approval sourcing, archive without `--yes`). PR #1 is not merged.
 - Tools on the box: gitleaks 8.30.1, node, npm, python3, uv, jq. Not on the box: actionlint, pre-commit. Nothing was installed for this proposal.
@@ -40,7 +40,7 @@ The apply step re-resolves each SHA and records any change before use.
 
 **Goals:**
 - A derived repository is compliant on its first commit and cannot silently pass CI with an unfilled stack slot.
-- Everything works on GitHub Free for organizations with no paid feature, no new account, and no stored credential.
+- Everything works on GitHub Free for organizations with no paid feature, no new account, and no stored credential; the public template gets enforced protection, and private derived repositories get the flag-only layer.
 - Every check is honest about whether it blocks or only flags.
 
 **Non-Goals:**
@@ -62,16 +62,21 @@ Checks are small Bash scripts under `scripts/` (Bash is allowed for glue), using
 
 Alternatives: a Node or Python checker (adds a runtime and lockfile to a language-neutral template; rejected); third-party lint actions (more pins and wider permissions; rejected).
 
-### D3. Free substitute for branch protection (Decision 1, recommended option A)
+### D3. Branch governance: ruleset on the public template, flag-only checks where rulesets are unavailable (Decision 1 = B)
 
-- `qa-gate.yml`: triggers `pull_request` (opened, synchronize, reopened) and `issue_comment` (created, edited). It never checks out code. It reads the pull request's comments through the API, finds the newest comment whose first line matches `^Independent QA by .+: (SHIP|SHIP WITH FIXES|NO-SHIP)$` and whose body contains the current head SHA, and sets a commit status `qa-gate` on the head SHA: success only for SHIP. Job permissions: `contents: read`, `pull-requests: read`, `statuses: write`. `issue_comment` runs use the workflow file on `main`, so a pull request cannot alter the gate it is judged by.
-- `main-guard.yml`: on `push` to `main`, for each commit in `before..after`, calls `GET /repos/{owner}/{repo}/commits/{sha}/pulls` and fails, naming the commit, if no merged pull request contains it. Permissions: `contents: read`, `pull-requests: read`.
-- Repository merge settings (applied by `gh api -X PATCH` at apply time, repo-scoped, reversible): squash merge only, pull request title as the squash subject, delete head branches on merge.
-- `AGENTS.md` merge rule as in the branch-governance spec.
+Woody chose B: the template is public, so GitHub rulesets work on it (finding 2). Layers, strongest first:
 
-Trade-off: these flag but cannot block. Anyone with the shared admin account can still merge a red pull request or push to `main`; `main-guard` then turns `main` red after the fact. Because QA and the implementer post from the same GitHub account, the gate trusts the comment's content, not its author. Option B (public template) gives enforced protection and rulesets for the template only, plus free minutes, but publishes its contents. Option C (GitHub Team) gives enforcement for private repos but costs money and needs Woody's spending approval. Under B or C the same checks become required status checks with admin bypass turned off.
+- **Ruleset `protect-main`** on the default branch, enforcement `active`, created with `gh api -X POST repos/OutcomefocusAi/repo-template/rulesets` only after each required check has reported at least once, so the context names match. Rules: `deletion`, `non_fast_forward`, `required_linear_history`, `pull_request` with `required_approving_review_count: 0` and `allowed_merge_methods: ["squash"]`, and `required_status_checks` with contexts `template-checks`, `project`, and `qa-gate`, `strict_required_status_checks_policy: false`.
+- **No approving reviews required.** Every agent posts as `AgileKnow23`, the author of every pull request, and GitHub does not let an author approve their own pull request, so a required review could never be satisfied. Independent QA is enforced through `qa-gate` instead.
+- **Empty bypass list.** Not even the org admin can push to `main`, force push, or merge with a red required check. Trade-off: in an emergency (for example a broken required check), the admin has to edit or disable the ruleset, which is a visible, logged settings change, rather than silently bypassing. That friction is the point. Alternative considered: admin in the bypass list "for pull requests only", rejected because every agent is the admin.
+- **`qa-gate` status.** Triggers `pull_request` (opened, synchronize, reopened) and `issue_comment` (created, edited). It never checks out pull request code. It reads the pull request's comments through the API and accepts only comments whose author login is in the allowlist in the workflow file (`AgileKnow23`), because on a public repository anyone with a GitHub account can comment. It finds the newest allowlisted comment whose first line matches `^Independent QA by .+: (SHIP|SHIP WITH FIXES|NO-SHIP)$` and whose body contains the full head SHA, then sets commit status `qa-gate` on the head: success only for SHIP. Release-please pull requests (head branch `release-please--*`) pass automatically only when every changed file is `CHANGELOG.md`, `version.txt`, or `.release-please-manifest.json`. Permissions: `contents: read`, `pull-requests: read`, `statuses: write`. `issue_comment` runs use the workflow file on `main`, so a pull request cannot change the gate its comments are judged by; a `pull_request` run uses the pull request's copy, so any change under `.github/workflows/` must be called out in the pull request and reviewed by QA.
+- **`main-guard`.** Kept as defense in depth: on `push` to `main`, for each commit in `before..after`, it calls `GET /repos/{owner}/{repo}/commits/{sha}/pulls` and fails, naming the commit, if no merged pull request contains it. It catches anything that slips through while the ruleset is disabled. In private derived repositories, where rulesets are not available on GitHub Free, it and `qa-gate` are the only guards and only flag.
+- **Repository merge settings** (`gh api -X PATCH`, repository-scoped, reversible): squash merge only, pull request title as the squash subject, delete head branches on merge.
+- **`AGENTS.md` merge rule** as in the branch-governance spec.
 
-Minutes: each comment on a pull request triggers one short `qa-gate` run, billed as at least one minute. Expected use is well under the 2,000-minute monthly allowance; README states the cost.
+Minutes: free here, because standard runners are free on public repositories (finding 5). In private derived repositories each comment triggers one short `qa-gate` run, billed as at least one minute.
+
+Fork pull requests: on a public repository anyone can open one. Their workflows get a read-only token and no secrets (the template uses none), so `qa-gate` cannot set a status from a fork run, and first-time contributors need approval before their workflows run (GitHub default).
 
 ### D4. Secrets: gitleaks binary, not gitleaks-action
 
@@ -103,13 +108,15 @@ Two guards: `ignore` stops production builds, and if it does not run (for exampl
 
 ### D8. AGENTS.md assembly
 
-Start from PR #1's merged `AGENTS.md` (or latest head, recorded by SHA in `TEMPLATE_SOURCE.md`) and change only:
+Copy openspec-sandbox `AGENTS.md` from the latest remote head of `openspec/add-agent-guidance-ponytail` (or its merge commit), record the SHA in `TEMPLATE_SOURCE.md`, keep every rule in it unchanged (including its docs waiver text, per Decision 3), and add only:
 
-- Section 1: replace the "Trivial (may skip OpenSpec)" paragraph with the docs-only waiver, quoting Woody's words and source ("OK, that works. No need to use open spec on dock changes.", 2026-10-21 11:59 AM AZ, relayed verbatim by Chief of Staff), with docs-only defined per Decision 3 and "unsure means not docs-only".
-- New sections: Traceability (issue, branch, commits, pull request, QA verdict, merge, multi-PR parent issue, Notion row), Maximum effort, Stack defaults, Security (secrets, validation, OWASP Top 10, dependency audits, pinning, licenses), Observability (structured logs, error tracking, health check) and accessibility in engineering standards, Branch governance (D3, with the enforcement level stated).
-- Remove nothing from PR #1's rules. Owner stays Woody (`AgileKnow23`).
+- Traceability (issue, `<issue#>-<change-name>` branch, commits referencing the issue, pull request with `Closes #N`, evidence, QA verdict, merge, multi-PR parent issue, Notion row).
+- Maximum effort.
+- Stack defaults.
+- Security rules (secrets, validation, OWASP Top 10, dependency audits, pinning, licenses), observability (structured logs, error tracking, health check), and accessibility, added to the engineering standards.
+- Branch governance (D3), stating the enforcement level for public and private repositories.
 
-Sections that are specific to one person stay in, because the template is for Woody's own org; README tells anyone reusing it outside OutcomefocusAi to edit the owner line.
+Owner stays Woody (`AgileKnow23`). README tells anyone reusing the template outside OutcomefocusAi to edit the owner line.
 
 ### D9. Drift control
 
@@ -122,14 +129,20 @@ Alternatives: git subtree or a template remote (histories are unrelated, finding
 
 ### D10. CODEOWNERS and repository hygiene
 
-`CODEOWNERS` with `* @AgileKnow23`, with a comment that it is advisory on private Free repositories (finding 4); `.editorconfig` per the template-lifecycle spec; `.gitignore` covering env files, OS files, editor folders, and the common build and coverage outputs of the default stacks (`node_modules/`, `dist/`, `build/`, `coverage/`, `.venv/`, `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `.netlify/`).
+`CODEOWNERS` with `* @AgileKnow23` (Decision 4 = A). On the public template GitHub reads it (finding 4) and shows the owner on each pull request; the ruleset does not require a code-owner review, because the owner is also the author of every pull request and cannot approve it. In private derived repositories on GitHub Free it has no effect. `.editorconfig` per the template-lifecycle spec; `.gitignore` covering env files, OS files, editor folders, and the common build and coverage outputs of the default stacks (`node_modules/`, `dist/`, `build/`, `coverage/`, `.venv/`, `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `.netlify/`).
+
+### D11. Pre-publication privacy check
+
+Before the visibility change: gitleaks over the full history; and a search of every file in every commit, plus issue #1 and PR #2 bodies and comments, for postal addresses, phone numbers, email addresses other than the `AgileKnow23` noreply address, Notion IDs and URLs, Bland and AgentMail references, day-job references, and personal names other than Woody. Anything private stops the visibility change. Known, accepted public items: the GitHub handle `AgileKnow23`, the nickname "Woody", the agent role names, and the Notion Tasks row link, which Woody's Chief of Staff asked to be linked in proposal.md, the issue, and the pull request (it opens only with workspace access). Issue and pull request templates keep the Notion row as a generic placeholder.
 
 ## Risks / Trade-offs
 
-- [Flag-only governance on private Free] An agent can still merge or push past a red check. → Merge rule in `AGENTS.md`, `main-guard` makes violations visible, QA checks the gate before SHIP; Decision 1 B or C removes the gap.
+- [Flag-only governance in private derived repositories] An agent can still merge or push past a red check there. → Merge rule in `AGENTS.md`, `main-guard` makes violations visible, QA checks the gate before SHIP; making that repository public or upgrading removes the gap.
+- [Public template] Contents, issues, and comments are world-readable, and anyone can comment or fork. → Privacy check before publishing (D11), allowlisted `qa-gate` authors, no secrets in workflows.
+- [Empty bypass list] A broken required check blocks all merges. → The admin edits or disables the ruleset, a visible and logged change, then restores it.
 - [Shared GitHub identity] A SHIP comment cannot be attributed to QA by author. → Verdict must name the head SHA and include evidence; Woody's merge is the final human check.
 - [PR #1 still changing] The `AGENTS.md` source may change again before merge. → Apply re-reads it and records the exact SHA; if PR #1 is unmerged at apply time, the PR for this change says so.
-- [Actions minutes] Comment-triggered `qa-gate` runs and CI on every push spend the shared 2,000 minutes. → Linux only, concurrency cancels superseded runs, no artifacts; README shows how to check usage. Blocked runs, not charges, follow if the quota runs out with no payment method on file (finding 5).
+- [Actions minutes in private derived repositories] Comment-triggered `qa-gate` runs and CI on every push spend the shared 2,000 minutes. → Linux only, concurrency cancels superseded runs, no artifacts; README shows how to check usage. Blocked runs, not charges, follow if the quota runs out with no payment method on file (finding 5).
 - [Netlify `CONTEXT` in `ignore`] Unverified. → Second guard plus UI auto-publish lock.
 - [release-please org setting] Unknown. → First run tells us; asking Woody to flip one setting is the fallback.
 - [Third-party pins age] → Dependabot weekly; the pin check stops unpinned additions.

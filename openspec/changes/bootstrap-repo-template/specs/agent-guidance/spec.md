@@ -26,10 +26,10 @@ The repository SHALL contain `AGENTS.md` at its root holding every working rule 
 
 #### Scenario: Sections carried over
 - **WHEN** a reviewer compares the template `AGENTS.md` with the recorded source
-- **THEN** the workflow, Ponytail (per Decision 2), order of authority, testing standard, non-negotiables, engineering standards, and writing style sections are present
+- **THEN** the workflow, Ponytail, order of authority, testing standard, non-negotiables, engineering standards, and writing style sections are present
 
 ### Requirement: Docs-only changes skip OpenSpec but keep traceability
-`AGENTS.md` SHALL state Woody's docs-only waiver with its source, define docs-only per Decision 3, and require that docs-only changes still have an issue, an `<issue#>-<change-name>` branch, Conventional Commits referencing the issue, a pull request with `Closes #N`, QA review, and Woody's OK before merge.
+`AGENTS.md` SHALL state Woody's docs-only waiver with its source, define docs-only as in the openspec-sandbox source (edits to documentation, including `AGENTS.md`, that add no capability and change no code, configuration, dependencies, CI, or runtime behavior), and require that docs-only changes still have an issue, an `<issue#>-<change-name>` branch, Conventional Commits referencing the issue, a pull request with `Closes #N`, QA review, and Woody's OK before merge.
 
 #### Scenario: Docs-only change
 - **WHEN** a change touches only documentation and alters no capability, code, configuration, or behavior
@@ -63,6 +63,13 @@ The repository SHALL contain `AGENTS.md` at its root holding every working rule 
 #### Scenario: Security rules
 - **WHEN** a reviewer reads the security rules
 - **THEN** they require secrets only in environment variables or a secret store, input validation, OWASP Top 10 awareness, dependency audits, and pinned dependencies
+
+### Requirement: Ponytail skills are vendored at a pinned commit
+The repository SHALL vendor the ponytail, ponytail-review, and ponytail-audit skills under `.agents/skills/` byte for byte from the pinned upstream commit, each with its LICENSE and a SOURCE.md naming the commit.
+
+#### Scenario: Vendored copies match
+- **WHEN** a reviewer compares SHA-256 values of the vendored SKILL.md files with the openspec-sandbox copies
+- **THEN** they match
 
 ### Requirement: Skills live in .agents/skills
 OpenSpec-generated skills SHALL live in `.agents/skills/openspec-*/` as produced by `openspec init --tools agents` at the pinned OpenSpec version, and `AGENTS.md` SHALL name the skill for each workflow step that has one.

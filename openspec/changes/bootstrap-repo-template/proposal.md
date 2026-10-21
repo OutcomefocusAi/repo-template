@@ -1,12 +1,16 @@
 # Proposal: bootstrap-repo-template
 
 Tracking issue: https://github.com/OutcomefocusAi/repo-template/issues/1
-Notion Tasks row: none found on 2026-10-21 (read-only search of Ops HQ Tasks for "repo-template" and "template repository OutcomefocusAi OpenSpec" returned no matching row). Chief of Staff owns creating one; link it here and in the issue when it exists.
+Notion Tasks row: linked from the tracking issue (kept out of committed files).
 
 ## Approval record
 
-- Planning authorized by Woody, 2026-10-21 12:03 PM AZ (America/Phoenix), relayed verbatim by Chief of Staff in the Principal Engineer chat: "Yes, start the proposal", answering "Have Principal Engineer build a clean repo-template under OutcomefocusAi with all of this, starting with an OpenSpec proposal for you to approve?"
-- This authorizes planning only. Implementation approval: pending. Record Woody's exact words, with where and when he wrote them, here before apply starts.
+| What | Woody's exact words | Where and when |
+| --- | --- | --- |
+| Start planning | "Yes, start the proposal" (answering "Have Principal Engineer build a clean repo-template under OutcomefocusAi with all of this, starting with an OpenSpec proposal for you to approve?") | Relayed verbatim by Chief of Staff; written 2026-10-21 12:03 PM MST (America/Phoenix) |
+| Implement this proposal, with Decision 1 changed | "Approved, but make repo-template public for real branch protection; other recommendations as proposed." (answering "Approve the repo-template proposal?") | Grok Bot chat, 2026-10-21 12:15 PM MST; relayed verbatim to Principal Engineer and recorded here before apply |
+| Docs waiver | "OK, that works. No need to use open spec on dock changes." ("dock" means docs) | Relayed verbatim by Chief of Staff; written 2026-10-21 11:59 AM MST |
+| How the waiver reads in AGENTS.md (applies to Decision 3) | "Fold the docs waiver into PR #1's spec now." (answering "How should I reconcile the docs waiver with PR #1's spec?") | Grok Bot chat with Principal Engineer, 2026-10-21 12:13 PM MST, as recorded in openspec-sandbox commit `141ca6c` |
 
 ## Why
 
@@ -22,7 +26,7 @@ Every new OutcomefocusAi project currently starts from nothing, so the rules Woo
 - Add `CODEOWNERS`, `.editorconfig`, and release-please for a Conventional Commits changelog and release tags.
 - Add `netlify.toml` configured so only Deploy Previews and branch deploys build; production builds are refused.
 - Replace the README stub with how to start a new repository from the template and how to keep template drift in check.
-- Add a free-plan substitute for branch protection (see Decision 1), because GitHub Free does not offer branch protection or rulesets on private repositories.
+- Make the repository public (Decision 1) and protect `main` with a GitHub ruleset; keep `qa-gate` as a required check and `main-guard` as defense in depth.
 
 ## Capabilities
 
@@ -35,29 +39,31 @@ Every new OutcomefocusAi project currently starts from nothing, so the rules Woo
 - `release-management`: changelog generation and release tagging from Conventional Commits.
 - `preview-deploys`: Netlify configuration that allows previews and refuses production.
 - `template-lifecycle`: template repository status, starting a new repository from it, recording the template version, and detecting drift.
-- `branch-governance`: how `main` is kept to reviewed, QA-shipped pull requests without paid branch protection.
+- `branch-governance`: how `main` is kept to reviewed, QA-shipped pull requests, with a ruleset where the plan allows it and flag-only checks where it does not.
 
 ### Modified Capabilities
 
 None. The repository has no existing specs.
 
-## Decisions for Woody
+## Decisions (answered 2026-10-21)
 
-Each has a recommendation; nothing below is implemented before he answers. Details and alternatives are in design.md.
+Details and alternatives are in design.md.
 
-1. **Branch protection on a private Free repository.** GitHub's docs say protected branches and rulesets are available in public repositories on GitHub Free for organizations, and in private repositories only on paid plans. Options: (A, recommended) stay private and use the free substitute: CI plus a `qa-gate` check that fails until a SHIP verdict for the current head SHA is on the pull request, a `main-guard` check that turns red when `main` receives a commit not from a merged pull request, and the AGENTS.md merge rule. It flags violations but cannot block them. (B) Make `repo-template` public: real branch protection and rulesets and free Actions minutes for this repository, at the cost of the template's contents being public (no secrets or business data are in it). Derived repositories stay private either way. (C) Upgrade the org to GitHub Team: paid, needs his spending approval.
-2. **Ponytail skills.** (A, recommended) Vendor ponytail, ponytail-review, and ponytail-audit at the same pinned commit PR #1 uses, so AGENTS.md section 2 works unchanged. (B) Leave them out and remove section 2 from the template's AGENTS.md.
-3. **Is an AGENTS.md rule change "docs-only"?** The waiver in my profile lists AGENTS.md as documentation. PR #1's AGENTS.md says changes to agent rules are non-trivial and need OpenSpec. (A, recommended) A change that alters what agents must do is not docs-only and uses OpenSpec; wording-only edits to AGENTS.md are docs-only. (B) All AGENTS.md edits are docs-only, as the profile text reads.
-4. **CODEOWNERS.** GitHub's docs say code owners work in private repositories only on paid plans. (A, recommended) Include `* @AgileKnow23` as advisory; it starts working if the repo goes public or the plan changes. (B) Omit it, as PR #1 did.
-5. **Pre-commit mechanism for gitleaks.** (A, recommended) A plain `.githooks/pre-commit` script enabled with `git config core.hooksPath .githooks`; needs only the gitleaks binary. (B) The `pre-commit` framework with gitleaks' published hook; a common standard but adds a Python tool every machine must install.
-6. **release-please pull requests.** Pull requests that release-please opens with the built-in token start their CI runs in an approval-required state. (A, recommended) Accept that: Woody or an agent clicks "Approve workflows to run" on each release pull request; no new credential. (B) Create a fine-grained token or GitHub App so CI starts automatically; adds a secret to manage. Separately, the org setting that lets Actions create pull requests may need to be turned on; I cannot read it with the current token scopes.
-7. **Netlify.** The template only ships `netlify.toml`. (A, recommended) No Netlify site is created or linked in this change; a derived project links its own site when Woody approves, and also turns off auto publishing in the Netlify UI as a second guard. (B) Link a site for the template itself now.
+1. **Branch protection: B, make `repo-template` public.** GitHub's docs say protected branches and rulesets are available in public repositories on GitHub Free for organizations. `main` gets an active ruleset (pull request required, required status checks, no force push, no deletion, linear history, empty bypass list). `main-guard` stays as defense in depth. Standard GitHub-hosted runners are free for public repositories, so this repository's Actions minutes cost nothing. Derived repositories may still be private; there the ruleset is not available and they fall back to the flag-only checks (see design D3).
+2. **Ponytail: A.** Vendor ponytail, ponytail-review, and ponytail-audit at the pinned commit openspec-sandbox uses.
+3. **AGENTS.md edits and the docs waiver: follow openspec-sandbox.** Woody's later instruction "Fold the docs waiver into PR #1's spec now." produced sandbox `AGENTS.md` text that counts edits to `AGENTS.md`, including its agent rules, as docs-only when they add no capability and change no code, configuration, dependencies, CI, or runtime behavior. The template copies that text unchanged. This differs from option A in the first draft of this proposal; "other recommendations as proposed" was read as not overriding his more specific 12:13 PM instruction. Woody can say otherwise and the text changes in a follow-up.
+4. **CODEOWNERS: A.** `* @AgileKnow23`. On a public repository GitHub reads it; a code-owner review is not required by the ruleset, because the only account is the author of every pull request and cannot approve its own pull request.
+5. **Pre-commit: A.** Plain `.githooks/pre-commit` using the gitleaks binary.
+6. **release-please: A.** Built-in token; release pull request CI starts after "Approve workflows to run".
+7. **Netlify: A.** No site created or linked.
 
 ## Impact
 
-- New repository `OutcomefocusAi/repo-template` (private, marked as a template). `main` holds only a README stub (commit `33bae47`), the one direct-to-main commit, made so a branch and pull request could exist.
+- Repository `OutcomefocusAi/repo-template`, marked as a template, made public by Decision 1 after a privacy check of every file, commit, the issue, and the pull request. `main` holds only a README stub (commit `33bae47`), the one direct-to-main commit, made so a branch and pull request could exist.
+- New ruleset on `main` (repository-scoped, reversible).
 - New files: `AGENTS.md`, `CLAUDE.md`, `README.md` (replaced), `SECURITY.md`, `CODEOWNERS`, `.editorconfig`, `.gitignore`, `.env.example`, `netlify.toml`, `.githooks/pre-commit`, `.gitleaks.toml` if needed, `release-please-config.json`, `.release-please-manifest.json`, `version.txt`, `TEMPLATE_SOURCE.md`, `scripts/` checks, `.github/workflows/{ci,qa-gate,main-guard,release}.yml`, `.github/dependabot.yml`, `.github/ISSUE_TEMPLATE/*`, `.github/pull_request_template.md`, and (Decision 2) `.agents/skills/ponytail*/`.
 - This change folder: `openspec/changes/bootstrap-repo-template/`.
 - New pinned third-party dependencies, all used only in CI or on developer machines: actions/checkout v7.0.1, actions/setup-node v7.1.0, googleapis/release-please-action v5.0.0, gitleaks v8.30.1 (binary, MIT), actionlint v1.7.12 (binary, MIT), @fission-ai/openspec 1.14.3 (MIT). gitleaks-action is deliberately not used: it is under an end-user license and requires a license key for organization repositories.
-- GitHub Actions minutes: private repositories on GitHub Free for organizations get 2,000 included minutes a month, shared across the org. The template's CI is Linux-only and short.
+- GitHub Actions minutes: free for this repository once public (standard runners). Private derived repositories draw on the org's 2,000 included minutes a month; the CI is Linux-only and short.
+- Public exposure: the template's contents (including Woody's GitHub handle `AgileKnow23` and the nickname "Woody" in `AGENTS.md`) become public. Anyone with a GitHub account can open issues, comment, and fork; `qa-gate` therefore accepts verdicts only from an allowlisted author.
 - No spending, no new accounts, no production deploys.

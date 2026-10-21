@@ -7,7 +7,7 @@ Keeps secrets out of the repository and keeps third-party code pinned, current, 
 ## ADDED Requirements
 
 ### Requirement: Secrets are scanned before commit
-The repository SHALL ship a pre-commit hook, per Decision 5, that runs gitleaks on staged changes with redacted output and blocks the commit when a secret is found. README SHALL give the one command that enables it.
+The repository SHALL ship a plain git pre-commit hook in `.githooks/` that runs gitleaks on staged changes with redacted output and blocks the commit when a secret is found. README SHALL give the one command that enables it.
 
 #### Scenario: Staged secret
 - **WHEN** a developer with the hook enabled stages a file containing a credential that gitleaks detects
