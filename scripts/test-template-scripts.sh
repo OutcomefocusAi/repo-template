@@ -193,7 +193,9 @@ release_state() { # dir
   local d=$1 cfg initial bump manifest version heading semver='^[0-9]+\.[0-9]+\.[0-9]+$'
   cfg='.packages["."]'
   initial=$(jq -r "$cfg[\"initial-version\"] // \"unset\"" "$d/release-please-config.json")
-  bump=$(jq -r "$cfg | if has(\"bump-minor-pre-major\") then .[\"bump-minor-pre-major\"] | tostring else \"unset\" end" "$d/release-please-config.json")
+  # release-please honours only the JSON boolean true here, so a string "true" is reported as itself.
+  bump=$(jq -r '.packages["."] | if has("bump-minor-pre-major") then .["bump-minor-pre-major"]
+    | (if . == true then "true" else tojson end) else "unset" end' "$d/release-please-config.json")
   manifest=$(jq -r '.["."]' "$d/.release-please-manifest.json")
   version=$(tr -d '[:space:]' < "$d/version.txt")
   heading=none # newest "## " heading in CHANGELOG.md: "## X.Y.Z (date)" or "## [X.Y.Z](url) (date)"
@@ -205,7 +207,7 @@ release_state() { # dir
   fi
   local found="initial-version $initial, bump-minor-pre-major $bump, manifest $manifest, version.txt $version, newest changelog heading $heading"
   if [ "$initial" != "0.1.0" ]; then echo "initial-version must be 0.1.0 ($found)"; return 1; fi
-  if [ "$bump" != "true" ]; then echo "bump-minor-pre-major must be true ($found)"; return 1; fi
+  if [ "$bump" != "true" ]; then echo "bump-minor-pre-major must be the JSON boolean true ($found)"; return 1; fi
   if ! [[ $manifest =~ $semver && $version =~ $semver ]]; then echo "manifest and version.txt must be MAJOR.MINOR.PATCH ($found)"; return 1; fi
   if [ "$manifest" != "$version" ]; then echo "manifest and version.txt disagree ($found)"; return 1; fi
   if [ "$manifest" = "0.0.0" ]; then
