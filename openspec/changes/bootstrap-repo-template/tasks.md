@@ -18,7 +18,7 @@
 ## 3. CI workflow
 
 - [x] 3.1 Write `.github/workflows/ci.yml` with `template-checks` (including the checksum-verified gitleaks and actionlint downloads) and `project` jobs per D1 and D2, and verify `scripts/check-workflows.sh` passes locally
-- [ ] 3.2 Push the branch and verify the CI run on PR #2 passes, with the five slot warnings visible in the run annotations (link the run)
+- [x] 3.2 Push the branch and verify the CI run on PR #2 passes, with the five slot warnings visible in the run annotations (link the run)
 
 ## 4. Security scaffolding
 
@@ -32,7 +32,7 @@
 
 - [x] 5.1 Write issue forms (`change.yml`, `docs-change.yml`, `bug.yml`) and `ISSUE_TEMPLATE/config.yml` with blank issues off, Notion row as a generic placeholder, and verify each parses as YAML and is served by `gh api repos/OutcomefocusAi/repo-template/contents/.github/ISSUE_TEMPLATE?ref=<branch>`
 - [x] 5.2 Write `.github/pull_request_template.md` with every field in the change-traceability spec and verify it contains each field
-- [ ] 5.3 Write `.github/workflows/qa-gate.yml` per D3 and verify on PR #2 that the status fails with no verdict (link the run); the SHIP path is verified when Principal QA posts its verdict
+- [x] 5.3 Write `.github/workflows/qa-gate.yml` per D3 and verify on PR #2 that the status fails with no verdict (link the run); the SHIP path is verified when Principal QA posts its verdict
 - [x] 5.4 Write `.github/workflows/main-guard.yml` per D3 and verify actionlint passes; its live behavior is verified after merge
 - [x] 5.5 Apply repository merge settings per D3 with `gh api -X PATCH` and verify with `gh api repos/OutcomefocusAi/repo-template --jq '{allow_squash_merge,allow_merge_commit,allow_rebase_merge,delete_branch_on_merge}'`
 
@@ -53,7 +53,7 @@
 
 - [x] 8.1 Write `template-manifest.txt` and `scripts/template-drift.sh` per D9 and verify it exits 0 against a matching tree and 1 after changing one managed file in a scratch copy
 - [x] 8.2 Replace README with start-a-new-repository steps, hook setup, slot filling, drift check, minutes note, and the enforcement statement from the branch-governance spec, and verify each local command in it runs as written in a scratch directory (`gh repo create` is shown, not run)
-- [ ] 8.3 Run the em-dash check, `openspec validate bootstrap-repo-template --strict`, and `openspec validate --all --strict` and record the output in the pull request
+- [x] 8.3 Run the em-dash check, `openspec validate bootstrap-repo-template --strict`, and `openspec validate --all --strict` and record the output in the pull request
 
 ## 9. Ruleset, verification and handoff
 
