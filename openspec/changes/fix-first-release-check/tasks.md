@@ -20,7 +20,7 @@
 ## 4. Validation, CI evidence and review
 
 - [x] 4.1 Run `openspec validate --all --strict`, the self-test, the em-dash check, `check-workflows`, `check-commits` and gitleaks, and verify all pass. Done: retaken after the QA fixes on the tree committed as the PR head: all pass, also actionlint and shellcheck (clean, as on main); on the merge result with main: validate 9/9 and the self-test; `evidence/4.1-checks.txt`
-- [ ] 4.2 Open the pull request for the issue with the scenario-to-test map and CI run links, verify `template-checks` and `project` are green, and get Principal QA's verdict (COMMENT review, first line `Independent QA by <reviewer>: ...`) for the head with `qa-gate` green. QA round 1: SHIP-WITH-FIXES at `6894c82` ([review](https://github.com/OutcomefocusAi/repo-template/pull/15#pullrequestreview-5607115446)); D1 to D3 fixed on this branch, verdict for the new head pending
+- [x] 4.2 Open the pull request for the issue with the scenario-to-test map and CI run links, verify `template-checks` and `project` are green, and get Principal QA's verdict (COMMENT review, first line `Independent QA by <reviewer>: ...`) for the head with `qa-gate` green. QA round 1: SHIP-WITH-FIXES at `6894c82` ([review](https://github.com/OutcomefocusAi/repo-template/pull/15#pullrequestreview-5607115446)); D1 to D3 fixed on this branch, verdict for the new head pending. QA round 2: Principal QA's [SHIP review](https://github.com/OutcomefocusAi/repo-template/pull/15#pullrequestreview-5607172900) for `43e0a0a`; CI green ([run 39688821777](https://github.com/OutcomefocusAi/repo-template/actions/runs/39688821777)), `qa-gate` green; squash-merged as `ad660e4`
 
 ## Workflow follow-up
 

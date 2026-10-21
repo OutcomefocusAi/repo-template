@@ -7,6 +7,7 @@ Tracking issue: [#14](https://github.com/OutcomefocusAi/repo-template/issues/14)
 | What | Words or selected option text | How given, where and when |
 | --- | --- | --- |
 | Approve this proposal (at `be539e8`, issue #14) | Option selected by Woody: "Yes, approve fix-first-release-check as proposed, including the under-1.0.0 rule and the README reset step." (answering "Approve the release check fix?") | Option selected on Chief of Staff's card in Woody's chat with Chief of Staff, 2026-10-21 3:29 PM MST; option text by Chief of Staff; relayed verbatim to Principal Engineer. Covers the proposal only; not a merge OK. Recorded here before apply |
+| Merge PR #15 | Option selected by Woody: "Yes, merge repo-template PR #15." (answering "Merge the release-check fix?") | Option selected on Chief of Staff's card in Woody's chat with Chief of Staff, 2026-10-21 3:52 PM MST; option text by Chief of Staff; relayed verbatim to Principal Engineer; squash commit `ad660e4` (head `43e0a0a`). Recorded at archive, issue #16 |
 
 ## Why
 
