@@ -40,6 +40,9 @@ jobs:
           scripts/install-ci-tools.sh
           npm install --global --no-fund --no-audit @fission-ai/openspec@1.14.3
 
+      - name: Self-test of the template check scripts and the qa-gate verdict filter
+        run: scripts/test-template-scripts.sh
+
       - name: Em-dash check
         run: scripts/check-em-dash.sh
 
