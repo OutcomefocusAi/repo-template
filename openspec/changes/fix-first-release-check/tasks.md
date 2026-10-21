@@ -11,8 +11,8 @@
 
 ## 3. Fix
 
-- [ ] 3.1 Replace the release check with the state-aware check (design decision 1) and verify every fixture from 2.1 gives the expected result and the suite passes on the branch (pre-release state)
-- [ ] 3.2 Set `"bump-minor-pre-major": true` in `release-please-config.json` and verify the self-test asserts it
+- [x] 3.1 Replace the release check with the state-aware check (design decision 1) and verify every fixture from 2.1 gives the expected result and the suite passes on the branch (pre-release state). Done: every fixture as expected, each rejection names its reason; 72/72 once 3.2 set the key (before 3.2 only "this repository" failed, on `bump-minor-pre-major must be true`); `evidence/3.1-passing-test.txt`
+- [x] 3.2 Set `"bump-minor-pre-major": true` in `release-please-config.json` and verify the self-test asserts it. Done: the "bump-minor-pre-major not set" fixture and the check on this repository both require `true`
 - [ ] 3.3 Run release-please 17.6.0 version calculation offline and verify `feat!:` on `0.1.0` gives `0.2.0`, `Release-As: 1.0.0` gives `1.0.0`, and a `0.0.0` manifest gives `0.1.0`; save the output in the change folder
 - [ ] 3.4 Run the self-test against the files of release PR #11's head (`CHANGELOG.md`, `version.txt`, `.release-please-manifest.json` copied into a scratch checkout, not pushed) and verify it passes
 - [ ] 3.5 Add the release-state reset step to README "start a new repository" and verify, on a scratch copy of the template with those files at `0.1.0`, that following the step leaves `0.0.0` and no `CHANGELOG.md`
