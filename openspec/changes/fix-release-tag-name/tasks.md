@@ -7,7 +7,7 @@
 
 ## 2. Failing test first
 
-- [ ] 2.1 Add self-test fixtures for `include-component-in-tag` missing and given as the string `"false"`, plus the passing case, and extend the release check to require the JSON boolean `false`; run `scripts/test-template-scripts.sh` before the config change and verify it fails on this repository for that reason only (save the output as evidence)
+- [x] 2.1 Add self-test fixtures for `include-component-in-tag` missing and given as the string `"false"`, plus the passing case, and extend the release check to require the JSON boolean `false`; run `scripts/test-template-scripts.sh` before the config change and verify it fails on this repository for that reason only (save the output as evidence). Done: 75/76, only "release state: this repository" fails, with "include-component-in-tag must be the JSON boolean false (... include-component-in-tag unset ...)"; the missing, `true` and string `"false"` fixtures are rejected and the boolean `false` passes; shellcheck clean; `evidence/2.1-failing-test.txt`
 
 ## 3. Fix
 
