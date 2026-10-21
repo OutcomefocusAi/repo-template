@@ -17,7 +17,7 @@
 
 ## 3. CI workflow
 
-- [ ] 3.1 Write `.github/workflows/ci.yml` with `template-checks` (including the checksum-verified gitleaks and actionlint downloads) and `project` jobs per D1 and D2, and verify `scripts/check-workflows.sh` passes locally
+- [x] 3.1 Write `.github/workflows/ci.yml` with `template-checks` (including the checksum-verified gitleaks and actionlint downloads) and `project` jobs per D1 and D2, and verify `scripts/check-workflows.sh` passes locally
 - [ ] 3.2 Push the branch and verify the CI run on PR #2 passes, with the five slot warnings visible in the run annotations (link the run)
 
 ## 4. Security scaffolding
