@@ -186,18 +186,62 @@ rel false "fork branch named release-please--*" release-please--branches--main m
 rel false "same-repository branch named release-please--* opened by an agent" release-please--x OutcomefocusAi/repo-template AgileKnow23
 rel false "ordinary branch" 1-bootstrap-repo-template OutcomefocusAi/repo-template AgileKnow23
 
-# release-please first version (design D6): with no release yet, release-please uses the
-# package's `initial-version` (1.0.0 when unset), so the first release is 0.1.0 only if the
-# config sets it and the manifest and version.txt still read 0.0.0.
-total=$((total + 1))
-rp_initial=$(jq -r '.packages["."]["initial-version"] // "unset"' "$root/release-please-config.json")
-rp_manifest=$(jq -r '.["."]' "$root/.release-please-manifest.json")
-rp_version=$(tr -d '[:space:]' < "$root/version.txt")
-if [ "$rp_initial" = "0.1.0" ] && [ "$rp_manifest" = "0.0.0" ] && [ "$rp_version" = "0.0.0" ]; then
-  echo "ok   release: first release is 0.1.0 (initial-version 0.1.0, manifest 0.0.0)"
-else
-  echo "FAIL release: first release would not be 0.1.0 (initial-version $rp_initial, manifest $rp_manifest, version.txt $rp_version)"; fails=$((fails + 1))
-fi
+# release-please version state (design D6; change fix-first-release-check). The check reads
+# a directory's release-please-config.json, .release-please-manifest.json, version.txt and
+# CHANGELOG.md and exits 0 when they are consistent.
+release_state() { # dir
+  local d=$1 initial bump manifest version heading semver='^[0-9]+\.[0-9]+\.[0-9]+$'
+  initial=$(jq -r '.packages["."]["initial-version"] // "unset"' "$d/release-please-config.json")
+  # release-please honours only the JSON boolean true here, so a string "true" is reported as itself.
+  bump=$(jq -r '.packages["."] | if has("bump-minor-pre-major") then .["bump-minor-pre-major"]
+    | (if . == true then "true" else tojson end) else "unset" end' "$d/release-please-config.json")
+  manifest=$(jq -r '.["."]' "$d/.release-please-manifest.json")
+  version=$(tr -d '[:space:]' < "$d/version.txt")
+  heading=none # newest "## " heading in CHANGELOG.md: "## X.Y.Z (date)" or "## [X.Y.Z](url) (date)"
+  if [ -f "$d/CHANGELOG.md" ]; then
+    heading=$(grep -m1 '^## ' "$d/CHANGELOG.md" || true)
+    if [ -z "$heading" ]; then heading=none
+    elif [[ $heading =~ ^##\ \[?([0-9]+\.[0-9]+\.[0-9]+)[]\ ] ]]; then heading=${BASH_REMATCH[1]}
+    else heading="unparsed '$heading'"; fi
+  fi
+  local found="initial-version $initial, bump-minor-pre-major $bump, manifest $manifest, version.txt $version, newest changelog heading $heading"
+  if [ "$initial" != "0.1.0" ]; then echo "initial-version must be 0.1.0 ($found)"; return 1; fi
+  if [ "$bump" != "true" ]; then echo "bump-minor-pre-major must be the JSON boolean true ($found)"; return 1; fi
+  if ! [[ $manifest =~ $semver && $version =~ $semver ]]; then echo "manifest and version.txt must be MAJOR.MINOR.PATCH ($found)"; return 1; fi
+  if [ "$manifest" != "$version" ]; then echo "manifest and version.txt disagree ($found)"; return 1; fi
+  if [ "$manifest" = "0.0.0" ]; then
+    if [ "$heading" != none ]; then echo "no release yet, but CHANGELOG.md has a released version ($found)"; return 1; fi
+    echo "before the first release: first release is 0.1.0 ($found)"
+  else
+    if [ "$heading" != "$manifest" ]; then echo "newest CHANGELOG.md heading does not match the version ($found)"; return 1; fi
+    echo "released $manifest: version files agree ($found)"
+  fi
+}
+rp_fixture() { # name manifest version.txt bump-minor-pre-major(true|false|string-true|unset) initial-version(0.1.0|unset) [changelog headings...]
+  local d="$scratch/rp-$1" manifest=$2 version=$3 bump=$4 initial=$5; shift 5
+  mkdir -p "$d"
+  jq -n --arg b "$bump" --arg i "$initial" '{packages: {".": ({"release-type": "simple"}
+    + (if $i == "unset" then {} else {"initial-version": $i} end)
+    + (if $b == "unset" then {} elif $b == "string-true" then {"bump-minor-pre-major": "true"}
+       else {"bump-minor-pre-major": ($b == "true")} end))}}' > "$d/release-please-config.json"
+  jq -n --arg m "$manifest" '{".": $m}' > "$d/.release-please-manifest.json"
+  printf '%s\n' "$version" > "$d/version.txt"
+  if [ $# -gt 0 ]; then { echo "# Changelog"; for h in "$@"; do printf '\n%s\n\n* entry\n' "$h"; done; } > "$d/CHANGELOG.md"; fi
+  echo "$d"
+}
+h010='## 0.1.0 (2026-10-21)'
+h020='## [0.2.0](https://github.com/OutcomefocusAi/repo-template/compare/v0.1.0...v0.2.0) (2026-11-02)'
+expect 0 "release state: before any release (0.0.0, no changelog)" release_state "$(rp_fixture pre 0.0.0 0.0.0 true 0.1.0)"
+expect 0 "release state: first release 0.1.0 (release pull request or merged)" release_state "$(rp_fixture first 0.1.0 0.1.0 true 0.1.0 "$h010")"
+expect 0 "release state: later release 0.2.0 with a linked heading" release_state "$(rp_fixture later 0.2.0 0.2.0 true 0.1.0 "$h020" "$h010")"
+expect 1 "release state: manifest and version.txt disagree" release_state "$(rp_fixture split 0.1.0 0.0.0 true 0.1.0 "$h010")"
+expect 1 "release state: newest changelog heading disagrees" release_state "$(rp_fixture stale 0.2.0 0.2.0 true 0.1.0 "$h010")"
+expect 1 "release state: 0.0.0 with an inherited released changelog" release_state "$(rp_fixture inherited 0.0.0 0.0.0 true 0.1.0 "$h010")"
+expect 1 "release state: bump-minor-pre-major not set" release_state "$(rp_fixture nobump 0.0.0 0.0.0 unset 0.1.0)"
+expect 1 "release state: bump-minor-pre-major is the string \"true\", not the boolean" release_state "$(rp_fixture strbump 0.0.0 0.0.0 string-true 0.1.0)"
+expect 1 "release state: initial-version not set" release_state "$(rp_fixture noinit 0.0.0 0.0.0 true unset)"
+expect 1 "release state: version is not MAJOR.MINOR.PATCH" release_state "$(rp_fixture badver 0.1 0.1 true 0.1.0 '## 0.1 (2026-10-21)')"
+expect 0 "release state: this repository" release_state "$root"
 
 echo "test-template-scripts: $((total - fails))/$total passed"
 [ "$fails" -eq 0 ]

@@ -6,7 +6,8 @@
       "package-name": "repo-template",
       "changelog-path": "CHANGELOG.md",
       "include-v-in-tag": true,
-      "initial-version": "0.1.0"
+      "initial-version": "0.1.0",
+      "bump-minor-pre-major": true
     }
   }
 }

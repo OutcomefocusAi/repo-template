@@ -1,0 +1,53 @@
+# release-please 17.6.0 (the version the pinned action v5.0.0 runs), offline, no network or token.
+# Before: release-please-config.json on main (a76c200). After: this branch.
+
+config main:release-please-config.json: initial-version=0.1.0 bump-minor-pre-major=undefined
+  no release yet, feat: commit -> 0.1.0
+  0.1.0, feat!: commit -> 1.0.0
+  0.1.0, BREAKING CHANGE footer -> 1.0.0
+  0.1.0, feat: commit -> 0.2.0
+  0.1.0, fix: commit -> 0.1.1
+  0.1.0, Release-As: 1.0.0 footer -> 1.0.0
+  1.2.0, feat!: commit -> 2.0.0
+config release-please-config.json: initial-version=0.1.0 bump-minor-pre-major=true
+  no release yet, feat: commit -> 0.1.0
+  0.1.0, feat!: commit -> 0.2.0
+  0.1.0, BREAKING CHANGE footer -> 0.2.0
+  0.1.0, feat: commit -> 0.2.0
+  0.1.0, fix: commit -> 0.1.1
+  0.1.0, Release-As: 1.0.0 footer -> 1.0.0
+  1.2.0, feat!: commit -> 2.0.0
+
+# Script (node <script> <config>, run with release-please 17.6.0 installed from npm):
+```js
+// Offline (no network, no token): release-please 17.6.0 version calculation with a given
+// release-please-config.json. Maps the keys this config uses the same way manifest.js does.
+const fs = require('fs');
+const { buildStrategy } = require('release-please/build/src/factory');
+const { parseConventionalCommits } = require('release-please/build/src/commit');
+const { TagName } = require('release-please/build/src/util/tag-name');
+const { Version } = require('release-please/build/src/version');
+const p = JSON.parse(fs.readFileSync(process.argv[2])).packages['.'];
+const opts = { releaseType: p['release-type'], packageName: p['package-name'], changelogPath: p['changelog-path'],
+  includeVInTag: p['include-v-in-tag'], initialVersion: p['initial-version'], bumpMinorPreMajor: p['bump-minor-pre-major'] };
+const github = { repository: { owner: 'o', repo: 'r', defaultBranch: 'main' } };
+const rel = v => ({ tag: new TagName(Version.parse(v), 'repo-template', '-', true), sha: 'abc', notes: '' });
+const c = (m, i) => ({ sha: 'c' + i, message: m, files: [] });
+const cases = [
+  ['no release yet, feat: commit', undefined, ['feat: bootstrap repo-template (#1)']],
+  ['0.1.0, feat!: commit', '0.1.0', ['feat!: drop the old layout (#20)']],
+  ['0.1.0, BREAKING CHANGE footer', '0.1.0', ['fix: rename a flag (#21)\n\nBREAKING CHANGE: the flag is renamed']],
+  ['0.1.0, feat: commit', '0.1.0', ['feat: add a check (#22)']],
+  ['0.1.0, fix: commit', '0.1.0', ['fix: a bug (#23)']],
+  ['0.1.0, Release-As: 1.0.0 footer', '0.1.0', ['chore: release 1.0.0 (#24)\n\nRelease-As: 1.0.0']],
+  ['1.2.0, feat!: commit', '1.2.0', ['feat!: change the API (#25)']],
+];
+(async () => {
+  const s = await buildStrategy({ github, ...opts, path: '.', targetBranch: 'main' });
+  console.log(`config ${process.argv[2]}: initial-version=${opts.initialVersion} bump-minor-pre-major=${opts.bumpMinorPreMajor}`);
+  for (const [name, latest, msgs] of cases) {
+    const v = await s.buildNewVersion(parseConventionalCommits(msgs.map(c)), latest && rel(latest));
+    console.log(`  ${name} -> ${v.toString()}`);
+  }
+})().catch(e => { console.error('ERR', e.stack); process.exit(1); });
+```

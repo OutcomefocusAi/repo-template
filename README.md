@@ -28,13 +28,21 @@ Replace `<name>` with the new repository name and `<tag>` with the template rele
    git config core.hooksPath .githooks
    ```
 
-4. Record the template version in `TEMPLATE_SOURCE.md`: under "Created from", fill in the template tag, its full commit SHA, and today's date. The SHA of a tag is printed by:
+4. Reset the release state copied from the template, so this repository's first release is `0.1.0` (the template's `CHANGELOG.md` and version belong to the template; `release-please-config.json` stays as it is):
+
+   ```bash
+   printf '{\n  ".": "0.0.0"\n}\n' > .release-please-manifest.json
+   echo 0.0.0 > version.txt
+   rm -f CHANGELOG.md
+   ```
+
+5. Record the template version in `TEMPLATE_SOURCE.md`: under "Created from", fill in the template tag, its full commit SHA, and today's date. The SHA of a tag is printed by:
 
    ```bash
    gh api repos/OutcomefocusAi/repo-template/commits/<tag> --jq .sha
    ```
 
-5. Open the first issue with the "OpenSpec change" form for the project proposal. That proposal picks the stack (defaults in `AGENTS.md`) and fills the CI slots (below).
+6. Open the first issue with the "OpenSpec change" form for the project proposal. That proposal picks the stack (defaults in `AGENTS.md`) and fills the CI slots (below).
 
 If you reuse the template outside OutcomefocusAi, edit the owner line in `AGENTS.md` section 1 and `.github/CODEOWNERS`.
 

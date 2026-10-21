@@ -2,7 +2,7 @@
 
 ## Created from
 
-In the template itself this section is blank. A repository created from the template fills it in its first commit (README, "Start a new repository", step 4).
+In the template itself this section is blank. A repository created from the template fills it in its first commit (README, "Start a new repository", step 5).
 
 | Field | Value |
 | --- | --- |
