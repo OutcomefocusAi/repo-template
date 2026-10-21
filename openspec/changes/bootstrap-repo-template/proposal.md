@@ -11,6 +11,12 @@ Notion Tasks row: linked from the tracking issue (kept out of committed files).
 | Implement this proposal, with Decision 1 changed | "Approved, but make repo-template public for real branch protection; other recommendations as proposed." (answering "Approve the repo-template proposal?") | Grok Bot chat, 2026-10-21 12:15 PM MST; relayed verbatim to Principal Engineer and recorded here before apply |
 | Docs waiver | "OK, that works. No need to use open spec on dock changes." ("dock" means docs) | Relayed verbatim by Chief of Staff; written 2026-10-21 11:59 AM MST |
 | How the waiver reads in AGENTS.md (applies to Decision 3) | "Fold the docs waiver into PR #1's spec now." (answering "How should I reconcile the docs waiver with PR #1's spec?") | Grok Bot chat with Principal Engineer, 2026-10-21 12:13 PM MST, as recorded in openspec-sandbox commit `141ca6c` |
+| Rebuild the repository | "Yes, approve all three recommendations: rebuild a fresh repo-template and keep the old one private, add the workflow permission, and squash-merge PR #1 with the branch-name waiver and QA's stricter rule." (the third item refers to openspec-sandbox PR #1, not this repository) | Woody's chat with Chief of Staff, 2026-10-21 about 12:25 to 12:27 PM MST, relayed verbatim to Principal Engineer |
+| The early merge of the first repository's PR #2 | "Yes, that was my fault" | Woody's chat with Chief of Staff, 2026-10-21 12:27 PM MST, relayed verbatim to Principal Engineer |
+
+## Rebuild (2026-10-21)
+
+The first `OutcomefocusAi/repo-template` had its proposal-only PR #2 merged into `main` at 12:18 PM MST, before implementation, with a GitHub web merge commit authored under a personal email address rather than the noreply address. The pre-publication privacy check ran on a local clone that had not fetched that commit, so the repository was public for about three minutes (about 12:20 to 12:23 PM MST) before it was made private again. With Woody's approval above, that repository was renamed `OutcomefocusAi/repo-template-old`, kept private, and had its template flag turned off; nothing in it was deleted or force-pushed. This repository is a fresh replay of the same content with clean history: every commit is authored and committed by `AgileKnow23 <204773855+AgileKnow23@users.noreply.github.com>`, `main` again holds only the README stub, and the tracking issue and pull request are new (issue #1, pull request #2 in this repository). The privacy check (design D11) now runs after `git fetch --all` over every remote ref, including `refs/pull/*`.
 
 ## Why
 
@@ -59,7 +65,7 @@ Details and alternatives are in design.md.
 
 ## Impact
 
-- Repository `OutcomefocusAi/repo-template`, marked as a template, made public by Decision 1 after a privacy check of every file, commit, the issue, and the pull request. `main` holds only a README stub (commit `33bae47`), the one direct-to-main commit, made so a branch and pull request could exist.
+- Repository `OutcomefocusAi/repo-template`, marked as a template, made public by Decision 1 after a privacy check of every file, commit, the issue, and the pull request. `main` holds only a README stub, the one direct-to-main commit, made so a branch and pull request could exist. Rebuilt on 2026-10-21 (see Rebuild); the first repository is kept private as `OutcomefocusAi/repo-template-old`.
 - New ruleset on `main` (repository-scoped, reversible).
 - New files: `AGENTS.md`, `CLAUDE.md`, `README.md` (replaced), `SECURITY.md`, `CODEOWNERS`, `.editorconfig`, `.gitignore`, `.env.example`, `netlify.toml`, `.githooks/pre-commit`, `.gitleaks.toml` if needed, `release-please-config.json`, `.release-please-manifest.json`, `version.txt`, `TEMPLATE_SOURCE.md`, `scripts/` checks, `.github/workflows/{ci,qa-gate,main-guard,release}.yml`, `.github/dependabot.yml`, `.github/ISSUE_TEMPLATE/*`, `.github/pull_request_template.md`, and (Decision 2) `.agents/skills/ponytail*/`.
 - This change folder: `openspec/changes/bootstrap-repo-template/`.

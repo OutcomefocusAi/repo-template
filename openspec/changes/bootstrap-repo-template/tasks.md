@@ -4,8 +4,8 @@
 
 - [x] 1.1 Record Woody's implementation approval and the decision answers (exact words, where and when) in proposal.md, revise design and specs for a public repository, and verify `openspec validate bootstrap-repo-template --strict` passes
 - [x] 1.2 Re-resolve every pin in design.md with `gh api` and verify each recorded SHA matches its tag (record and justify any change)
-- [ ] 1.3 Run the pre-publication privacy check (design D11) over all commits, files, issue #1 and PR #2, and verify it finds nothing private (record the commands and results in the pull request)
-- [ ] 1.4 Make the repository public with `gh repo edit --visibility public` and verify `gh api repos/OutcomefocusAi/repo-template --jq '{visibility,is_template}'` shows `public` and `true`
+- [ ] 1.3 Run the pre-publication privacy check (design D11) after `git fetch --all` and a fetch of `refs/pull/*`, over every remote ref, all commits, files, issue #1 and PR #2, and verify it finds nothing private (record the commands and results in the pull request)
+- [ ] 1.4 Make the repository public with `gh api -X PATCH repos/OutcomefocusAi/repo-template -f visibility=public` and verify `gh api repos/OutcomefocusAi/repo-template --jq '{visibility,is_template}'` shows `public` and `true`
 
 ## 2. Template checks
 
@@ -23,7 +23,7 @@
 ## 4. Security scaffolding
 
 - [ ] 4.1 Write `.githooks/pre-commit` per D4 and verify it blocks a staged fake credential, passes a clean commit, and fails closed when gitleaks is not on PATH
-- [ ] 4.2 Verify the CI gitleaks step fails when the expected checksum is altered (run the download-and-verify script locally with a wrong checksum)
+- [x] 4.2 Verify the CI gitleaks step fails when the expected checksum is altered (run the download-and-verify script locally with a wrong checksum)
 - [ ] 4.3 Write `.github/dependabot.yml` per D5 and verify GitHub accepts it (no Dependabot configuration error reported for the repository)
 - [ ] 4.4 Write `.env.example` and `.gitignore` per D10 and verify `git check-ignore .env .env.local` matches and `.env.example` is tracked
 - [ ] 4.5 Write `SECURITY.md` and verify it covers private reporting and revoke-then-rotate
