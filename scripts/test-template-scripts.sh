@@ -56,6 +56,24 @@ jobs:
       - uses: actions/checkout@v4
 YAML
 expect 1 "check-workflows: unpinned, unbounded, privileged workflow" in_repo scripts/check-workflows.sh bad.yml
+good_head='on: [push]
+concurrency:
+  group: x
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:'
+printf '%s\n      - run: echo ok\n' "$good_head" > "$repo/ok.yml"
+expect 0 "check-workflows: minimal hardened workflow" in_repo scripts/check-workflows.sh ok.yml
+printf '%s\n      - {uses: actions/checkout@v4}\n' "$good_head" > "$repo/flow.yml"
+expect 1 "check-workflows: flow-style uses mapping" in_repo scripts/check-workflows.sh flow.yml
+sed 's/^  contents: read$/  contents: read\n  issues: write/' "$repo/ok.yml" > "$repo/extra.yml"
+expect 1 "check-workflows: extra top-level write scope" in_repo scripts/check-workflows.sh extra.yml
+grep -v -e '^concurrency:' -e '^  group: x' "$repo/ok.yml" > "$repo/noconc.yml"
+expect 1 "check-workflows: missing concurrency" in_repo scripts/check-workflows.sh noconc.yml
 
 # slot.sh
 expect 0 "slot: warns in the template repository" env GITHUB_REPOSITORY=OutcomefocusAi/repo-template "$root/scripts/slot.sh" lint

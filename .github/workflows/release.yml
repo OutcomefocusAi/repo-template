@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# Pushes to main queue in order; a run on main is never cancelled.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release-please:
     name: release-please
@@ -16,9 +21,9 @@ jobs:
     timeout-minutes: 10
     # The only job in the template with write permissions.
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: write       # commit the changelog and create tags and releases
+      pull-requests: write  # open and update the release pull request
+      issues: write         # apply release-please labels
     steps:
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:

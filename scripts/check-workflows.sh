@@ -2,7 +2,8 @@
 # Hardening checks for GitHub Actions workflows:
 #   - no pull_request_target trigger
 #   - every remote action pinned to a 40-character commit SHA with a "# vX.Y.Z" comment
-#   - top-level permissions set to contents: read
+#   - top-level permissions set to exactly contents: read (writes only per job)
+#   - top-level concurrency set
 #   - every job sets timeout-minutes
 #   - every job runs on a standard Linux runner (ubuntu-*)
 # Usage: scripts/check-workflows.sh [workflow files...]  (default: .github/workflows/*.yml)
@@ -29,8 +30,22 @@ for f in "${files[@]}"; do
     fi
   done < <(grep -nE '^[[:space:]-]*uses:' "$f" || true)
 
-  if ! awk '/^permissions:/{getline n; if (n ~ /^  contents: read[[:space:]]*$/) ok=1} END{exit ok?0:1}' "$f"; then
-    err "$f" 1 "top-level permissions must start with 'contents: read'"
+  # Flow-style mappings such as "- {uses: owner/action@v1}" hide a uses: key from the check above.
+  while IFS=: read -r line _; do
+    err "$f" "$line" "flow-style mapping with uses: is not allowed; write it as a block mapping"
+  done < <(grep -nE '\{[^}]*uses:' "$f" || true)
+
+  # Top-level permissions: exactly one entry, contents: read.
+  if ! awk '
+    /^permissions:[[:space:]]*$/ { inperm=1; next }
+    inperm && /^  [^ #]/ { n++; if ($0 ~ /^  contents: read([[:space:]]+#.*)?[[:space:]]*$/) ok++; next }
+    inperm && /^[^ #]/ { inperm=0 }
+    END { exit (n == 1 && ok == 1) ? 0 : 1 }' "$f"; then
+    err "$f" 1 "top-level permissions must be exactly 'contents: read'; raise permissions per job"
+  fi
+
+  if ! grep -q '^concurrency:' "$f"; then
+    err "$f" 1 "top-level concurrency is required"
   fi
 
   # Report jobs missing timeout-minutes or using a non-Linux runner.
