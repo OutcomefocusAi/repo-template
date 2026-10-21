@@ -1,13 +1,20 @@
 # qa-gate: sets commit status `qa-gate` on the pull request head.
-# success only when an allowlisted account has commented
+#
+# Passes only when the newest verdict, by creation time, from an allowlisted account is a
+# comment or non-dismissed review whose first line is exactly
 #   Independent QA by <reviewer>: SHIP
-# naming the full current head SHA. SHIP-WITH-FIXES (AGENTS.md spelling), SHIP WITH FIXES
-# and NO-SHIP all count as the latest verdict and fail the gate.
-# Verdicts are read from pull request comments and from pull request reviews; the gate
-# re-runs when one is added, edited, deleted, or dismissed.
-# Never checks out pull request code.
-# issue_comment runs use this file from the default branch, so a pull request
-# cannot change the gate its comments are judged by.
+# and whose body contains the full current head SHA. SHIP-WITH-FIXES (AGENTS.md spelling),
+# SHIP WITH FIXES and NO-SHIP fail. Fail closed: any later allowlisted comment or review
+# whose first line contains "Independent QA by" but is not a valid verdict for the head
+# (other spelling, extra text or spaces, short or other SHA) blocks an earlier SHIP.
+#
+# Limits (README, "How main is protected"): every agent posts as AgileKnow23, so the gate
+# cannot tell Principal QA from another agent; and a pull_request run uses the pull
+# request's copy of this file. The gate guards against mistakes and outsiders, not against
+# the shared identity.
+#
+# Never checks out pull request code. issue_comment and pull_request_review runs re-evaluate
+# when a verdict is added, edited, deleted, or dismissed.
 name: qa-gate
 
 on:
@@ -21,9 +28,11 @@ on:
 permissions:
   contents: read
 
+# Newest run wins: each run reads the current head and all verdicts, so a superseded run
+# has nothing left to decide.
 concurrency:
   group: qa-gate-${{ github.event.pull_request.number || github.event.issue.number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   evaluate:
@@ -32,9 +41,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
-      contents: read
-      pull-requests: read
-      statuses: write
+      contents: read        # default read access
+      pull-requests: read   # read the pull request, its files, comments and reviews
+      statuses: write       # set the qa-gate commit status on the head SHA
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
@@ -47,7 +56,6 @@ jobs:
           set -euo pipefail
           pr_json=$(gh api "repos/$REPO/pulls/$PR")
           head_sha=$(jq -r .head.sha <<<"$pr_json")
-          head_ref=$(jq -r .head.ref <<<"$pr_json")
 
           set_status() {
             gh api -X POST "repos/$REPO/statuses/$head_sha" \
@@ -55,7 +63,10 @@ jobs:
             echo "qa-gate: $1: $2"
           }
 
-          if [[ "$head_ref" == release-please--* ]]; then
+          # Release pull requests pass without a verdict only when release-please opened them
+          # from this repository and they touch release files alone.
+          release_ok=$(jq -r --arg repo "$REPO" '(.head.ref | startswith("release-please--")) and .head.repo.full_name == $repo and .user.login == "github-actions[bot]"' <<<"$pr_json")
+          if [[ "$release_ok" == "true" ]]; then
             others=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' \
               | grep -v -x -e CHANGELOG.md -e version.txt -e .release-please-manifest.json || true)
             if [[ -z "$others" ]]; then
@@ -66,19 +77,23 @@ jobs:
 
           allow_json=$(jq -R -c 'split(" ") | map(select(length > 0))' <<<"$ALLOWLIST")
           verdict=$( { gh api --paginate "repos/$REPO/issues/$PR/comments" \
-                         --jq '.[] | {user, body, updated_at}'
+                         --jq '.[] | {user: {login: .user.login}, body, created_at, updated_at}'
                        gh api --paginate "repos/$REPO/pulls/$PR/reviews" \
-                         --jq '.[] | select(.state != "DISMISSED") | {user, body: (.body // ""), updated_at: .submitted_at}'; } \
+                         --jq '.[] | {user: {login: .user.login}, body: (.body // ""), created_at: .submitted_at, updated_at: .submitted_at, state}'; } \
             | jq -r -s --arg sha "$head_sha" --argjson allow "$allow_json" '
-                map(select(.user.login as $u | $allow | index($u)))
-                | map(select(.body | contains($sha)))
-                | map(. + {first: (.body | split("\n")[0] | rtrimstr("\r"))})
-                | map(select(.first | test("^Independent QA by .+: (SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$")))
-                | sort_by(.updated_at) | last
-                | if . == null then "" else (.first | capture(": (?<v>SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$").v) end')
+                map(select((.state // "") != "DISMISSED"))
+                | map(select(.user.login as $u | $allow | index($u)))
+                | map(. + {first: ((.body // "") | split("\n")[0] | rtrimstr("\r")), at: (.created_at // .updated_at)})
+                | map(select(.first | ascii_downcase | contains("independent qa by")))
+                | map(. + {valid: ((.first | test("^Independent QA by .+: (SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$")) and (.body | contains($sha)))})
+                | sort_by(.at)
+                | (map(select(.valid)) | last) as $v
+                | if $v == null then ""
+                  elif any(.[]; (.valid | not) and .at > $v.at) then "NO-SHIP"
+                  else ($v.first | capture(": (?<v>SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$").v) end')
 
           case "$verdict" in
             "SHIP") set_status success "Independent QA shipped ${head_sha:0:7}" ;;
             "") set_status failure "QA has not shipped this head (${head_sha:0:7})" ;;
-            *) set_status failure "Latest QA verdict for ${head_sha:0:7} is $verdict" ;;
+            *) set_status failure "Latest QA verdict for ${head_sha:0:7} is $verdict or unreadable" ;;
           esac
