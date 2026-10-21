@@ -1,12 +1,13 @@
 # Proposal: align-qa-gate-requirement
 
-Tracking issue: #6. Branch: `6-align-qa-gate-requirement`. Not docs-only: it changes the text of a spec requirement, so it goes through OpenSpec and waits for Woody's approval before apply.
+Tracking issue: [#6](https://github.com/OutcomefocusAi/repo-template/issues/6). Branch: `6-align-qa-gate-requirement`. Notion Tasks row: https://app.notion.com/p/400444b092e6813797effbf10de0ddf5 (added at archive, issue #12, so PR #9's shipped head stayed unchanged). Not docs-only: it changes the text of a spec requirement, so it goes through OpenSpec and waits for Woody's approval before apply.
 
 ## Approval
 
 | What | Words or selected option text | How given, where and when |
 | --- | --- | --- |
 | Approve this proposal (together with the close-out of `bootstrap-repo-template`, issue #7) | Option selected by Woody: "Yes to both: close out the repo-template build with 11.2 deferred (including the 0.1.0 version fix), and approve the #6 proposal." (answering "Approve the close-out and the spec fix?") | Option selected on Chief of Staff's card in Woody's chat with Chief of Staff, 2026-10-21 1:45 PM MST; option text by Chief of Staff; relayed verbatim to Principal Engineer. Recorded here before apply |
+| Merge PR #9 | Option selected by Woody: "Yes, merge repo-template PR #9." (answering "Merge the spec fix PR?") | Option selected on Chief of Staff's card in Woody's chat with Chief of Staff, 2026-10-21 3:18 PM MST; option text by Chief of Staff; relayed verbatim to Principal Engineer; squash commit `e8040c2` |
 
 ## Why
 
