@@ -4,9 +4,12 @@
 # comment or non-dismissed review whose first line is exactly
 #   Independent QA by <reviewer>: SHIP
 # and whose body contains the full current head SHA. SHIP-WITH-FIXES (AGENTS.md spelling),
-# SHIP WITH FIXES and NO-SHIP fail. Fail closed: any later allowlisted comment or review
-# whose first line contains "Independent QA by" but is not a valid verdict for the head
-# (other spelling, extra text or spaces, short or other SHA) blocks an earlier SHIP.
+# SHIP WITH FIXES and NO-SHIP fail. Fail closed: any allowlisted comment or review at the
+# same time or later whose first line contains "Independent QA by" (any letter case,
+# anywhere in the line) but is not a valid verdict for the head (other spelling, extra text
+# or spaces, short or other SHA) blocks the SHIP, and so does any other verdict in the same
+# second. Dismissed reviews, pending reviews, and items with no creation or submission time
+# never count.
 #
 # Limits (README, "How main is protected"): every agent posts as AgileKnow23, so the gate
 # cannot tell Principal QA from another agent; and a pull_request run uses the pull
@@ -81,16 +84,19 @@ jobs:
                        gh api --paginate "repos/$REPO/pulls/$PR/reviews" \
                          --jq '.[] | {user: {login: .user.login}, body: (.body // ""), created_at: .submitted_at, updated_at: .submitted_at, state}'; } \
             | jq -r -s --arg sha "$head_sha" --argjson allow "$allow_json" '
-                map(select((.state // "") != "DISMISSED"))
+                map(select((.state // "") != "DISMISSED" and (.state // "") != "PENDING"))
                 | map(select(.user.login as $u | $allow | index($u)))
                 | map(. + {first: ((.body // "") | split("\n")[0] | rtrimstr("\r")), at: (.created_at // .updated_at)})
+                | map(select(.at != null))
                 | map(select(.first | ascii_downcase | contains("independent qa by")))
                 | map(. + {valid: ((.first | test("^Independent QA by .+: (SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$")) and (.body | contains($sha)))})
+                | map(. + {v: (if .valid then (.first | capture(": (?<v>SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$").v) else null end)})
                 | sort_by(.at)
                 | (map(select(.valid)) | last) as $v
                 | if $v == null then ""
-                  elif any(.[]; (.valid | not) and .at > $v.at) then "NO-SHIP"
-                  else ($v.first | capture(": (?<v>SHIP|SHIP[ -]WITH[ -]FIXES|NO-SHIP)$").v) end')
+                  elif any(.[]; .at >= $v.at and (.valid | not)) then "NO-SHIP"
+                  elif $v.v == "SHIP" and any(.[]; .at == $v.at and .v != "SHIP") then "NO-SHIP"
+                  else $v.v end')
 
           case "$verdict" in
             "SHIP") set_status success "Independent QA shipped ${head_sha:0:7}" ;;
