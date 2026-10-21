@@ -24,6 +24,6 @@ Closes #<issue>
 
 Principal QA posts the verdict as a comment. Its first line must be:
 
-`Independent QA by <reviewer>: <SHIP | SHIP WITH FIXES | NO-SHIP>`
+`Independent QA by <reviewer>: <SHIP | SHIP-WITH-FIXES | NO-SHIP>`
 
 followed by the full head SHA tested and the evidence. `qa-gate` passes only on SHIP for the current head.
