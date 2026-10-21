@@ -58,7 +58,7 @@
 ## 9. Ruleset, verification and handoff
 
 - [x] 9.1 After `template-checks`, `project`, and `qa-gate` have each reported on PR #2, create ruleset `protect-main` per D3 and verify with `gh api repos/OutcomefocusAi/repo-template/rulesets/<id>` that enforcement is `active`, `bypass_actors` is empty, and the rules match
-- [ ] 9.2 Run the Ponytail review on `git diff main...HEAD`, fix must-fix findings, then update PR #2's body with the scenario-to-evidence map and CI links and request Principal QA with the head SHA
+- [x] 9.2 Run the Ponytail review on `git diff main...HEAD`, fix must-fix findings, then update PR #2's body with the scenario-to-evidence map and CI links and request Principal QA with the head SHA
 
 ## Workflow follow-up
 

@@ -50,11 +50,11 @@ Template-managed paths are listed in `template-manifest.txt`. To see which of th
 scripts/template-drift.sh <tag>
 ```
 
-It exits 0 when nothing differs and 1 when something does. Run it before each new project proposal.
+It exits 0 when nothing differs and 1 when something does. Run it before each new project proposal. `.github/workflows/ci.yml` always shows as differing once its slots are filled; compare it by eye (`git diff --no-index`) and treat only changes outside the `SLOT` steps as drift.
 
 ## How main is protected
 
-- **This template repository** is meant to be public, where GitHub Free allows rulesets. Its `main` is then protected by the ruleset `protect-main`, which blocks direct pushes, force pushes, deletion, and merges without a passing `template-checks`, `project`, and `qa-gate`, with no bypass for anyone.
+- **This template repository** is public, where GitHub Free allows rulesets. Its `main` is protected by the ruleset `protect-main`, which blocks direct pushes, force pushes, deletion, and merges without a passing `template-checks`, `project`, and `qa-gate`, with no bypass for anyone.
 - **Private repositories on GitHub Free for organizations** cannot use rulesets or branch protection. There the checks only flag violations: `qa-gate` shows a failed status until Principal QA ships the head, and `main-guard` marks a commit pushed to `main` without a pull request with a red status. Nothing stops the push or merge itself; the rule in `AGENTS.md` does.
 
 ## Actions minutes
