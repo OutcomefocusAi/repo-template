@@ -28,4 +28,4 @@ Principal QA posts the verdict as a pull request review of type COMMENT (or a pl
 
 `Independent QA by <reviewer>: <SHIP | SHIP-WITH-FIXES | NO-SHIP>`
 
-followed by the full head SHA tested and the evidence. `qa-gate` passes only on SHIP for the current head; a later malformed verdict line blocks it.
+followed by the full head SHA tested and the evidence. `qa-gate` passes only on SHIP for the current head; any later first line containing "Independent QA by" (any letter case) that is not a valid verdict blocks it.

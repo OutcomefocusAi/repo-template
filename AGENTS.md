@@ -133,7 +133,7 @@ Added by `OutcomefocusAi/repo-template`; it ranks with sections 8 to 12 in secti
 
 - **Secrets tooling:** enable the gitleaks pre-commit hook in every clone (`git config core.hooksPath .githooks`); CI scans the full history. `.env` is never committed; `.env.example` lists every variable with a placeholder. If a secret is exposed, revoke it first, then rotate it (`SECURITY.md`).
 - **Pinning:** GitHub Actions are pinned to full commit SHAs with a version comment, and CI tool binaries to SHA-256 checksums (`TEMPLATE_SOURCE.md`).
-- **Verdict:** the QA verdict line is read by the `qa-gate` check. Post a new verdict for every new head; do not edit an old verdict to change it. Only the first line counts, exactly as section 1 step 6 gives it, and any later line starting "Independent QA by" that is not a valid verdict for the head blocks the merge until a new valid verdict is posted.
+- **Verdict:** the QA verdict line is read by the `qa-gate` check. Post a new verdict for every new head; do not edit an old verdict to change it. Only the first line counts, exactly as section 1 step 6 gives it, and any verdict-like comment or review posted at the same time or later (one whose first line contains "Independent QA by" anywhere, in any letter case) that is not a valid verdict for the head blocks the merge until a new valid verdict is posted.
 - **Merge:** squash-merge with the pull request title as the subject, and make sure the subject ends with the issue reference (for example `feat: add log export (#12)`), not the pull request number GitHub appends by default.
 
 How strongly the merge rule (section 8) is enforced depends on the repository:
