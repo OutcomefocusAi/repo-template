@@ -60,6 +60,15 @@
 - [x] 9.1 After `template-checks`, `project`, and `qa-gate` have each reported on PR #2, create ruleset `protect-main` per D3 and verify with `gh api repos/OutcomefocusAi/repo-template/rulesets/<id>` that enforcement is `active`, `bypass_actors` is empty, and the rules match
 - [x] 9.2 Run the Ponytail review on `git diff main...HEAD`, fix must-fix findings, then update PR #2's body with the scenario-to-evidence map and CI links and request Principal QA with the head SHA
 
+## 10. Principal QA fixes (SHIP-WITH-FIXES at 8ca7f7a)
+
+- [x] 10.1 M2: add Principal QA's 21 adversarial qa-gate cases plus fail-closed, deleted and dismissed cases to `scripts/test-template-scripts.sh`, verify they fail first, then make `qa-gate` order verdicts by creation time and block on any later malformed verdict line, and verify all pass
+- [x] 10.2 S5: restrict the release-please auto-pass to `github-actions[bot]` pull requests from this repository, with tests
+- [x] 10.3 S3 and S4: concurrency on every workflow (`qa-gate` cancels superseded runs), and `check-workflows.sh` rejects flow-style `uses`, extra top-level permissions, and missing concurrency, with tests
+- [x] 10.4 M3: approval record says how each approval was given; "Yes, that was my fault" moved to context; AGENTS.md copied from openspec-sandbox `main` `fd91e3b` with the selected-option rule, SHA in `TEMPLATE_SOURCE.md`
+- [x] 10.5 M1 docs: README and AGENTS.md section 13 state the shared-identity limits of `qa-gate` and the ruleset
+- [x] 10.6 S1, S6, S8, S9: PR template verdict wording, change-folder links pinned to a commit, squash subject in the PR body, Notion row text refreshed; shellcheck 0.11.0 clean on every script
+
 ## Workflow follow-up
 
 - Principal QA posts its verdict; `qa-gate` turns green only on SHIP for the head.
