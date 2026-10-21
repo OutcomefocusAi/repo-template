@@ -54,8 +54,10 @@ It exits 0 when nothing differs and 1 when something does. Run it before each ne
 
 ## How main is protected
 
-- **This template repository** is public, where GitHub Free allows rulesets. Its `main` is protected by the ruleset `protect-main`, which blocks direct pushes, force pushes, deletion, and merges without a passing `template-checks`, `project`, and `qa-gate`, with no bypass for anyone.
+- **This template repository** is public, where GitHub Free allows rulesets. The ruleset `protect-main` blocks direct pushes, force pushes, deletion, and merges without a passing `template-checks`, `project`, and `qa-gate`, and it lists no bypass actors.
 - **Private repositories on GitHub Free for organizations** cannot use rulesets or branch protection. There the checks only flag violations: `qa-gate` shows a failed status until Principal QA ships the head, and `main-guard` marks a commit pushed to `main` without a pull request with a red status. Nothing stops the push or merge itself; the rule in `AGENTS.md` does.
+- **Limits in both:** all agents share the `AgileKnow23` login and token. Any of them can post a SHIP verdict that `qa-gate` accepts, any holder of the token can set the `qa-gate` status directly or edit the ruleset, and a pull request that edits `.github/workflows/` runs its own copy of `qa-gate`. The checks protect against mistakes and outsiders, not against the shared identity; the `AGENTS.md` rules (only Principal QA posts verdicts, the owner OKs every merge) are what hold.
+- **Release pull requests** opened by release-please with the built-in token start their checks only after someone clicks "Approve workflows to run" on the pull request, and they stay blocked until then.
 
 ## Actions minutes
 

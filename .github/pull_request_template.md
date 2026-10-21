@@ -1,5 +1,7 @@
 Closes #<issue>
 
+Squash subject: `<type>: <summary> (#<issue>)` (the pull request title; remove the ` (#<pr>)` GitHub appends)
+
 - OpenSpec change folder: `openspec/changes/<change-name>/`
 - Notion Tasks row: <link or none>
 - Workflow files changed: <yes, list them / no>
@@ -22,8 +24,8 @@ Closes #<issue>
 
 ## QA verdict
 
-Principal QA posts the verdict as a comment. Its first line must be:
+Principal QA posts the verdict as a pull request review of type COMMENT (or a plain comment if GitHub refuses the review), one new verdict per head. Its first line must be exactly:
 
 `Independent QA by <reviewer>: <SHIP | SHIP-WITH-FIXES | NO-SHIP>`
 
-followed by the full head SHA tested and the evidence. `qa-gate` passes only on SHIP for the current head.
+followed by the full head SHA tested and the evidence. `qa-gate` passes only on SHIP for the current head; a later malformed verdict line blocks it.
