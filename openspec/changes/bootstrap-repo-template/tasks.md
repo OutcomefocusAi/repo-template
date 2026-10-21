@@ -51,7 +51,7 @@
 
 ## 8. README and drift control
 
-- [ ] 8.1 Write `template-manifest.txt` and `scripts/template-drift.sh` per D9 and verify it exits 0 against a matching tree and 1 after changing one managed file in a scratch copy
+- [x] 8.1 Write `template-manifest.txt` and `scripts/template-drift.sh` per D9 and verify it exits 0 against a matching tree and 1 after changing one managed file in a scratch copy
 - [ ] 8.2 Replace README with start-a-new-repository steps, hook setup, slot filling, drift check, minutes note, and the enforcement statement from the branch-governance spec, and verify each local command in it runs as written in a scratch directory (`gh repo create` is shown, not run)
 - [ ] 8.3 Run the em-dash check, `openspec validate bootstrap-repo-template --strict`, and `openspec validate --all --strict` and record the output in the pull request
 
