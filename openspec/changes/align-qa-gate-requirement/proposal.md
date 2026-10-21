@@ -2,6 +2,12 @@
 
 Tracking issue: #6. Branch: `6-align-qa-gate-requirement`. Not docs-only: it changes the text of a spec requirement, so it goes through OpenSpec and waits for Woody's approval before apply.
 
+## Approval
+
+| What | Words or selected option text | How given, where and when |
+| --- | --- | --- |
+| Approve this proposal (together with the close-out of `bootstrap-repo-template`, issue #7) | Option selected by Woody: "Yes to both: close out the repo-template build with 11.2 deferred (including the 0.1.0 version fix), and approve the #6 proposal." (answering "Approve the close-out and the spec fix?") | Option selected on Chief of Staff's card in Woody's chat with Chief of Staff, 2026-10-21 1:45 PM MST; option text by Chief of Staff; relayed verbatim to Principal Engineer. Recorded here before apply |
+
 ## Why
 
 The branch-governance requirement "QA gate check" still says `qa-gate` runs "when comments are added" and passes on "a pull request comment". Since `bootstrap-repo-template`, the `qa-gate` workflow also runs when a comment is edited or deleted and when a review is submitted, edited, or dismissed, and it counts submitted reviews of type COMMENT as verdicts. The change-traceability requirements already describe that behavior, so the two capabilities disagree. Principal QA raised it in issue #6 when shipping PR #2 at `645d98d`.
