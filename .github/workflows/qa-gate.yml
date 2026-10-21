@@ -3,7 +3,8 @@
 #   Independent QA by <reviewer>: SHIP
 # naming the full current head SHA. SHIP-WITH-FIXES (AGENTS.md spelling), SHIP WITH FIXES
 # and NO-SHIP all count as the latest verdict and fail the gate.
-# Verdicts are read from pull request comments and from pull request reviews.
+# Verdicts are read from pull request comments and from pull request reviews; the gate
+# re-runs when one is added, edited, deleted, or dismissed.
 # Never checks out pull request code.
 # issue_comment runs use this file from the default branch, so a pull request
 # cannot change the gate its comments are judged by.
@@ -13,9 +14,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
   pull_request_review:
-    types: [submitted, edited]
+    types: [submitted, edited, dismissed]
 
 permissions:
   contents: read
@@ -67,7 +68,7 @@ jobs:
           verdict=$( { gh api --paginate "repos/$REPO/issues/$PR/comments" \
                          --jq '.[] | {user, body, updated_at}'
                        gh api --paginate "repos/$REPO/pulls/$PR/reviews" \
-                         --jq '.[] | {user, body: (.body // ""), updated_at: .submitted_at}'; } \
+                         --jq '.[] | select(.state != "DISMISSED") | {user, body: (.body // ""), updated_at: .submitted_at}'; } \
             | jq -r -s --arg sha "$head_sha" --argjson allow "$allow_json" '
                 map(select(.user.login as $u | $allow | index($u)))
                 | map(select(.body | contains($sha)))
