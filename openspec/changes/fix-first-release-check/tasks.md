@@ -19,7 +19,7 @@
 
 ## 4. Validation, CI evidence and review
 
-- [ ] 4.1 Run `openspec validate --all --strict`, the self-test, the em-dash check, `check-workflows`, `check-commits` and gitleaks, and verify all pass
+- [x] 4.1 Run `openspec validate --all --strict`, the self-test, the em-dash check, `check-workflows`, `check-commits` and gitleaks, and verify all pass. Done: all pass at `948362e`, also actionlint; on the merge result with main: validate 9/9 and 72/72; `evidence/4.1-checks.txt`
 - [ ] 4.2 Open the pull request for the issue with the scenario-to-test map and CI run links, verify `template-checks` and `project` are green, and get Principal QA's verdict (COMMENT review, first line `Independent QA by <reviewer>: ...`) for the head with `qa-gate` green
 
 ## Workflow follow-up

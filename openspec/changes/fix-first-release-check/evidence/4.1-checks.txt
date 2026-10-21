@@ -1,0 +1,27 @@
+# Task 4.1 checks on the branch at 948362e (local, 2026-10-21 3:34 PM MST)
+## openspec validate --all --strict
+✓ spec/template-lifecycle
+Totals: 10 passed, 0 failed (10 items)
+## openspec validate fix-first-release-check --strict
+Change 'fix-first-release-check' is valid
+## test-template-scripts
+test-template-scripts: 72/72 passed
+## check-em-dash
+check-em-dash: no em dashes in hand-written files
+## check-workflows
+check-workflows: 4 workflow file(s) pass
+## check-commits origin/main..HEAD
+check-commits: 8 commit(s) pass on 14-fix-first-release-check
+## actionlint
+actionlint: clean
+## gitleaks (branch commits)
+INF 8 commits scanned.
+INF scanned ~40750 bytes (40.75 KB) in 141ms
+INF no leaks found
+## gitleaks (full history)
+INF scanned ~904968 bytes (904.97 KB) in 202ms
+INF no leaks found
+
+## Merge result with main a76c200 (temporary worktree, not pushed): no conflicts
+openspec validate --all --strict: Totals: 9 passed, 0 failed (9 items)
+test-template-scripts: 72/72 passed
