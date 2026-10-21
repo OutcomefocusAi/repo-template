@@ -1,0 +1,23 @@
+name: Docs-only change
+description: Documentation that adds no capability and changes no code, configuration, dependencies, CI, or runtime behavior (OpenSpec waived).
+title: "docs: <summary>"
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What changes and why
+    validations:
+      required: true
+  - type: checkboxes
+    id: docs-only
+    attributes:
+      label: Docs-only confirmation
+      options:
+        - label: This change adds no capability and changes no code, configuration, dependencies, CI, or runtime behavior.
+          required: true
+  - type: input
+    id: notion-row
+    attributes:
+      label: Notion Tasks row
+      placeholder: https://www.notion.so/<workspace>/<task-row>
