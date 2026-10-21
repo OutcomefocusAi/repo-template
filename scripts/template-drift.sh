@@ -21,7 +21,16 @@ fi
 
 mapfile -t paths < <(grep -v -e '^#' -e '^[[:space:]]*$' "$src/template-manifest.txt")
 
-list() { (cd "$1" && git ls-files -- "${paths[@]}" 2>/dev/null || find "${paths[@]}" -type f 2>/dev/null) | sort -u; }
+list() { # tracked files under the manifest paths, or all files when DIR is not a git checkout
+  (
+    cd "$1" || exit 1
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      git ls-files -- "${paths[@]}"
+    else
+      find "${paths[@]}" -type f 2>/dev/null
+    fi
+  ) | sort -u
+}
 
 differ=0
 while IFS= read -r f; do
