@@ -216,12 +216,13 @@ release_state() { # dir
     echo "released $manifest: version files agree ($found)"
   fi
 }
-rp_fixture() { # name manifest version.txt bump-minor-pre-major(true|unset) initial-version(0.1.0|unset) [changelog headings...]
+rp_fixture() { # name manifest version.txt bump-minor-pre-major(true|false|string-true|unset) initial-version(0.1.0|unset) [changelog headings...]
   local d="$scratch/rp-$1" manifest=$2 version=$3 bump=$4 initial=$5; shift 5
   mkdir -p "$d"
   jq -n --arg b "$bump" --arg i "$initial" '{packages: {".": ({"release-type": "simple"}
     + (if $i == "unset" then {} else {"initial-version": $i} end)
-    + (if $b == "unset" then {} else {"bump-minor-pre-major": ($b == "true")} end))}}' > "$d/release-please-config.json"
+    + (if $b == "unset" then {} elif $b == "string-true" then {"bump-minor-pre-major": "true"}
+       else {"bump-minor-pre-major": ($b == "true")} end))}}' > "$d/release-please-config.json"
   jq -n --arg m "$manifest" '{".": $m}' > "$d/.release-please-manifest.json"
   printf '%s\n' "$version" > "$d/version.txt"
   if [ $# -gt 0 ]; then { echo "# Changelog"; for h in "$@"; do printf '\n%s\n\n* entry\n' "$h"; done; } > "$d/CHANGELOG.md"; fi
@@ -236,6 +237,7 @@ expect 1 "release state: manifest and version.txt disagree" release_state "$(rp_
 expect 1 "release state: newest changelog heading disagrees" release_state "$(rp_fixture stale 0.2.0 0.2.0 true 0.1.0 "$h010")"
 expect 1 "release state: 0.0.0 with an inherited released changelog" release_state "$(rp_fixture inherited 0.0.0 0.0.0 true 0.1.0 "$h010")"
 expect 1 "release state: bump-minor-pre-major not set" release_state "$(rp_fixture nobump 0.0.0 0.0.0 unset 0.1.0)"
+expect 1 "release state: bump-minor-pre-major is the string \"true\", not the boolean" release_state "$(rp_fixture strbump 0.0.0 0.0.0 string-true 0.1.0)"
 expect 1 "release state: initial-version not set" release_state "$(rp_fixture noinit 0.0.0 0.0.0 true unset)"
 expect 1 "release state: version is not MAJOR.MINOR.PATCH" release_state "$(rp_fixture badver 0.1 0.1 true 0.1.0 '## 0.1 (2026-10-21)')"
 expect 0 "release state: this repository" release_state "$root"
