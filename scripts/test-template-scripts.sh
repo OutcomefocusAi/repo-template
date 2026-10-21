@@ -145,6 +145,22 @@ v "" "deleted SHIP comment (no longer returned by the API)" "$(item AgileKnow23 
 v "" "dismissed SHIP review" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP${L}$sha" DISMISSED)"
 v SHIP "COMMENTED SHIP review" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP${L}$sha" COMMENTED)"
 v SHIP "CRLF first line" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP"$'\r'"${L}$sha")"
+# Same-second ties and pending reviews (Principal QA N2): a tie with anything other than a
+# valid SHIP blocks, and a review that was never submitted never counts.
+pending() { jq -cn --arg b "$1" --arg s "${2:-}" \
+  '{user:{login:"AgileKnow23"},created_at:null,updated_at:null,body:$b} + (if $s == "" then {} else {state:$s} end)'; }
+v NO-SHIP "malformed verdict in the same second as a SHIP blocks it" "$(ship $T1)" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: NO SHIP${L}$sha")"
+v NO-SHIP "malformed verdict in the same second, listed first, blocks" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: NO SHIP${L}$sha")" "$(ship $T1)"
+v NO-SHIP "NO-SHIP in the same second as a SHIP, listed first, blocks" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: NO-SHIP${L}$sha")" "$(ship $T1)"
+v SHIP "two SHIPs in the same second pass" "$(ship $T1)" "$(ship $T1)"
+v "" "pending SHIP review (state PENDING, no submitted_at) never counts" "$(pending "Independent QA by Q: SHIP${L}$sha" PENDING)"
+v "" "SHIP review with no submitted_at and no state never counts" "$(pending "Independent QA by Q: SHIP${L}$sha")"
+v NO-SHIP "pending SHIP review does not override an earlier NO-SHIP" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: NO-SHIP${L}$sha")" "$(pending "Independent QA by Q: SHIP${L}$sha" PENDING)"
+# Principal QA N3: the blocking test is "first line contains 'Independent QA by' in any case",
+# not only lines that start with it.
+v NO-SHIP "later first line containing 'independent qa by' mid-line, lowercase, blocks" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Re: independent qa by Q: NO SHIP${L}$sha")"
+v NO-SHIP "later first line in upper case blocks" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "INDEPENDENT QA BY Q: SHIP${L}$sha")"
+v SHIP "later comment that only mentions QA without the phrase does not block" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "QA looks done, thanks${L}$sha")"
 
 total=$((total + 1))
 if grep -Eq 'types: \[created, edited, deleted\]' "$wf" && grep -Eq 'types: \[submitted, edited, dismissed\]' "$wf"; then
