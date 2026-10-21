@@ -22,3 +22,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .netlify/
+
+# Local CI tool installs (scripts/install-ci-tools.sh default)
+.ci-tools/
