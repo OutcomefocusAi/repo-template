@@ -11,7 +11,7 @@
 
 ## 3. Fix
 
-- [ ] 3.1 Add `"include-component-in-tag": false` to the root package in `release-please-config.json` and verify the self-test passes, including the new fixtures
+- [x] 3.1 Add `"include-component-in-tag": false` to the root package in `release-please-config.json` and verify the self-test passes, including the new fixtures. Done: 76/76, "release state: this repository" ok and the three include-component-in-tag fixtures rejected; `evidence/3.1-passing-test.txt`
 - [ ] 3.2 Run release-please 17.6.0 offline on the new config and verify the tag and the release name are both `v0.1.0`, the release branch is unchanged and the title is `chore(main): release 0.1.0`; save the output in the change folder
 - [ ] 3.3 Verify the self-test passes with #11's release files over the branch (temporary worktree, nothing pushed)
 

@@ -1,0 +1,78 @@
+# Task 3.1: "include-component-in-tag": false (JSON boolean) in release-please-config.json. scripts/test-template-scripts.sh, exit 0.
+ok   check-commits: conventional commit with issue reference
+ok   check-commits: missing issue reference
+ok   check-commits: dependabot branch skips issue reference
+ok   check-commits: not a conventional commit
+ok   check-em-dash: clean tree
+ok   check-em-dash: em dash in a hand-written file
+ok   check-workflows: template workflows
+ok   check-workflows: unpinned, unbounded, privileged workflow
+ok   check-workflows: minimal hardened workflow
+ok   check-workflows: flow-style uses mapping
+ok   check-workflows: extra top-level write scope
+ok   check-workflows: missing concurrency
+ok   slot: warns in the template repository
+ok   slot: fails in a derived repository
+ok   template-drift: no drift
+ok   template-drift: changed managed file
+ok   qa-gate: no comments
+ok   qa-gate: comment that is not a verdict
+ok   qa-gate: QA 1: plain SHIP, SHA on line 2
+ok   qa-gate: QA 2: SHIP from a non-allowlisted login
+ok   qa-gate: QA 3: SHIP from any agent on the shared login (known limit, see README)
+ok   qa-gate: QA 4: SHIP naming only an old head
+ok   qa-gate: QA 5: SHIP naming an old head but mentioning the current SHA
+ok   qa-gate: QA 6: SHIP in a blockquote
+ok   qa-gate: QA 7: SHIP in a code block
+ok   qa-gate: QA 8: SHIP line not first
+ok   qa-gate: QA 9: bold first line
+ok   qa-gate: QA 10: lowercase ship
+ok   qa-gate: QA 11: trailing space after SHIP
+ok   qa-gate: QA 12: SHIP-WITH-FIXES
+ok   qa-gate: QA 13: SHIP WITH FIXES
+ok   qa-gate: QA 14: NO-SHIP is not read as SHIP
+ok   qa-gate: QA 15: SHIP then a later NO-SHIP
+ok   qa-gate: QA 16: SHIP then a later malformed 'NO SHIP' (fail closed)
+ok   qa-gate: QA 17: SHIP then a later NO-SHIP with trailing space (fail closed)
+ok   qa-gate: QA 18: SHIP then a later NO-SHIP naming only a short SHA (fail closed)
+ok   qa-gate: QA 19: NO-SHIP at T2, older SHIP comment edited at T3
+ok   qa-gate: QA 20: SHIP with prose after the verdict on line 1
+ok   qa-gate: QA 21: reviewer name containing ': NO-SHIP'
+ok   qa-gate: SHIP then a later verdict in another spelling ('Ship-With-Fixes')
+ok   qa-gate: SHIP then a later verdict naming a different full SHA
+ok   qa-gate: non-allowlisted NO-SHIP after SHIP is ignored
+ok   qa-gate: SHIP after an earlier NO-SHIP
+ok   qa-gate: deleted SHIP comment (no longer returned by the API)
+ok   qa-gate: dismissed SHIP review
+ok   qa-gate: COMMENTED SHIP review
+ok   qa-gate: CRLF first line
+ok   qa-gate: malformed verdict in the same second as a SHIP blocks it
+ok   qa-gate: malformed verdict in the same second, listed first, blocks
+ok   qa-gate: NO-SHIP in the same second as a SHIP, listed first, blocks
+ok   qa-gate: two SHIPs in the same second pass
+ok   qa-gate: pending SHIP review (state PENDING, no submitted_at) never counts
+ok   qa-gate: SHIP review with no submitted_at and no state never counts
+ok   qa-gate: pending SHIP review does not override an earlier NO-SHIP
+ok   qa-gate: later first line containing 'independent qa by' mid-line, lowercase, blocks
+ok   qa-gate: later first line in upper case blocks
+ok   qa-gate: later comment that only mentions QA without the phrase does not block
+ok   qa-gate: re-runs on deleted comments and dismissed reviews
+ok   qa-gate release: release-please pull request from this repository
+ok   qa-gate release: fork branch named release-please--*
+ok   qa-gate release: same-repository branch named release-please--* opened by an agent
+ok   qa-gate release: ordinary branch
+ok   release state: before any release (0.0.0, no changelog)
+ok   release state: first release 0.1.0 (release pull request or merged)
+ok   release state: later release 0.2.0 with a linked heading
+ok   release state: manifest and version.txt disagree
+ok   release state: newest changelog heading disagrees
+ok   release state: 0.0.0 with an inherited released changelog
+ok   release state: bump-minor-pre-major not set
+ok   release state: bump-minor-pre-major is the string "true", not the boolean
+ok   release state: include-component-in-tag not set (tag would be repo-template-v0.1.0)
+ok   release state: include-component-in-tag true
+ok   release state: include-component-in-tag is the string "false", not the boolean
+ok   release state: initial-version not set
+ok   release state: version is not MAJOR.MINOR.PATCH
+ok   release state: this repository
+test-template-scripts: 76/76 passed
