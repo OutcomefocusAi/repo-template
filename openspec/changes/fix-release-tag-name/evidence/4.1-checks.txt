@@ -1,0 +1,44 @@
+# Task 4.1 checks at commit 3241b7e (clean working tree), 2026-10-21 4:29 PM MST. Final code commit: b45d48e (release-please-config.json and scripts/test-template-scripts.sh have not changed since; commits after it touch only this change's evidence/ and tasks.md). The commit that adds this file changes nothing else except writing 3241b7e into task 4.1 in tasks.md.
+## openspec validate --all --strict
+Totals: 9 passed, 0 failed (9 items)
+## openspec validate fix-release-tag-name --strict
+Change 'fix-release-tag-name' is valid
+## test-template-scripts
+ok   release state: before any release (0.0.0, no changelog)
+ok   release state: first release 0.1.0 (release pull request or merged)
+ok   release state: later release 0.2.0 with a linked heading
+ok   release state: manifest and version.txt disagree
+ok   release state: newest changelog heading disagrees
+ok   release state: 0.0.0 with an inherited released changelog
+ok   release state: bump-minor-pre-major not set
+ok   release state: bump-minor-pre-major is the string "true", not the boolean
+ok   release state: include-component-in-tag not set (tag would be repo-template-v0.1.0)
+ok   release state: include-component-in-tag true
+ok   release state: include-component-in-tag is the string "false", not the boolean
+ok   release state: initial-version not set
+ok   release state: version is not MAJOR.MINOR.PATCH
+ok   release state: this repository
+test-template-scripts: 76/76 passed
+## check-em-dash
+check-em-dash: no em dashes in hand-written files
+## check-workflows
+check-workflows: 4 workflow file(s) pass
+## check-commits origin/main..HEAD
+check-commits: 7 commit(s) pass on 18-fix-release-tag-name
+## actionlint
+actionlint: clean (exit 0)
+## shellcheck scripts/*.sh .githooks/*
+shellcheck 0.11.0: clean (exit 0); main e72c3c4 also clean
+## git diff --check origin/main
+clean
+## gitleaks (branch commits)
+INF 7 commits scanned.
+INF scanned ~39427 bytes (39.43 KB) in 143ms
+INF no leaks found
+## gitleaks (full history)
+INF no leaks found
+## gitleaks (working tree)
+INF no leaks found
+## merge result with main e72c3c4 (temporary worktree, not pushed): no conflicts
+Totals: 9 passed, 0 failed (9 items)
+test-template-scripts: 76/76 passed

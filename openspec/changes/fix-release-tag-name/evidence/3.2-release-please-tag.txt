@@ -1,0 +1,58 @@
+# Task 3.2: release-please 17.6.0 offline (no network, no token), the version the pinned action v5.0.0 runs.
+# Config read through Manifest.fromManifest with a stub GitHub; manifest and release pull request body from release PR #11 head 59f38a9. Values printed as JSON.
+
+## Branch release-please-config.json at b45d48e
+config: package-name=repo-template include-v-in-tag=true include-component-in-tag=false
+  release PR branch: release-please--branches--main--components--repo-template
+  release PR title:  chore(main): release 0.1.0
+  tag on merge:      v0.1.0
+  release name:      v0.1.0
+
+## main e72c3c4 (before)
+config: package-name=repo-template include-v-in-tag=true include-component-in-tag=undefined
+  release PR branch: release-please--branches--main--components--repo-template
+  release PR title:  chore(main): release repo-template 0.1.0
+  tag on merge:      repo-template-v0.1.0
+  release name:      repo-template: v0.1.0
+
+## Branch config with the string "false" instead (rejected by the self-test)
+config: package-name=repo-template include-v-in-tag=true include-component-in-tag="false"
+  release PR branch: release-please--branches--main--components--repo-template
+  release PR title:  chore(main): release repo-template 0.1.0
+  tag on merge:      repo-template-v0.1.0
+  release name:      repo-template: v0.1.0
+
+## Branch config, merging a release pull request that still has #11's current title "chore(main): release repo-template 0.1.0"
+  tag on merge:      v0.1.0
+  release name:      v0.1.0
+
+## Script (node tag-probe.js <config dir> <manifest file> <release PR body file>; the old-title case sets the merged title from $T)
+```js
+// Offline (no network, no token): release-please 17.6.0. Manifest.fromManifest reads the repo's
+// release-please-config.json and .release-please-manifest.json through a stub GitHub, then the
+// strategy built from that config gives the release pull request branch and title, and, for the
+// merged release pull request, the tag and GitHub release name.
+// Usage: node tag-probe.js <dir with release-please-config.json> <manifest json file> <release PR body file>
+const fs = require('fs');
+const { Manifest } = require('release-please/build/src/manifest');
+const { buildStrategy } = require('release-please/build/src/factory');
+const { parseConventionalCommits } = require('release-please/build/src/commit');
+const [dir, manifestFile, bodyFile] = process.argv.slice(2);
+const files = { 'release-please-config.json': dir + '/release-please-config.json', '.release-please-manifest.json': manifestFile };
+const github = { repository: { owner: 'OutcomefocusAi', repo: 'repo-template', defaultBranch: 'main' },
+  getFileJson: async p => JSON.parse(fs.readFileSync(files[p], 'utf8')) };
+(async () => {
+  const m = await Manifest.fromManifest(github, 'main');
+  const cfg = m.repositoryConfig['.'];
+  const s = await buildStrategy({ github, ...cfg, path: '.', targetBranch: 'main' });
+  const commits = parseConventionalCommits([{ sha: '56975b7', message: 'feat: bootstrap repo-template (#1)', files: [] }]);
+  const pr = await s.buildReleasePullRequest(commits, undefined);
+  const rel = await s.buildRelease({ title: pr.title.toString(), body: fs.readFileSync(bodyFile, 'utf8'),
+    headBranchName: pr.headRefName, baseBranchName: 'main', number: 11, labels: [], files: [], sha: 'mergesha' });
+  console.log(`config: package-name=${cfg.packageName} include-v-in-tag=${JSON.stringify(cfg.includeVInTag)} include-component-in-tag=${JSON.stringify(cfg.includeComponentInTag)}`);
+  console.log(`  release PR branch: ${pr.headRefName}`);
+  console.log(`  release PR title:  ${pr.title.toString()}`);
+  console.log(`  tag on merge:      ${rel && rel.tag.toString()}`);
+  console.log(`  release name:      ${rel && rel.name}`);
+})().catch(e => { console.error('ERR', e.stack); process.exit(1); });
+```
