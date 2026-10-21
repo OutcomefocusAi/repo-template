@@ -4,8 +4,8 @@
 
 - [x] 1.1 Record Woody's implementation approval and the decision answers (exact words, where and when) in proposal.md, revise design and specs for a public repository, and verify `openspec validate bootstrap-repo-template --strict` passes
 - [x] 1.2 Re-resolve every pin in design.md with `gh api` and verify each recorded SHA matches its tag (record and justify any change)
-- [x] 1.3 Run the pre-publication privacy check (design D11) over all commits, files, issue #1 and PR #2, and verify it finds nothing private (record the commands and results in the pull request)
-- [x] 1.4 Make the repository public with `gh repo edit --visibility public` and verify `gh api repos/OutcomefocusAi/repo-template --jq '{visibility,is_template}'` shows `public` and `true`
+- [ ] 1.3 Run the pre-publication privacy check (design D11) over all commits, files, issue #1 and PR #2, and verify it finds nothing private (record the commands and results in the pull request)
+- [ ] 1.4 Make the repository public with `gh repo edit --visibility public` and verify `gh api repos/OutcomefocusAi/repo-template --jq '{visibility,is_template}'` shows `public` and `true`
 
 ## 2. Template checks
 
