@@ -3,17 +3,17 @@
 ## 1. Approval, inputs and publication
 
 - [x] 1.1 Record Woody's implementation approval and the decision answers (exact words, where and when) in proposal.md, revise design and specs for a public repository, and verify `openspec validate bootstrap-repo-template --strict` passes
-- [ ] 1.2 Re-resolve every pin in design.md with `gh api` and verify each recorded SHA matches its tag (record and justify any change)
-- [ ] 1.3 Run the pre-publication privacy check (design D11) over all commits, files, issue #1 and PR #2, and verify it finds nothing private (record the commands and results in the pull request)
-- [ ] 1.4 Make the repository public with `gh repo edit --visibility public` and verify `gh api repos/OutcomefocusAi/repo-template --jq '{visibility,is_template}'` shows `public` and `true`
+- [x] 1.2 Re-resolve every pin in design.md with `gh api` and verify each recorded SHA matches its tag (record and justify any change)
+- [x] 1.3 Run the pre-publication privacy check (design D11) over all commits, files, issue #1 and PR #2, and verify it finds nothing private (record the commands and results in the pull request)
+- [x] 1.4 Make the repository public with `gh repo edit --visibility public` and verify `gh api repos/OutcomefocusAi/repo-template --jq '{visibility,is_template}'` shows `public` and `true`
 
 ## 2. Template checks
 
-- [ ] 2.1 Write `scripts/check-em-dash.sh` per D2 and verify it fails on a temporary file containing U+2014 and passes on the clean tree, ignoring generated and vendored paths
-- [ ] 2.2 Write `scripts/check-workflows.sh` (SHA pins with version comments, `timeout-minutes` on every job, no `pull_request_target`, top-level `contents: read`) and verify it fails on a temporary unpinned workflow and passes on the real ones
-- [ ] 2.3 Write `scripts/check-commits.sh` per D2 and verify it passes on this branch's commits and fails on a temporary commit without `(#N)`
-- [ ] 2.4 Write `scripts/slot.sh` per D1 and verify it exits 0 with a warning when `GITHUB_REPOSITORY=OutcomefocusAi/repo-template` and exits 1 for any other value
-- [ ] 2.5 Run `shellcheck` if available, otherwise `bash -n`, on every script and record which one ran
+- [x] 2.1 Write `scripts/check-em-dash.sh` per D2 and verify it fails on a temporary file containing U+2014 and passes on the clean tree, ignoring generated and vendored paths
+- [x] 2.2 Write `scripts/check-workflows.sh` (SHA pins with version comments, `timeout-minutes` on every job, no `pull_request_target`, top-level `contents: read`) and verify it fails on a temporary unpinned workflow and passes on the real ones
+- [x] 2.3 Write `scripts/check-commits.sh` per D2 and verify it passes on this branch's commits and fails on a temporary commit without `(#N)`
+- [x] 2.4 Write `scripts/slot.sh` per D1 and verify it exits 0 with a warning when `GITHUB_REPOSITORY=OutcomefocusAi/repo-template` and exits 1 for any other value
+- [x] 2.5 Run `shellcheck` if available, otherwise `bash -n`, on every script and record which one ran
 
 ## 3. CI workflow
 
