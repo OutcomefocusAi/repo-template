@@ -22,11 +22,11 @@
 
 ## 4. Security scaffolding
 
-- [ ] 4.1 Write `.githooks/pre-commit` per D4 and verify it blocks a staged fake credential, passes a clean commit, and fails closed when gitleaks is not on PATH
+- [x] 4.1 Write `.githooks/pre-commit` per D4 and verify it blocks a staged fake credential, passes a clean commit, and fails closed when gitleaks is not on PATH
 - [x] 4.2 Verify the CI gitleaks step fails when the expected checksum is altered (run the download-and-verify script locally with a wrong checksum)
 - [ ] 4.3 Write `.github/dependabot.yml` per D5 and verify GitHub accepts it (no Dependabot configuration error reported for the repository)
-- [ ] 4.4 Write `.env.example` and `.gitignore` per D10 and verify `git check-ignore .env .env.local` matches and `.env.example` is tracked
-- [ ] 4.5 Write `SECURITY.md` and verify it covers private reporting and revoke-then-rotate
+- [x] 4.4 Write `.env.example` and `.gitignore` per D10 and verify `git check-ignore .env .env.local` matches and `.env.example` is tracked
+- [x] 4.5 Write `SECURITY.md` and verify it covers private reporting and revoke-then-rotate
 
 ## 5. Traceability scaffolding
 
