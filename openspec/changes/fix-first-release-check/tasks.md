@@ -15,7 +15,7 @@
 - [x] 3.2 Set `"bump-minor-pre-major": true` in `release-please-config.json` and verify the self-test asserts it. Done: the "bump-minor-pre-major not set" fixture and the check on this repository both require `true`
 - [x] 3.3 Run release-please 17.6.0 version calculation offline and verify `feat!:` on `0.1.0` gives `0.2.0`, `Release-As: 1.0.0` gives `1.0.0`, and a `0.0.0` manifest gives `0.1.0`; save the output in the change folder. Done: with this branch's config `feat!:` and a BREAKING CHANGE footer on 0.1.0 give 0.2.0 (main's config gives 1.0.0), `Release-As: 1.0.0` gives 1.0.0, no release gives 0.1.0; `evidence/3.3-release-please-versions.txt`
 - [x] 3.4 Run the self-test against the files of release PR #11's head (`CHANGELOG.md`, `version.txt`, `.release-please-manifest.json` copied into a scratch checkout, not pushed) and verify it passes. Done: 72/72 with the 7cd0555 release files over the branch (old check on the same files: 62/63, the PR #11 failure); `evidence/3.4-release-pr-state.txt`
-- [ ] 3.5 Add the release-state reset step to README "start a new repository" and verify, on a scratch copy of the template with those files at `0.1.0`, that following the step leaves `0.0.0` and no `CHANGELOG.md`
+- [x] 3.5 Add the release-state reset step to README "start a new repository" and verify, on a scratch copy of the template with those files at `0.1.0`, that following the step leaves `0.0.0` and no `CHANGELOG.md`. Done: README step 4 (later steps renumbered); on the scratch copy the manifest and `version.txt` go from 0.1.0 to 0.0.0, `CHANGELOG.md` is removed, the release check passes and release-please gives 0.1.0; `evidence/3.5-readme-reset.txt`
 
 ## 4. Validation, CI evidence and review
 

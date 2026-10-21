@@ -1,0 +1,16 @@
+# README step 4 on a scratch copy of the template (git archive of branch commit b0e29c7) with the template's 0.1.0 release files from 7cd0555 laid over it, as in a repository made from template release v0.1.0. The commands are taken verbatim from README step 4 as committed with this task.
+## Before
+manifest: {".":"0.1.0"}  version.txt: 0.1.0  CHANGELOG.md: ## 0.1.0 (2026-10-21)
+## Commands, extracted verbatim from README step 4
+printf '{\n  ".": "0.0.0"\n}\n' > .release-please-manifest.json
+echo 0.0.0 > version.txt
+rm -f CHANGELOG.md
+
+## After
+manifest: {".":"0.0.0"}  version.txt: 0.0.0  CHANGELOG.md: absent
+release_state: before the first release: first release is 0.1.0 (initial-version 0.1.0, bump-minor-pre-major true, manifest 0.0.0, version.txt 0.0.0, newest changelog heading none)
+exit 0
+manifest byte-identical to the template's pre-release manifest
+## release-please 17.6.0 next version for this config with no release yet
+config release-please-config.json: initial-version=0.1.0 bump-minor-pre-major=true
+  no release yet, feat: commit -> 0.1.0
