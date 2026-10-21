@@ -78,9 +78,10 @@
 ## 11. Woody's decisions on the QA follow-ups (2026-10-21 1:25 PM MST)
 
 - [x] 11.1 Pin the `qa-gate` required check in ruleset `protect-main` to integration 15368 and set `require_extra_approval_for_unattributed_changes` to false, keeping every other rule; save before and after in `evidence/settings-2026-10-21/`
-- [ ] 11.2 Turn on the repository's "Allow GitHub Actions to create and approve pull requests" (blocked: HTTP 409, the organization setting is off; needs an org owner)
+- [ ] 11.2 Turn on the repository's "Allow GitHub Actions to create and approve pull requests" (blocked: HTTP 409, the organization setting is off; needs an org owner with the `admin:org` scope, and stays off until Woody approves the organization change)
 - [x] 11.3 Enable private vulnerability reporting
 - [x] 11.4 Enable secret scanning and push protection
 - [x] 11.5 Keep Decision 3 as written and record Woody's approval in `proposal.md`
 - [x] 11.6 Align the change-traceability verdict text (`SHIP-WITH-FIXES`, COMMENT review or comment) and the release-management permission text (release job and `qa-gate` `statuses: write`, design D3); validate strictly
 - [x] 11.7 Update design D3, D4, D6, README, and AGENTS.md section 13 for these settings
+- [x] 11.8 Principal QA follow-ups at `a69ae89`: failing tests first for same-second ties, pending reviews, and case-insensitive blocking lines, then fix `qa-gate`; spec requirements for creation-time ordering, fail-closed lines, review handling, and the release auto-pass; align AGENTS.md section 13 and the pull request template with the "contains, any case" rule; 12:15 PM approval row no longer says widget; document the organization setting and release-please behavior meanwhile
