@@ -14,7 +14,7 @@
 ## 3. Validation and review
 
 - [x] 3.1 Run `openspec validate --all --strict` and the em-dash check and verify both pass
-- [ ] 3.2 Open the pull request for issue #6 with the evidence map, get Principal QA's verdict for the head, and verify `qa-gate` is green
+- [x] 3.2 Open the pull request for issue #6 with the evidence map, get Principal QA's verdict for the head, and verify `qa-gate` is green. Done: PR #9, Principal QA's [SHIP review](https://github.com/OutcomefocusAi/repo-template/pull/9#pullrequestreview-5606913650) for the merged head `a909bb4`, `qa-gate` green; squash-merged as `e8040c2`
 
 ## Workflow follow-up
 
