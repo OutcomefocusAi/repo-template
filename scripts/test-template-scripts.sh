@@ -69,29 +69,88 @@ expect 0 "template-drift: no drift" in_repo env TEMPLATE_DIR="$scratch/tpl" scri
 echo "# local edit" >> "$repo/SECURITY.md"
 expect 1 "template-drift: changed managed file" in_repo env TEMPLATE_DIR="$scratch/tpl" scripts/template-drift.sh test
 
-# qa-gate verdict filter, extracted from the workflow so the test exercises the real text
-filter=$(python3 - "$root/.github/workflows/qa-gate.yml" <<'PY'
+# qa-gate verdict filter, extracted from the workflow so the tests exercise the real text.
+# Items are shaped like the workflow's API stage: comments and reviews with user, body,
+# created_at, updated_at, and (reviews) state.
+wf="$root/.github/workflows/qa-gate.yml"
+filter=$(python3 - "$wf" <<'PY'
 import re, sys
 s = open(sys.argv[1]).read()
 print(re.search(r"--argjson allow \"\$allow_json\" '(.*?)'\)", s, re.S).group(1))
 PY
 )
 sha=0123456789abcdef0123456789abcdef01234567
-verdict() { jq -r -s --arg sha "$sha" --argjson allow '["AgileKnow23"]' "$filter"; }
-c() { printf '{"user":{"login":"%s"},"updated_at":"%s","body":"%s"}\n' "$1" "$2" "$3"; }
-check_verdict() { # expected description comments...
+old=fedcba9876543210fedcba9876543210fedcba98
+T1=2026-10-21T20:00:00Z; T2=2026-10-21T20:05:00Z; T3=2026-10-21T20:10:00Z
+L=$'\n'
+# item LOGIN CREATED UPDATED BODY [STATE]
+item() { jq -cn --arg u "$1" --arg c "$2" --arg m "$3" --arg b "$4" --arg s "${5:-}" \
+  '{user:{login:$u},created_at:$c,updated_at:$m,body:$b} + (if $s == "" then {} else {state:$s} end)'; }
+v() { # expected description items...
   local want=$1 name=$2; shift 2
   total=$((total + 1))
-  local got; got=$(printf '%s\n' "$@" | verdict)
+  local got; got=$(printf '%s\n' "$@" | jq -r -s --arg sha "$sha" --argjson allow '["AgileKnow23"]' "$filter" 2>&1)
   if [ "$got" = "$want" ]; then echo "ok   qa-gate: $name"; else echo "FAIL qa-gate: $name (got '$got', expected '$want')"; fails=$((fails + 1)); fi
 }
-check_verdict "" "no verdict" "$(c AgileKnow23 1 'looks fine')"
-check_verdict "SHIP" "SHIP for the head" "$(c AgileKnow23 1 "Independent QA by Principal QA: SHIP\\nhead $sha")"
-check_verdict "" "SHIP for an older head" "$(c AgileKnow23 1 'Independent QA by Principal QA: SHIP\nhead fedcba9876543210fedcba9876543210fedcba98')"
-check_verdict "" "SHIP from a non-allowlisted account" "$(c someone-else 1 "Independent QA by X: SHIP\\n$sha")"
-check_verdict "SHIP-WITH-FIXES" "later SHIP-WITH-FIXES overrides SHIP" "$(c AgileKnow23 1 "Independent QA by Q: SHIP\\n$sha")" "$(c AgileKnow23 2 "Independent QA by Q: SHIP-WITH-FIXES\\n$sha")"
-check_verdict "NO-SHIP" "later NO-SHIP overrides SHIP" "$(c AgileKnow23 1 "Independent QA by Q: SHIP\\n$sha")" "$(c AgileKnow23 2 "Independent QA by Q: NO-SHIP\\n$sha")"
-check_verdict "SHIP" "CRLF first line" "$(c AgileKnow23 1 "Independent QA by Q: SHIP\\r\\n$sha")"
+ship() { item AgileKnow23 "$1" "${2:-$1}" "Independent QA by Principal QA: SHIP${L}Head tested: \`$sha\`"; }
+
+v "" "no comments"
+v "" "comment that is not a verdict" "$(item AgileKnow23 $T1 $T1 'looks fine')"
+# Principal QA's 21 adversarial cases (QA report 2026-10-21, qa-gate-adversarial.sh)
+v SHIP "QA 1: plain SHIP, SHA on line 2" "$(ship $T1)"
+v "" "QA 2: SHIP from a non-allowlisted login" "$(item mallory $T1 $T1 "Independent QA by Principal QA: SHIP${L}$sha")"
+v SHIP "QA 3: SHIP from any agent on the shared login (known limit, see README)" "$(item AgileKnow23 $T1 $T1 "Independent QA by Principal Engineer: SHIP${L}$sha")"
+v "" "QA 4: SHIP naming only an old head" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP${L}$old")"
+v SHIP "QA 5: SHIP naming an old head but mentioning the current SHA" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP${L}Tested $old (head was later $sha)")"
+v "" "QA 6: SHIP in a blockquote" "$(item AgileKnow23 $T1 $T1 "> Independent QA by Q: SHIP${L}$sha")"
+v "" "QA 7: SHIP in a code block" "$(item AgileKnow23 $T1 $T1 "\`\`\`${L}Independent QA by Q: SHIP${L}\`\`\`${L}$sha")"
+v "" "QA 8: SHIP line not first" "$(item AgileKnow23 $T1 $T1 "Re-check below${L}Independent QA by Q: SHIP${L}$sha")"
+v "" "QA 9: bold first line" "$(item AgileKnow23 $T1 $T1 "**Independent QA by Q: SHIP**${L}$sha")"
+v "" "QA 10: lowercase ship" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: ship${L}$sha")"
+v "" "QA 11: trailing space after SHIP" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP ${L}$sha")"
+v SHIP-WITH-FIXES "QA 12: SHIP-WITH-FIXES" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP-WITH-FIXES${L}$sha")"
+v "SHIP WITH FIXES" "QA 13: SHIP WITH FIXES" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP WITH FIXES${L}$sha")"
+v NO-SHIP "QA 14: NO-SHIP is not read as SHIP" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: NO-SHIP${L}$sha")"
+v NO-SHIP "QA 15: SHIP then a later NO-SHIP" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: NO-SHIP${L}$sha")"
+v NO-SHIP "QA 16: SHIP then a later malformed 'NO SHIP' (fail closed)" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: NO SHIP${L}$sha")"
+v NO-SHIP "QA 17: SHIP then a later NO-SHIP with trailing space (fail closed)" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: NO-SHIP ${L}$sha")"
+v NO-SHIP "QA 18: SHIP then a later NO-SHIP naming only a short SHA (fail closed)" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: NO-SHIP${L}${sha:0:7}")"
+v NO-SHIP "QA 19: NO-SHIP at T2, older SHIP comment edited at T3" "$(ship $T1 $T3)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: NO-SHIP${L}$sha")"
+v "" "QA 20: SHIP with prose after the verdict on line 1" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP (conditional)${L}$sha")"
+v SHIP "QA 21: reviewer name containing ': NO-SHIP'" "$(item AgileKnow23 $T1 $T1 "Independent QA by X: NO-SHIP: SHIP${L}$sha")"
+# Further fail-closed and lifecycle cases
+v NO-SHIP "SHIP then a later verdict in another spelling ('Ship-With-Fixes')" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: Ship-With-Fixes${L}$sha")"
+v NO-SHIP "SHIP then a later verdict naming a different full SHA" "$(ship $T1)" "$(item AgileKnow23 $T2 $T2 "Independent QA by Q: SHIP${L}$old")"
+v SHIP "non-allowlisted NO-SHIP after SHIP is ignored" "$(ship $T1)" "$(item mallory $T2 $T2 "Independent QA by Q: NO-SHIP${L}$sha")"
+v SHIP "SHIP after an earlier NO-SHIP" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: NO-SHIP${L}$sha")" "$(ship $T2)"
+v "" "deleted SHIP comment (no longer returned by the API)" "$(item AgileKnow23 $T1 $T1 'unrelated note')"
+v "" "dismissed SHIP review" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP${L}$sha" DISMISSED)"
+v SHIP "COMMENTED SHIP review" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP${L}$sha" COMMENTED)"
+v SHIP "CRLF first line" "$(item AgileKnow23 $T1 $T1 "Independent QA by Q: SHIP"$'\r'"${L}$sha")"
+
+total=$((total + 1))
+if grep -Eq 'types: \[created, edited, deleted\]' "$wf" && grep -Eq 'types: \[submitted, edited, dismissed\]' "$wf"; then
+  echo "ok   qa-gate: re-runs on deleted comments and dismissed reviews"
+else echo "FAIL qa-gate: deleted or dismissed trigger missing"; fails=$((fails + 1)); fi
+
+# qa-gate release-please auto-pass decision, extracted from the workflow
+release=$(python3 - "$wf" <<'PY'
+import re, sys
+s = open(sys.argv[1]).read()
+print(re.search(r"release_ok=\$\(jq -r --arg repo \"\$REPO\" '(.*?)' <<<", s, re.S).group(1))
+PY
+)
+rel() { # expected description head_ref head_repo author
+  local want=$1 name=$2
+  total=$((total + 1))
+  local got; got=$(jq -cn --arg r "$3" --arg hr "$4" --arg a "$5" '{head:{ref:$r,repo:{full_name:$hr}},user:{login:$a}}' \
+    | jq -r --arg repo OutcomefocusAi/repo-template "$release" 2>&1)
+  if [ "$got" = "$want" ]; then echo "ok   qa-gate release: $name"; else echo "FAIL qa-gate release: $name (got '$got', expected '$want')"; fails=$((fails + 1)); fi
+}
+rel true "release-please pull request from this repository" release-please--branches--main OutcomefocusAi/repo-template 'github-actions[bot]'
+rel false "fork branch named release-please--*" release-please--branches--main mallory/repo-template 'mallory'
+rel false "same-repository branch named release-please--* opened by an agent" release-please--x OutcomefocusAi/repo-template AgileKnow23
+rel false "ordinary branch" 1-bootstrap-repo-template OutcomefocusAi/repo-template AgileKnow23
 
 echo "test-template-scripts: $((total - fails))/$total passed"
 [ "$fails" -eq 0 ]
