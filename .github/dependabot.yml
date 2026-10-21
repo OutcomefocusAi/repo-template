@@ -1,0 +1,40 @@
+# Dependabot version updates. Pull requests use the `ci` Conventional Commits prefix
+# and are exempt from the issue-reference rule, but still go through Principal QA.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  # SLOT(dependabot-npm): uncomment for a Node project.
+  # - package-ecosystem: npm
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #   commit-message:
+  #     prefix: build
+  #   groups:
+  #     npm:
+  #       patterns: ["*"]
+
+  # SLOT(dependabot-python): uncomment for a Python project (pip, or uv with a uv.lock).
+  # - package-ecosystem: uv
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #   commit-message:
+  #     prefix: build
+
+  # SLOT(dependabot-docker): uncomment if the project has a Dockerfile.
+  # - package-ecosystem: docker
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #   commit-message:
+  #     prefix: build

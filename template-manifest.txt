@@ -1,0 +1,12 @@
+# Paths managed by repo-template. scripts/template-drift.sh compares these against a
+# template tag. One path or glob per line (git pathspec). Project-owned files such as the
+# README body, netlify.toml slots, CHANGELOG.md and version.txt are deliberately absent.
+AGENTS.md
+CLAUDE.md
+SECURITY.md
+.editorconfig
+.githooks/
+.github/
+.agents/skills/
+scripts/
+template-manifest.txt

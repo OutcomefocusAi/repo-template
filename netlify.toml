@@ -1,0 +1,14 @@
+# Netlify: Deploy Previews and branch deploys only. Production publishing is refused
+# by two independent guards. Set environment values in the Netlify UI, never here.
+
+[build]
+  # Guard 1: exit 0 tells Netlify to skip the build; production is always skipped.
+  ignore = "if [ \"$CONTEXT\" = \"production\" ]; then exit 0; else exit 1; fi"
+  # SLOT(netlify-build): replace with the project's build command.
+  command = "scripts/slot.sh netlify-build"
+  # SLOT(netlify-publish): replace with the project's publish directory.
+  publish = "dist"
+
+[context.production]
+  # Guard 2: if a production build starts anyway (for example from a build hook), it fails.
+  command = "echo 'Production deploys are disabled by repo-template policy' && exit 1"

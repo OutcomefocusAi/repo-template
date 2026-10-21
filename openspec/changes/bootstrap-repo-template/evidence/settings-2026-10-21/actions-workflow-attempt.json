@@ -1,0 +1,1 @@
+{"request":"PUT /repos/OutcomefocusAi/repo-template/actions/permissions/workflow {\"default_workflow_permissions\":\"read\",\"can_approve_pull_request_reviews\":true}","status":409,"message":"Conflict","errors":"The organization does not allow GitHub Actions to create or approve pull requests"}

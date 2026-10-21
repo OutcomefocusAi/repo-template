@@ -1,0 +1,40 @@
+name: OpenSpec change
+description: A change that adds or modifies a capability. One issue per change.
+title: "<change-name>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Create the OpenSpec proposal first (`openspec/changes/<change-name>/`), then open this issue.
+        Branch name: `<issue#>-<change-name>`. Every commit ends with `(#<issue#>)`.
+  - type: input
+    id: change-folder
+    attributes:
+      label: Change folder
+      description: Path to the OpenSpec change folder.
+      placeholder: openspec/changes/<change-name>/
+    validations:
+      required: true
+  - type: input
+    id: notion-row
+    attributes:
+      label: Notion Tasks row
+      description: Link to the task row that tracks this work, or "none".
+      placeholder: https://www.notion.so/<workspace>/<task-row>
+    validations:
+      required: true
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks
+      description: Copy the checklist from tasks.md and keep it in sync.
+      placeholder: |
+        - [ ] 1.1 ...
+    validations:
+      required: true
+  - type: input
+    id: parent-issue
+    attributes:
+      label: Parent issue
+      description: If this work is split across several pull requests, the parent issue that links them.
+      placeholder: "#<number> or none"

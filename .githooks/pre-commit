@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Blocks commits that stage a secret. Enable once per clone:
+#   git config core.hooksPath .githooks
+# Requires the gitleaks binary (MIT), version pinned in TEMPLATE_SOURCE.md.
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks is not installed, so this commit is blocked." >&2
+  echo "Install the pinned version from https://github.com/gitleaks/gitleaks/releases and retry." >&2
+  exit 1
+fi
+
+exec gitleaks git --pre-commit --redact --staged --verbose

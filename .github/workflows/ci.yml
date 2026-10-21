@@ -1,0 +1,99 @@
+# CI for every pull request and every push to main.
+# template-checks: repository rules that apply to every project made from this template.
+# project: stack-specific steps. Each step marked SLOT must be replaced with the
+# project's real command by the first project proposal in a derived repository.
+# Until then, slots warn in OutcomefocusAi/repo-template and fail everywhere else.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DO_NOT_TRACK: "1"
+
+jobs:
+  template-checks:
+    name: template-checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.1
+
+      - name: Install pinned tools (gitleaks, actionlint, OpenSpec)
+        run: |
+          scripts/install-ci-tools.sh
+          npm install --global --no-fund --no-audit @fission-ai/openspec@1.14.3
+
+      - name: Self-test of the template check scripts and the qa-gate verdict filter
+        run: scripts/test-template-scripts.sh
+
+      - name: Em-dash check
+        run: scripts/check-em-dash.sh
+
+      - name: Workflow hardening check
+        run: scripts/check-workflows.sh
+
+      - name: Workflow lint (actionlint)
+        run: actionlint -color
+
+      - name: Secrets scan (gitleaks, full history)
+        run: gitleaks git --redact --no-banner --verbose .
+
+      - name: OpenSpec validation
+        run: openspec validate --all --strict --no-interactive
+
+      - name: Conventional Commits with issue references
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: scripts/check-commits.sh "$BASE_SHA" "$HEAD_SHA" "$HEAD_REF"
+
+  project:
+    name: project
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # SLOT(setup): add pinned toolchain setup and a locked dependency install here.
+
+      - name: Lint
+        # SLOT(lint): replace with the project's lint command.
+        run: scripts/slot.sh lint
+
+      - name: Typecheck
+        # SLOT(typecheck): replace with the project's typecheck command.
+        run: scripts/slot.sh typecheck
+
+      - name: Test
+        # SLOT(test): replace with the project's unit and integration test command.
+        run: scripts/slot.sh test
+
+      - name: Coverage gate
+        # SLOT(coverage): replace with a command that fails below 80% line coverage
+        # on new code and below 90% on money and critical paths (AGENTS.md, testing standard).
+        run: scripts/slot.sh coverage
+
+      - name: Build
+        # SLOT(build): replace with the project's build command.
+        run: scripts/slot.sh build

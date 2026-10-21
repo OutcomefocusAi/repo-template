@@ -1,0 +1,50 @@
+# main-guard: fails, naming the commit, when a commit reaches main without a merged
+# pull request. Defense in depth behind the ruleset; in private repositories on
+# GitHub Free, where rulesets are unavailable, it is the guard that flags.
+name: main-guard
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Pushes to main queue in order; a run on main is never cancelled.
+concurrency:
+  group: main-guard-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  main-guard:
+    name: main-guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read        # read commits
+      pull-requests: read   # find the merged pull request for each commit
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      BEFORE: ${{ github.event.before }}
+      AFTER: ${{ github.event.after }}
+    steps:
+      - name: Check every pushed commit belongs to a merged pull request
+        run: |
+          set -euo pipefail
+          if [[ "$BEFORE" =~ ^0+$ ]]; then
+            shas="$AFTER"
+          else
+            shas=$(gh api --paginate "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.commits[].sha')
+          fi
+          bad=0
+          for sha in $shas; do
+            merged=$(gh api "repos/$REPO/commits/$sha/pulls" --jq '[.[] | select(.merged_at != null)] | length')
+            if [[ "$merged" -eq 0 ]]; then
+              echo "::error::commit $sha reached main without a merged pull request"
+              bad=1
+            else
+              echo "ok $sha"
+            fi
+          done
+          exit "$bad"
