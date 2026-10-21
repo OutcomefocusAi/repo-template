@@ -116,6 +116,8 @@ Copy openspec-sandbox `AGENTS.md` from the latest remote head of `openspec/add-a
 - Security rules (secrets, validation, OWASP Top 10, dependency audits, pinning, licenses), observability (structured logs, error tracking, health check), and accessibility, added to the engineering standards.
 - Branch governance (D3), stating the enforcement level for public and private repositories.
 
+Where the copied source already carries one of these, it is not duplicated. openspec-sandbox `main` at `fd91e3b` (the merge of its PR #1 plus its conventions change) carries the first four as its sections 6 and 8 to 12, so the template adds the remaining items, the template tooling and branch governance with its limits, as section 13.
+
 Owner stays Woody (`AgileKnow23`). README tells anyone reusing the template outside OutcomefocusAi to edit the owner line.
 
 ### D9. Drift control
