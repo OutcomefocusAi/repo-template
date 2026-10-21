@@ -13,8 +13,8 @@
 
 - [x] 3.1 Replace the release check with the state-aware check (design decision 1) and verify every fixture from 2.1 gives the expected result and the suite passes on the branch (pre-release state). Done: every fixture as expected, each rejection names its reason; 72/72 once 3.2 set the key (before 3.2 only "this repository" failed, on `bump-minor-pre-major must be true`); `evidence/3.1-passing-test.txt`
 - [x] 3.2 Set `"bump-minor-pre-major": true` in `release-please-config.json` and verify the self-test asserts it. Done: the "bump-minor-pre-major not set" fixture and the check on this repository both require `true`
-- [ ] 3.3 Run release-please 17.6.0 version calculation offline and verify `feat!:` on `0.1.0` gives `0.2.0`, `Release-As: 1.0.0` gives `1.0.0`, and a `0.0.0` manifest gives `0.1.0`; save the output in the change folder
-- [ ] 3.4 Run the self-test against the files of release PR #11's head (`CHANGELOG.md`, `version.txt`, `.release-please-manifest.json` copied into a scratch checkout, not pushed) and verify it passes
+- [x] 3.3 Run release-please 17.6.0 version calculation offline and verify `feat!:` on `0.1.0` gives `0.2.0`, `Release-As: 1.0.0` gives `1.0.0`, and a `0.0.0` manifest gives `0.1.0`; save the output in the change folder. Done: with this branch's config `feat!:` and a BREAKING CHANGE footer on 0.1.0 give 0.2.0 (main's config gives 1.0.0), `Release-As: 1.0.0` gives 1.0.0, no release gives 0.1.0; `evidence/3.3-release-please-versions.txt`
+- [x] 3.4 Run the self-test against the files of release PR #11's head (`CHANGELOG.md`, `version.txt`, `.release-please-manifest.json` copied into a scratch checkout, not pushed) and verify it passes. Done: 72/72 with the 7cd0555 release files over the branch (old check on the same files: 62/63, the PR #11 failure); `evidence/3.4-release-pr-state.txt`
 - [ ] 3.5 Add the release-state reset step to README "start a new repository" and verify, on a scratch copy of the template with those files at `0.1.0`, that following the step leaves `0.0.0` and no `CHANGELOG.md`
 
 ## 4. Validation, CI evidence and review
