@@ -13,6 +13,7 @@ Notion Tasks row: linked from the tracking issue (kept out of committed files).
 | How the waiver reads in AGENTS.md (applies to Decision 3) | "Fold the docs waiver into PR #1's spec now." (answering "How should I reconcile the docs waiver with PR #1's spec?") | Grok Bot chat with Principal Engineer, 2026-10-21 12:13 PM MST, as recorded in openspec-sandbox commit `141ca6c` |
 | Rebuild the repository | "Yes, approve all three recommendations: rebuild a fresh repo-template and keep the old one private, add the workflow permission, and squash-merge PR #1 with the branch-name waiver and QA's stricter rule." (the third item refers to openspec-sandbox PR #1, not this repository) | Woody's chat with Chief of Staff, 2026-10-21 about 12:25 to 12:27 PM MST, relayed verbatim to Principal Engineer |
 | The early merge of the first repository's PR #2 | "Yes, that was my fault" | Woody's chat with Chief of Staff, 2026-10-21 12:27 PM MST, relayed verbatim to Principal Engineer |
+| Privacy-check wording in design D11 (option selected by Woody) | "Yes, make it generic; the old wording can stay in the edit history." | Woody's chat with Chief of Staff, 2026-10-21 12:53 PM MST, option selected by Woody, relayed verbatim to Principal Engineer |
 
 ## Rebuild (2026-10-21)
 
