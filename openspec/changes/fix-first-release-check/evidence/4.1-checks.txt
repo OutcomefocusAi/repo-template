@@ -1,27 +1,41 @@
-# Task 4.1 checks on the branch at 948362e (local, 2026-10-21 3:34 PM MST)
+# Task 4.1 checks, retaken after QA round 1 (D1 to D3) at commit 41a7285 with a clean working tree, 2026-10-21 3:45 PM MST. The commit that adds this file changes nothing else, so the PR head has the same code, specs and docs as 41a7285.
 ## openspec validate --all --strict
-✓ spec/template-lifecycle
 Totals: 10 passed, 0 failed (10 items)
 ## openspec validate fix-first-release-check --strict
 Change 'fix-first-release-check' is valid
 ## test-template-scripts
-test-template-scripts: 72/72 passed
+ok   release state: before any release (0.0.0, no changelog)
+ok   release state: first release 0.1.0 (release pull request or merged)
+ok   release state: later release 0.2.0 with a linked heading
+ok   release state: manifest and version.txt disagree
+ok   release state: newest changelog heading disagrees
+ok   release state: 0.0.0 with an inherited released changelog
+ok   release state: bump-minor-pre-major not set
+ok   release state: bump-minor-pre-major is the string "true", not the boolean
+ok   release state: initial-version not set
+ok   release state: version is not MAJOR.MINOR.PATCH
+ok   release state: this repository
+test-template-scripts: 73/73 passed
 ## check-em-dash
 check-em-dash: no em dashes in hand-written files
 ## check-workflows
 check-workflows: 4 workflow file(s) pass
 ## check-commits origin/main..HEAD
-check-commits: 8 commit(s) pass on 14-fix-first-release-check
+check-commits: 14 commit(s) pass on 14-fix-first-release-check
 ## actionlint
-actionlint: clean
+actionlint: clean (exit 0)
+## shellcheck scripts/*.sh .githooks/*
+shellcheck 0.11.0: clean (exit 0); main a76c200 also clean
+## git diff --check origin/main
+clean
 ## gitleaks (branch commits)
-INF 8 commits scanned.
-INF scanned ~40750 bytes (40.75 KB) in 141ms
+INF 14 commits scanned.
+INF scanned ~54339 bytes (54.34 KB) in 141ms
 INF no leaks found
 ## gitleaks (full history)
-INF scanned ~904968 bytes (904.97 KB) in 202ms
 INF no leaks found
-
-## Merge result with main a76c200 (temporary worktree, not pushed): no conflicts
-openspec validate --all --strict: Totals: 9 passed, 0 failed (9 items)
-test-template-scripts: 72/72 passed
+## gitleaks (working tree)
+INF no leaks found
+## merge result with main a76c200 (temporary worktree, not pushed): no conflicts
+Totals: 9 passed, 0 failed (9 items)
+test-template-scripts: 73/73 passed
