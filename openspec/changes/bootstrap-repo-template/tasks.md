@@ -45,9 +45,9 @@
 ## 7. Agent guidance
 
 - [x] 7.1 Copy the three Ponytail folders byte for byte from the openspec-sandbox branch head and verify their SHA-256 values match the source
-- [ ] 7.2 Write `AGENTS.md` per design D8 from the latest openspec-sandbox `openspec/add-agent-guidance-ponytail` head (SHA recorded) and verify every agent-guidance and branch-governance merge-rule scenario against the file
-- [ ] 7.3 Write `CLAUDE.md` with `@AGENTS.md` and a one-line pointer, and verify it states no other rule
-- [ ] 7.4 Write `TEMPLATE_SOURCE.md` (template version, AGENTS.md source SHA, Ponytail SHA, tool pins and licenses) and verify every path it names exists
+- [x] 7.2 Write `AGENTS.md` per design D8 from the latest openspec-sandbox `openspec/add-agent-guidance-ponytail` head (SHA recorded) and verify every agent-guidance and branch-governance merge-rule scenario against the file
+- [x] 7.3 Write `CLAUDE.md` with `@AGENTS.md` and a one-line pointer, and verify it states no other rule
+- [x] 7.4 Write `TEMPLATE_SOURCE.md` (template version, AGENTS.md source SHA, Ponytail SHA, tool pins and licenses) and verify every path it names exists
 
 ## 8. README and drift control
 
