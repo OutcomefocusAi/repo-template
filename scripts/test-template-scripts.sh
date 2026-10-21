@@ -190,9 +190,8 @@ rel false "ordinary branch" 1-bootstrap-repo-template OutcomefocusAi/repo-templa
 # a directory's release-please-config.json, .release-please-manifest.json, version.txt and
 # CHANGELOG.md and exits 0 when they are consistent.
 release_state() { # dir
-  local d=$1 cfg initial bump manifest version heading semver='^[0-9]+\.[0-9]+\.[0-9]+$'
-  cfg='.packages["."]'
-  initial=$(jq -r "$cfg[\"initial-version\"] // \"unset\"" "$d/release-please-config.json")
+  local d=$1 initial bump manifest version heading semver='^[0-9]+\.[0-9]+\.[0-9]+$'
+  initial=$(jq -r '.packages["."]["initial-version"] // "unset"' "$d/release-please-config.json")
   # release-please honours only the JSON boolean true here, so a string "true" is reported as itself.
   bump=$(jq -r '.packages["."] | if has("bump-minor-pre-major") then .["bump-minor-pre-major"]
     | (if . == true then "true" else tojson end) else "unset" end' "$d/release-please-config.json")
