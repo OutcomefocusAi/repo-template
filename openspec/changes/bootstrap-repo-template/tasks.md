@@ -74,3 +74,13 @@
 - Principal QA posts its verdict; `qa-gate` turns green only on SHIP for the head.
 - Woody merges PR #2. Then verify on `main`: CI green, `main-guard` green for the squash merge, release-please opened its release pull request (or record the org-setting failure for Woody).
 - Woody merges the release pull request to tag `v0.1.0`, then the change is archived with `openspec archive bootstrap-repo-template` (no `--yes`).
+
+## 11. Woody's decisions on the QA follow-ups (2026-10-21 1:25 PM MST)
+
+- [x] 11.1 Pin the `qa-gate` required check in ruleset `protect-main` to integration 15368 and set `require_extra_approval_for_unattributed_changes` to false, keeping every other rule; save before and after in `evidence/settings-2026-10-21/`
+- [ ] 11.2 Turn on the repository's "Allow GitHub Actions to create and approve pull requests" (blocked: HTTP 409, the organization setting is off; needs an org owner)
+- [x] 11.3 Enable private vulnerability reporting
+- [x] 11.4 Enable secret scanning and push protection
+- [x] 11.5 Keep Decision 3 as written and record Woody's approval in `proposal.md`
+- [x] 11.6 Align the change-traceability verdict text (`SHIP-WITH-FIXES`, COMMENT review or comment) and the release-management permission text (release job and `qa-gate` `statuses: write`, design D3); validate strictly
+- [x] 11.7 Update design D3, D4, D6, README, and AGENTS.md section 13 for these settings

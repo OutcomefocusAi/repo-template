@@ -43,8 +43,8 @@ A `qa-gate` check SHALL run on pull requests and when comments are added, and SH
 - **WHEN** a release-please pull request changes only `CHANGELOG.md`, `version.txt`, and `.release-please-manifest.json`
 - **THEN** `qa-gate` passes without a verdict comment
 
-#### Scenario: SHIP WITH FIXES or NO-SHIP
-- **WHEN** the latest verdict for the head is SHIP WITH FIXES or NO-SHIP
+#### Scenario: SHIP-WITH-FIXES or NO-SHIP
+- **WHEN** the latest verdict for the head is `SHIP-WITH-FIXES` or `NO-SHIP`
 - **THEN** `qa-gate` fails
 
 ### Requirement: Direct pushes to main are flagged

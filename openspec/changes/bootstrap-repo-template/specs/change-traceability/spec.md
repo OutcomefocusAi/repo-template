@@ -36,8 +36,8 @@ The pull request template SHALL include `Closes #`, the change folder link, the 
 - **THEN** its body starts from the template with every field above
 
 ### Requirement: QA verdict recorded on the pull request
-The independent QA verdict SHALL be a pull request comment whose first line is `Independent QA by <reviewer>: <verdict>` with verdict SHIP, SHIP WITH FIXES, or NO-SHIP, followed by the head SHA tested and the evidence.
+The independent QA verdict SHALL be a pull request review of type COMMENT or a pull request comment whose first line is `Independent QA by <reviewer>: <verdict>` with verdict `SHIP`, `SHIP-WITH-FIXES`, or `NO-SHIP`, followed by the full head SHA tested and the evidence. A new verdict SHALL be posted for each new head rather than editing an earlier one.
 
 #### Scenario: Verdict format
 - **WHEN** QA finishes reviewing a pull request
-- **THEN** the verdict comment's first line matches the format and its body names the full head SHA
+- **THEN** the verdict review or comment has a first line that matches the format and a body that names the full head SHA

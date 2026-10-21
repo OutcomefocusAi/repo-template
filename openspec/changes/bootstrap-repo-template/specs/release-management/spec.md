@@ -21,8 +21,8 @@ A version tag and GitHub release SHALL be created only when the release pull req
 - **THEN** a tag `vX.Y.Z` and a GitHub release are created for that commit and nothing is deployed
 
 ### Requirement: Release workflow has least privilege
-Only the release job SHALL hold `contents: write` and `pull-requests: write`; every other job keeps `contents: read`.
+Every workflow SHALL set top-level permissions to `contents: read`. Write permissions SHALL appear only on two jobs: the release job, which holds `contents: write`, `pull-requests: write`, and `issues: write` (release-please labels its pull request), and the `qa-gate` job, which holds `statuses: write` and nothing else that writes, so it can set the `qa-gate` commit status (design D3). Every other job keeps read-only permissions.
 
 #### Scenario: Permission audit
 - **WHEN** a reviewer reads the workflows
-- **THEN** write permissions appear only on the release job
+- **THEN** write permissions appear only on the release job and, limited to `statuses: write`, on the `qa-gate` job
