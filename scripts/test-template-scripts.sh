@@ -186,5 +186,18 @@ rel false "fork branch named release-please--*" release-please--branches--main m
 rel false "same-repository branch named release-please--* opened by an agent" release-please--x OutcomefocusAi/repo-template AgileKnow23
 rel false "ordinary branch" 1-bootstrap-repo-template OutcomefocusAi/repo-template AgileKnow23
 
+# release-please first version (design D6): with no release yet, release-please uses the
+# package's `initial-version` (1.0.0 when unset), so the first release is 0.1.0 only if the
+# config sets it and the manifest and version.txt still read 0.0.0.
+total=$((total + 1))
+rp_initial=$(jq -r '.packages["."]["initial-version"] // "unset"' "$root/release-please-config.json")
+rp_manifest=$(jq -r '.["."]' "$root/.release-please-manifest.json")
+rp_version=$(tr -d '[:space:]' < "$root/version.txt")
+if [ "$rp_initial" = "0.1.0" ] && [ "$rp_manifest" = "0.0.0" ] && [ "$rp_version" = "0.0.0" ]; then
+  echo "ok   release: first release is 0.1.0 (initial-version 0.1.0, manifest 0.0.0)"
+else
+  echo "FAIL release: first release would not be 0.1.0 (initial-version $rp_initial, manifest $rp_manifest, version.txt $rp_version)"; fails=$((fails + 1))
+fi
+
 echo "test-template-scripts: $((total - fails))/$total passed"
 [ "$fails" -eq 0 ]
