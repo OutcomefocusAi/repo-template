@@ -2,8 +2,8 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Record Woody's approval of this proposal in `proposal.md` (exact words or selected option, where and when) and verify the record is committed before any other task starts
-- [ ] 1.2 Confirm release PR #11 is still open, unmerged and untouched by this branch, that no tag or release exists (`gh api repos/OutcomefocusAi/repo-template/tags` and `.../releases` empty), and that the branch diff lists no `CHANGELOG.md`, `version.txt` or `.release-please-manifest.json`
+- [x] 1.1 Record Woody's approval of this proposal in `proposal.md` (exact words or selected option, where and when) and verify the record is committed before any other task starts. Done: `9ad53ea`
+- [x] 1.2 Confirm release PR #11 is still open, unmerged and untouched by this branch, that no tag or release exists (`gh api repos/OutcomefocusAi/repo-template/tags` and `.../releases` empty), and that the branch diff lists no `CHANGELOG.md`, `version.txt` or `.release-please-manifest.json`. Done: #11 open, unmerged, head `59f38a9`, not touched; 0 tags, 0 releases; no release files in the branch diff
 
 ## 2. Failing test first
 
