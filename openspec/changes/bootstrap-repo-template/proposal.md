@@ -14,6 +14,7 @@ Notion Tasks row: linked from the tracking issue (kept out of committed files).
 | Rebuild the repository | "Yes, approve all three recommendations: rebuild a fresh repo-template and keep the old one private, add the workflow permission, and squash-merge PR #1 with the branch-name waiver and QA's stricter rule." (the third item refers to openspec-sandbox PR #1, not this repository) | Woody's chat with Chief of Staff, 2026-10-21 about 12:25 to 12:27 PM MST, relayed verbatim to Principal Engineer |
 | The early merge of the first repository's PR #2 | "Yes, that was my fault" | Woody's chat with Chief of Staff, 2026-10-21 12:27 PM MST, relayed verbatim to Principal Engineer |
 | Privacy-check wording in design D11 (option selected by Woody) | "Yes, make it generic; the old wording can stay in the edit history." | Woody's chat with Chief of Staff, 2026-10-21 12:53 PM MST, option selected by Woody, relayed verbatim to Principal Engineer |
+| GitHub email privacy turned on (clears the remaining privacy-check item) | "Done" | Woody's chat with Chief of Staff, 2026-10-21 12:55 PM MST, relayed verbatim to Principal Engineer; verified by re-scanning `refs/pull/2/merge` after GitHub recomputed it |
 
 ## Rebuild (2026-10-21)
 
