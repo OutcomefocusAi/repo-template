@@ -17,7 +17,7 @@
 
 ## 4. Validation, CI evidence and review
 
-- [ ] 4.1 Run `openspec validate --all --strict`, the self-test, the em-dash check, `check-workflows`, `check-commits`, actionlint, shellcheck and gitleaks at the head, and verify all pass
+- [x] 4.1 Run `openspec validate --all --strict`, the self-test, the em-dash check, `check-workflows`, `check-commits`, actionlint, shellcheck and gitleaks at the head, and verify all pass, plus `git diff --check`. Done: taken at `TASKSHA` with a clean tree; the code, config and test are final from `b45d48e` and later commits change only evidence and tasks.md; all pass, shellcheck clean as on main; `evidence/4.1-checks.txt`
 - [ ] 4.2 Open the pull request for #18 with the scenario-to-test map and CI run links, verify `template-checks` and `project` are green, and get Principal QA's verdict (COMMENT review, first line `Independent QA by <reviewer>: ...`) for the head with `qa-gate` green
 
 ## Workflow follow-up
