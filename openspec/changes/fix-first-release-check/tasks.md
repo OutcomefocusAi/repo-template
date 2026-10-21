@@ -2,8 +2,8 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Record Woody's approval of this proposal in `proposal.md` (exact words or selected option, where and when) and verify the record is committed before any other task starts
-- [ ] 1.2 Confirm PR #11 is still open and untouched by this branch, and verify `git diff origin/main --name-only` on the branch lists no `CHANGELOG.md`, `version.txt` or `.release-please-manifest.json`
+- [x] 1.1 Record Woody's approval of this proposal in `proposal.md` (exact words or selected option, where and when) and verify the record is committed before any other task starts. Done: `928b804`
+- [x] 1.2 Confirm PR #11 is still open and untouched by this branch, and verify `git diff origin/main --name-only` on the branch lists no `CHANGELOG.md`, `version.txt` or `.release-please-manifest.json`. Done: #11 open at `7cd0555`, not touched; the branch diff has no release files
 
 ## 2. Failing test first
 
