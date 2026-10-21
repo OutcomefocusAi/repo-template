@@ -7,7 +7,7 @@
 
 ## 2. Failing test first
 
-- [ ] 2.1 Add self-test fixtures for pre-release (`0.0.0`, no changelog), first release `0.1.0`, later release `0.2.0` with a linked heading, manifest and `version.txt` disagreeing, changelog heading disagreeing, and `bump-minor-pre-major` missing; run `scripts/test-template-scripts.sh` against the current check and verify the release fixtures fail (save the output as evidence)
+- [x] 2.1 Add self-test fixtures for pre-release (`0.0.0`, no changelog), first release `0.1.0`, later release `0.2.0` with a linked heading, manifest and `version.txt` disagreeing, changelog heading disagreeing, and `bump-minor-pre-major` missing; run `scripts/test-template-scripts.sh` against the current check and verify the release fixtures fail (save the output as evidence). Done: 68/72, the four release fixtures fail against the old check (0.1.0 and 0.2.0 rejected with the CI message, inherited changelog and missing `bump-minor-pre-major` accepted); `evidence/2.1-failing-test.txt`
 
 ## 3. Fix
 
