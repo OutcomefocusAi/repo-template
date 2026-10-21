@@ -1,0 +1,75 @@
+# qa-gate: sets commit status `qa-gate` on the pull request head.
+# success only when an allowlisted account has commented
+#   Independent QA by <reviewer>: SHIP
+# naming the full current head SHA. Never checks out pull request code.
+# issue_comment runs use this file from the default branch, so a pull request
+# cannot change the gate its comments are judged by.
+name: qa-gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qa-gate-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    name: evaluate
+    if: github.event_name == 'pull_request' || github.event.issue.pull_request
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+      # Accounts whose verdict comments count. On a public repository anyone can comment.
+      ALLOWLIST: "AgileKnow23"
+    steps:
+      - name: Evaluate QA verdict for the head commit
+        run: |
+          set -euo pipefail
+          pr_json=$(gh api "repos/$REPO/pulls/$PR")
+          head_sha=$(jq -r .head.sha <<<"$pr_json")
+          head_ref=$(jq -r .head.ref <<<"$pr_json")
+
+          set_status() {
+            gh api -X POST "repos/$REPO/statuses/$head_sha" \
+              -f state="$1" -f context=qa-gate -f description="$2" >/dev/null
+            echo "qa-gate: $1: $2"
+          }
+
+          if [[ "$head_ref" == release-please--* ]]; then
+            others=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' \
+              | grep -v -x -e CHANGELOG.md -e version.txt -e .release-please-manifest.json || true)
+            if [[ -z "$others" ]]; then
+              set_status success "Release pull request touching only release files"
+              exit 0
+            fi
+          fi
+
+          allow_json=$(jq -R -c 'split(" ") | map(select(length > 0))' <<<"$ALLOWLIST")
+          verdict=$(gh api --paginate "repos/$REPO/issues/$PR/comments" --jq '.[]' \
+            | jq -r -s --arg sha "$head_sha" --argjson allow "$allow_json" '
+                map(select(.user.login as $u | $allow | index($u)))
+                | map(select(.body | contains($sha)))
+                | map(. + {first: (.body | split("\n")[0] | rtrimstr("\r"))})
+                | map(select(.first | test("^Independent QA by .+: (SHIP|SHIP WITH FIXES|NO-SHIP)$")))
+                | sort_by(.updated_at) | last
+                | if . == null then "" else (.first | capture(": (?<v>SHIP|SHIP WITH FIXES|NO-SHIP)$").v) end')
+
+          case "$verdict" in
+            "SHIP") set_status success "Independent QA shipped ${head_sha:0:7}" ;;
+            "") set_status failure "QA has not shipped this head (${head_sha:0:7})" ;;
+            *) set_status failure "Latest QA verdict for ${head_sha:0:7} is $verdict" ;;
+          esac
