@@ -121,9 +121,11 @@ Justify any deviation in the proposal. Prefer managed and serverless hosting and
 - When building AI features: use evals with pass thresholds, version the prompts, guard against prompt injection, cap cost and tokens, and add fallbacks.
 - Never ship model output that has not been tested.
 
-## 12. Maximum effort
+## 12. Effort level
 
-For coding, design, debugging, review, and verification work in this repository, use the highest effort or reasoning level available. When handing work to a background worker or subagent, start it at its highest effort level, never a cheaper or faster setting. When a more capable option is offered at no extra cost, pick it. Do not trade quality for speed or cost unless the owner says so.
+For code, features, releases, design, debugging, testing, review, and verification work in this repository, use the highest effort or reasoning level available. This includes independent QA (section 1 step 6) of every change, docs-only changes included. When handing that work to a background worker or subagent, start it at its highest effort level, never a cheaper or faster setting. When a more capable option is offered at no extra cost, pick it. Do not trade quality for speed or cost unless the owner says so.
+
+Normal effort (the tool's default or standard level) is allowed for docs-only changes (section 9), OpenSpec archive work (section 1 step 7), and routine CI or status checks, whether an agent does that work itself or hands it to a worker. When unsure whether work is on this list, use the highest level. The effort level never changes an approval gate: proposals, independent QA, the owner's OK, and the merge rules apply the same way at any level.
 
 No spending: never spend money, start or change a paid plan, create a new account, or accept terms of service without the owner's approval, recorded as in section 3 tier 1.
 
