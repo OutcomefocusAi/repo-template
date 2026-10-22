@@ -12,7 +12,7 @@
 
 ## 3. Checks and review
 
-- [ ] 3.1 Run `openspec validate --all --strict`, `scripts/check-em-dash.sh`, `scripts/test-template-scripts.sh`, `scripts/check-workflows.sh`, `scripts/check-commits.sh` and `git diff --check` at the head and verify all pass; save the output under the change folder's `evidence/`.
+- [x] 3.1 Run `openspec validate --all --strict`, `scripts/check-em-dash.sh`, `scripts/test-template-scripts.sh`, `scripts/check-workflows.sh`, `scripts/check-commits.sh` and `git diff --check` at the head and verify all pass; save the output under the change folder's `evidence/`. Done: at `32ad658`, all exit 0: self-test 76/76, em-dash, check-workflows (4 files), actionlint, gitleaks full history (109 commits, no leaks), `openspec validate --all --strict` 9/9, check-commits (4 commits), `git diff --check`, and the five CI slots (warn only, as in this repository); `evidence/3.1-checks.txt`
 - [ ] 3.2 After 3.1 and after the pull request (follow-up below) is open with green CI, archive the change with `openspec archive update-effort-rule` (no `--yes`) as the last commit of the implementation pull request, and verify `openspec/specs/agent-guidance/spec.md` holds "AGENTS.md states the effort rule" with its four scenarios and no longer holds "AGENTS.md states the maximum effort rule".
 
 ## Workflow follow-up
