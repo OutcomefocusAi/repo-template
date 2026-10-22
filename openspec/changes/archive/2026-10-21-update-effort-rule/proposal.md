@@ -1,6 +1,6 @@
 # Proposal: update-effort-rule
 
-Tracking issue: [#26](https://github.com/OutcomefocusAi/repo-template/issues/26). Branch: `26-update-effort-rule`. Notion Tasks row: TBD. Not docs-only: it changes a requirement in the live `agent-guidance` spec, so it goes through OpenSpec and waits for Woody's approval before apply.
+Tracking issue: [#26](https://github.com/OutcomefocusAi/repo-template/issues/26). Branch: `26-update-effort-rule`. Notion Tasks row: https://app.notion.com/p/401444b092e6813f825cdf42fe37e5c8. Not docs-only: it changes a requirement in the live `agent-guidance` spec, so it goes through OpenSpec and waits for Woody's approval before apply.
 
 ## Approval
 
