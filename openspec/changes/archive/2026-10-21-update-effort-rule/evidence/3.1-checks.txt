@@ -1,0 +1,76 @@
+Checks at 32ad6589528695110a45ef6e4dde91e5d4e5fc7c (branch 26-update-effort-rule), 2026-10-21 20:09 MST, tree clean except this evidence file (untracked while written)
+
+$ scripts/test-template-scripts.sh
+ok   release state: before any release (0.0.0, no changelog)
+ok   release state: first release 0.1.0 (release pull request or merged)
+ok   release state: later release 0.2.0 with a linked heading
+ok   release state: manifest and version.txt disagree
+ok   release state: newest changelog heading disagrees
+ok   release state: 0.0.0 with an inherited released changelog
+ok   release state: bump-minor-pre-major not set
+ok   release state: bump-minor-pre-major is the string "true", not the boolean
+ok   release state: include-component-in-tag not set (tag would be repo-template-v0.1.0)
+ok   release state: include-component-in-tag true
+ok   release state: include-component-in-tag is the string "false", not the boolean
+ok   release state: initial-version not set
+ok   release state: version is not MAJOR.MINOR.PATCH
+ok   release state: this repository
+test-template-scripts: 76/76 passed
+exit=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+exit=0
+
+$ scripts/check-workflows.sh
+check-workflows: 4 workflow file(s) pass
+exit=0
+
+$ actionlint -color
+exit=0
+
+$ gitleaks git --redact --no-banner --verbose .
+8:09PM INF 109 commits scanned.
+8:09PM INF scanned ~1103123 bytes (1.10 MB) in 198ms
+8:09PM INF no leaks found
+exit=0
+
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+✓ change/update-effort-rule
+Totals: 9 passed, 0 failed (9 items)
+exit=0
+
+$ scripts/check-commits.sh a766b44451f77a3b8372afe44cd52d3eae12b4cb 32ad6589528695110a45ef6e4dde91e5d4e5fc7c 26-update-effort-rule
+check-commits: 4 commit(s) pass on 26-update-effort-rule
+exit=0
+
+$ git diff --check origin/main...HEAD
+exit=0
+
+$ scripts/slot.sh lint
+::warning title=Unfilled CI slot::'lint' is a template slot. Derived repositories must replace it in their first project proposal.
+exit=0
+
+$ scripts/slot.sh typecheck
+::warning title=Unfilled CI slot::'typecheck' is a template slot. Derived repositories must replace it in their first project proposal.
+exit=0
+
+$ scripts/slot.sh test
+::warning title=Unfilled CI slot::'test' is a template slot. Derived repositories must replace it in their first project proposal.
+exit=0
+
+$ scripts/slot.sh coverage
+::warning title=Unfilled CI slot::'coverage' is a template slot. Derived repositories must replace it in their first project proposal.
+exit=0
+
+$ scripts/slot.sh build
+::warning title=Unfilled CI slot::'build' is a template slot. Derived repositories must replace it in their first project proposal.
+exit=0

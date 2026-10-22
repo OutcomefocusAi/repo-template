@@ -1,0 +1,41 @@
+Archive of update-effort-rule, 2026-10-21 20:10 MST, on top of 13f7150
+
+$ openspec archive update-effort-rule
+Task status: ✓ Complete
+Specs to update:
+  agent-guidance: update
+? Proceed with spec updates? (Y/n)? Proceed with spec updates? (Y/n) y✔ Proceed with spec updates? Yes
+Applying changes to openspec/specs/agent-guidance/spec.md:
+  ~ 1 modified
+  → 1 renamed
+Totals: + 0, ~ 1, - 0, → 1
+Specs updated successfully.
+Change 'update-effort-rule' archived as '2026-10-21-update-effort-rule'.
+
+$ grep -n "Requirement: AGENTS.md states the" openspec/specs/agent-guidance/spec.md
+42:### Requirement: AGENTS.md states the effort rule
+
+$ grep -c "maximum effort rule" openspec/specs/agent-guidance/spec.md
+0
+
+$ awk scenarios under "AGENTS.md states the effort rule"
+#### Scenario: Agent delegates work
+#### Scenario: Docs-only, archive, or routine CI work
+#### Scenario: Unsure which effort applies
+#### Scenario: Approval gates unchanged
+
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+exit=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+exit=0
