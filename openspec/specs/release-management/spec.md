@@ -34,11 +34,23 @@ A release workflow SHALL run on push to `main` and keep one open release pull re
 - **THEN** the release pull request proposes `1.0.0`
 
 ### Requirement: Tags only on merging the release pull request
-A version tag and GitHub release SHALL be created only when the release pull request is merged. Nothing SHALL be published to a package registry or deployed by this workflow.
+A version tag and GitHub release SHALL be created only when the release pull request is merged. The tag and the GitHub release name SHALL both be `v` followed by the version (`vX.Y.Z`), with no component or package-name prefix. Nothing SHALL be published to a package registry or deployed by this workflow.
 
 #### Scenario: Release pull request merged
 - **WHEN** Woody merges the release pull request
 - **THEN** a tag `vX.Y.Z` and a GitHub release are created for that commit and nothing is deployed
+
+#### Scenario: First release tag
+- **WHEN** Woody merges the first release pull request, which proposes version `0.1.0`
+- **THEN** the tag is `v0.1.0`, not `repo-template-v0.1.0` or any other prefixed form
+
+#### Scenario: Release name matches the tag
+- **WHEN** a GitHub release is created for version `X.Y.Z`
+- **THEN** its name is `vX.Y.Z`, the same as its tag
+
+#### Scenario: Component in the tag configured
+- **WHEN** `release-please-config.json` does not set `include-component-in-tag` to the JSON boolean `false`
+- **THEN** the template self-test fails and names the value it found
 
 ### Requirement: Release workflow has least privilege
 Every workflow SHALL set top-level permissions to `contents: read`. Write permissions SHALL appear only on two jobs: the release job, which holds `contents: write`, `pull-requests: write`, and `issues: write` (release-please labels its pull request), and the `qa-gate` job, which holds `statuses: write` and nothing else that writes, so it can set the `qa-gate` commit status (design D3). Every other job keeps read-only permissions.

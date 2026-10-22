@@ -18,7 +18,7 @@
 ## 4. Validation, CI evidence and review
 
 - [x] 4.1 Run `openspec validate --all --strict`, the self-test, the em-dash check, `check-workflows`, `check-commits`, actionlint, shellcheck and gitleaks at the head, and verify all pass, plus `git diff --check`. Done: taken at `3241b7e` with a clean tree; the code, config and test are final from `b45d48e` and later commits change only evidence and tasks.md; all pass, shellcheck clean as on main; `evidence/4.1-checks.txt`
-- [ ] 4.2 Open the pull request for #18 with the scenario-to-test map and CI run links, verify `template-checks` and `project` are green, and get Principal QA's verdict (COMMENT review, first line `Independent QA by <reviewer>: ...`) for the head with `qa-gate` green
+- [x] 4.2 Open the pull request for #18 with the scenario-to-test map and CI run links, verify `template-checks` and `project` are green, and get Principal QA's verdict (COMMENT review, first line `Independent QA by <reviewer>: ...`) for the head with `qa-gate` green. Done: [PR #19](https://github.com/OutcomefocusAi/repo-template/pull/19) at `0cd8442`; CI green ([run 39693870113](https://github.com/OutcomefocusAi/repo-template/actions/runs/39693870113): `template-checks` 76/76, `project`); Principal QA's [SHIP review](https://github.com/OutcomefocusAi/repo-template/pull/19#pullrequestreview-5607527336) for `0cd8442`, `qa-gate` green ([run 39694483635](https://github.com/OutcomefocusAi/repo-template/actions/runs/39694483635)); squash-merged as `9ca35a4`
 
 ## Workflow follow-up
 

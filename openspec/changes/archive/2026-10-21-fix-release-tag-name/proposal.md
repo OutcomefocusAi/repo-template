@@ -8,6 +8,7 @@ Tracking issue: [#18](https://github.com/OutcomefocusAi/repo-template/issues/18)
 | --- | --- | --- |
 | Hold release PR #11 and propose this fix | Option selected by Woody: "Hold release PR #11 and have Principal Engineer propose the small fix so the tag is v0.1.0." | Option selected in Woody's chat with Chief of Staff, 2026-10-21 4:06 PM MST; relayed verbatim to Principal Engineer. A request to propose, not approval of this proposal |
 | Approve this proposal (at `fe08771`, issue #18) | Option selected by Woody: "Yes, approve fix-release-tag-name as proposed" (answering "Approve the v0.1.0 label fix?") | Option selected on Chief of Staff's card in Woody's chat with Chief of Staff, 2026-10-21 4:27 PM MST; option text by Chief of Staff; relayed verbatim to Principal Engineer. Covers the proposal only; not a merge OK. Recorded here before apply |
+| Merge PR #19 | Option selected by Woody: "Yes, merge repo-template PR #19." | Option selected in Woody's chat with Chief of Staff, 2026-10-21 4:52 PM MST; relayed verbatim to Principal Engineer; squash commit `9ca35a4` (head `0cd8442`). Recorded at archive, issue #20 |
 
 ## Why
 
