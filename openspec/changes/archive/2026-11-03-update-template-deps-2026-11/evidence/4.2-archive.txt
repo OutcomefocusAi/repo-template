@@ -5,7 +5,7 @@ Task status: ✓ Complete
 
 Specs to update:
   agent-guidance: update
-Proceed with spec updates? (Y/n) 
+Proceed with spec updates? (Y/n)
 Applying changes to openspec/specs/agent-guidance/spec.md:
   ~ 1 modified
 Totals: + 0, ~ 1, - 0, → 0
