@@ -1,0 +1,17 @@
+Upstream re-check for task 1.2, 2026-11-03 08:56 MST, on top of 2fbae8c
+
+$ npm view @fission-ai/openspec dist-tags.latest license engines.node
+dist-tags.latest = '1.16.0'
+license = 'MIT'
+engines.node = '>=22.12.0'
+
+$ gh api repos/DietrichGebert/ponytail/releases/latest -q .tag_name
+v5.3.3
+
+$ git ls-remote https://github.com/DietrichGebert/ponytail HEAD
+96608e078b2d5ea607c5c3b8b5a54d1c1fba6846	HEAD
+
+$ git describe --tags 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846
+v5.3.3-1-g96608e0
+
+Result: 1.16.0, v5.3.3 and 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846 as approved; nothing moved.

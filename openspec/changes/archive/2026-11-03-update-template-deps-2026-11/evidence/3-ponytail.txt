@@ -1,0 +1,29 @@
+Tasks 3.1 and 3.2, 2026-11-03 08:57 MST, on top of 4af9ba8
+
+$ git -C ponytail rev-parse HEAD (upstream clone, fetched today)
+96608e078b2d5ea607c5c3b8b5a54d1c1fba6846
+
+Copied with: git show 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846:skills/<skill>/SKILL.md > .agents/skills/<skill>/SKILL.md and git show 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846:LICENSE > .agents/skills/<skill>/LICENSE
+git status after copy: no byte changes to any SKILL.md or LICENSE (files identical to 09c434a copies)
+
+file | vendored sha256 | upstream sha256 at 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846 | recorded in SOURCE.md | result
+ponytail/SKILL.md | 9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509 | 9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509 | 9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509 | match
+ponytail/LICENSE | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | match
+ponytail-review/SKILL.md | 33fe4ebe22a460924e5d4a261e223df22e409cc94ab76182bee9fb91a3ef022e | 33fe4ebe22a460924e5d4a261e223df22e409cc94ab76182bee9fb91a3ef022e | 33fe4ebe22a460924e5d4a261e223df22e409cc94ab76182bee9fb91a3ef022e | match
+ponytail-review/LICENSE | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | match
+ponytail-audit/SKILL.md | 2b3223a02c386d1263e1b08343cb8eb3a53e444cdafb1d79e26c8ec2a8fcad28 | 2b3223a02c386d1263e1b08343cb8eb3a53e444cdafb1d79e26c8ec2a8fcad28 | 2b3223a02c386d1263e1b08343cb8eb3a53e444cdafb1d79e26c8ec2a8fcad28 | match
+ponytail-audit/LICENSE | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab | match
+
+$ grep "Pinned commit\|Upstream version" .agents/skills/ponytail*/SOURCE.md
+| Pinned commit | `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` |
+| Upstream version | 5.3.3 plus one docs commit (`git describe --tags`: `v5.3.3-1-g96608e0`) |
+| Pinned commit | `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` |
+| Upstream version | 5.3.3 plus one docs commit (`git describe --tags`: `v5.3.3-1-g96608e0`) |
+| Pinned commit | `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` |
+| Upstream version | 5.3.3 plus one docs commit (`git describe --tags`: `v5.3.3-1-g96608e0`) |
+
+$ grep ponytail TEMPLATE_SOURCE.md
+| `.agents/skills/ponytail/`, `ponytail-review/`, `ponytail-audit/` | https://github.com/DietrichGebert/ponytail at `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` (`v5.3.3-1-g96608e0`), MIT, vendored 2026-11-03; SHA-256 of each `SKILL.md` and `LICENSE` in each folder's `SOURCE.md` |
+
+$ rg -n "09c434a" (excluding openspec/changes/archive and this change)
+(no matches)

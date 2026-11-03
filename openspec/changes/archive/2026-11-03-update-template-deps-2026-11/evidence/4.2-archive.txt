@@ -1,0 +1,47 @@
+Archive of update-template-deps-2026-11, 2026-11-03 09:00 MST, on top of 53795d5, OpenSpec 1.16.0, after CI run 41669328187 was green on 53795d5
+
+$ printf "y\n" | openspec archive update-template-deps-2026-11
+Task status: ✓ Complete
+
+Specs to update:
+  agent-guidance: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/agent-guidance/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'update-template-deps-2026-11' archived as '2026-11-03-update-template-deps-2026-11'.
+
+$ grep -n -A12 'Requirement: Ponytail skills are vendored at a pinned commit' openspec/specs/agent-guidance/spec.md
+79:### Requirement: Ponytail skills are vendored at a pinned commit
+80-The repository SHALL vendor the ponytail, ponytail-review, and ponytail-audit skills under `.agents/skills/` byte for byte from the pinned upstream commit, each with its LICENSE and a SOURCE.md naming the commit, the upstream version, and the SHA-256 of its SKILL.md and LICENSE.
+81-
+82-#### Scenario: Vendored copies match
+83-- **WHEN** a reviewer compares SHA-256 values of the vendored SKILL.md and LICENSE files with the same files in `DietrichGebert/ponytail` at the commit named in each SOURCE.md
+84-- **THEN** they match, and they match the SHA-256 values recorded in that SOURCE.md
+85-
+86-#### Scenario: Pin records agree
+87-- **WHEN** a reviewer reads `TEMPLATE_SOURCE.md` and each vendored skill's SOURCE.md
+88-- **THEN** both name the same upstream commit and version
+89-
+90-### Requirement: Skills live in .agents/skills
+91-OpenSpec-generated skills SHALL live in `.agents/skills/openspec-*/` as produced by `openspec init --tools agents` at the pinned OpenSpec version, and `AGENTS.md` SHALL name the skill for each workflow step that has one.
+
+$ grep -c openspec-sandbox in that requirement
+0
+
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+exit=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+exit=0
