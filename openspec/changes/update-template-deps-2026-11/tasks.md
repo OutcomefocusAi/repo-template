@@ -12,8 +12,8 @@
 
 ## 3. Ponytail upstream HEAD 96608e0
 
-- [ ] 3.1 Copy `skills/ponytail/SKILL.md`, `skills/ponytail-review/SKILL.md`, `skills/ponytail-audit/SKILL.md` and `LICENSE` from `DietrichGebert/ponytail` at `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` byte for byte into the three vendored folders, and verify each `sha256sum` equals the upstream file's.
-- [ ] 3.2 Update each vendored `SOURCE.md` (pinned commit, upstream version `v5.3.3-1-g96608e0`, file link, date vendored, SHA-256 of `SKILL.md` and of `LICENSE`) and the Ponytail row of `TEMPLATE_SOURCE.md`, and verify `rg -n "09c434a"` outside `openspec/changes/archive/` finds nothing and every recorded SHA-256 matches the file.
+- [x] 3.1 Copy `skills/ponytail/SKILL.md`, `skills/ponytail-review/SKILL.md`, `skills/ponytail-audit/SKILL.md` and `LICENSE` from `DietrichGebert/ponytail` at `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` byte for byte into the three vendored folders, and verify each `sha256sum` equals the upstream file's.
+- [x] 3.2 Update each vendored `SOURCE.md` (pinned commit, upstream version `v5.3.3-1-g96608e0`, file link, date vendored, SHA-256 of `SKILL.md` and of `LICENSE`) and the Ponytail row of `TEMPLATE_SOURCE.md`, and verify `rg -n "09c434a"` outside `openspec/changes/archive/` finds nothing and every recorded SHA-256 matches the file.
 
 ## 4. Checks and review
 
