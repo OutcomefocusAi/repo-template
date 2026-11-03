@@ -7,8 +7,8 @@
 
 ## 2. OpenSpec 1.16.0
 
-- [ ] 2.1 Bump `@fission-ai/openspec@1.14.3` to `1.16.0` in `.github/workflows/ci.yml` and in both `TEMPLATE_SOURCE.md` rows (sources and tool pins, naming `openspec update` and the Node 22.12.0 floor), and verify `rg -n "1\.14\.3"` outside `openspec/changes/archive/` finds nothing.
-- [ ] 2.2 Run `openspec update` with OpenSpec 1.16.0 and verify `git diff --stat .agents/skills/openspec-*` shows exactly six one-line changes (`generatedBy: "1.16.0"`) and no added or removed file; stop if it shows more.
+- [x] 2.1 Bump `@fission-ai/openspec@1.14.3` to `1.16.0` in `.github/workflows/ci.yml` and in both `TEMPLATE_SOURCE.md` rows (sources and tool pins, naming `openspec update` and the Node 22.12.0 floor), and verify `rg -n "1\.14\.3"` outside `openspec/changes/archive/` finds nothing.
+- [x] 2.2 Run `openspec update` with OpenSpec 1.16.0 and verify `git diff --stat .agents/skills/openspec-*` shows exactly six one-line changes (`generatedBy: "1.16.0"`) and no added or removed file; stop if it shows more.
 
 ## 3. Ponytail upstream HEAD 96608e0
 

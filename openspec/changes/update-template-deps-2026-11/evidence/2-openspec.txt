@@ -1,0 +1,58 @@
+Tasks 2.1 and 2.2, 2026-11-03 08:56 MST, on top of 5d0c760
+
+$ rg -n "1\.14\.3" (excluding openspec/changes/archive and this change)
+(no matches)
+
+$ openspec --version
+1.16.0
+
+$ openspec update
+Updating 1 tool(s): agents (1.14.3 → 1.16.0)
+
+- Updating Other / Universal (shared .agents skills)...
+✔ Updated Other / Universal (shared .agents skills)
+
+✓ Updated: Other / Universal (shared .agents skills) (v1.16.0)
+Note: 6 more workflows are available (new, continue, ff, bulk-archive, verify, onboard).
+Add them with `openspec config profile`.
+Tools: Other / Universal (shared .agents skills)
+
+
+$ git diff --stat
+ .agents/skills/openspec-apply-change/SKILL.md   | 2 +-
+ .agents/skills/openspec-archive-change/SKILL.md | 2 +-
+ .agents/skills/openspec-explore/SKILL.md        | 2 +-
+ .agents/skills/openspec-propose/SKILL.md        | 2 +-
+ .agents/skills/openspec-sync-specs/SKILL.md     | 2 +-
+ .agents/skills/openspec-update-change/SKILL.md  | 2 +-
+ .github/workflows/ci.yml                        | 2 +-
+ TEMPLATE_SOURCE.md                              | 4 ++--
+ 8 files changed, 9 insertions(+), 9 deletions(-)
+
+$ git diff -U0 .agents/skills (changed lines)
++++ b/.agents/skills/openspec-apply-change/SKILL.md
+-  generatedBy: "1.14.3"
++  generatedBy: "1.16.0"
++++ b/.agents/skills/openspec-archive-change/SKILL.md
+-  generatedBy: "1.14.3"
++  generatedBy: "1.16.0"
++++ b/.agents/skills/openspec-explore/SKILL.md
+-  generatedBy: "1.14.3"
++  generatedBy: "1.16.0"
++++ b/.agents/skills/openspec-propose/SKILL.md
+-  generatedBy: "1.14.3"
++  generatedBy: "1.16.0"
++++ b/.agents/skills/openspec-sync-specs/SKILL.md
+-  generatedBy: "1.14.3"
++  generatedBy: "1.16.0"
++++ b/.agents/skills/openspec-update-change/SKILL.md
+-  generatedBy: "1.14.3"
++  generatedBy: "1.16.0"
+
+$ git status --short --untracked-files=all .agents
+ M .agents/skills/openspec-apply-change/SKILL.md
+ M .agents/skills/openspec-archive-change/SKILL.md
+ M .agents/skills/openspec-explore/SKILL.md
+ M .agents/skills/openspec-propose/SKILL.md
+ M .agents/skills/openspec-sync-specs/SKILL.md
+ M .agents/skills/openspec-update-change/SKILL.md
