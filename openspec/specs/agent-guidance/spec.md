@@ -77,11 +77,15 @@ The repository SHALL contain `AGENTS.md` at its root holding every working rule 
 - **THEN** they require secrets only in environment variables or a secret store, input validation, OWASP Top 10 awareness, dependency audits, and pinned dependencies
 
 ### Requirement: Ponytail skills are vendored at a pinned commit
-The repository SHALL vendor the ponytail, ponytail-review, and ponytail-audit skills under `.agents/skills/` byte for byte from the pinned upstream commit, each with its LICENSE and a SOURCE.md naming the commit.
+The repository SHALL vendor the ponytail, ponytail-review, and ponytail-audit skills under `.agents/skills/` byte for byte from the pinned upstream commit, each with its LICENSE and a SOURCE.md naming the commit, the upstream version, and the SHA-256 of its SKILL.md and LICENSE.
 
 #### Scenario: Vendored copies match
-- **WHEN** a reviewer compares SHA-256 values of the vendored SKILL.md files with the openspec-sandbox copies
-- **THEN** they match
+- **WHEN** a reviewer compares SHA-256 values of the vendored SKILL.md and LICENSE files with the same files in `DietrichGebert/ponytail` at the commit named in each SOURCE.md
+- **THEN** they match, and they match the SHA-256 values recorded in that SOURCE.md
+
+#### Scenario: Pin records agree
+- **WHEN** a reviewer reads `TEMPLATE_SOURCE.md` and each vendored skill's SOURCE.md
+- **THEN** both name the same upstream commit and version
 
 ### Requirement: Skills live in .agents/skills
 OpenSpec-generated skills SHALL live in `.agents/skills/openspec-*/` as produced by `openspec init --tools agents` at the pinned OpenSpec version, and `AGENTS.md` SHALL name the skill for each workflow step that has one.
