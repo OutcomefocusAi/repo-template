@@ -19,7 +19,7 @@ Facts checked on 2026-11-03 (re-checked in task 1.2; command output goes in this
 ## Goals / Non-Goals
 
 **Goals:**
-- Template pins OpenSpec 1.16.0 and Ponytail v5.3.3, with generated and vendored files matching those versions exactly.
+- Template pins OpenSpec 1.16.0 and Ponytail upstream `HEAD` `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` (`v5.3.3-1-g96608e0`), with generated and vendored files matching those versions exactly.
 - Each pin is recorded with a fingerprint a reviewer can recheck.
 
 **Non-Goals:**
@@ -30,15 +30,15 @@ Facts checked on 2026-11-03 (re-checked in task 1.2; command output goes in this
 ## Decisions
 
 1. **OpenSpec 1.16.0, not 1.15.0.** 1.16.0 is npm `latest`; its only breaking change (Node 22.12.0 floor for npm installs) is already met by CI's Node 24.22.1, and its stricter validation passes every current spec. Stopping at 1.15.0 would leave the template a release behind for no gain.
-2. **Ponytail v5.3.3 (`7801d06`), not `HEAD` (`96608e0`).** Default to the latest release; `HEAD` adds only a README line and no fix the skills need. The vendored files are byte-identical either way, so a release tag gives a stable, nameable pin with no content difference.
+2. **Ponytail upstream `HEAD` `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846`, not the v5.3.3 release `7801d06`.** The first draft proposed v5.3.3 as the latest release, since `HEAD` adds only a README entry and the vendored files are byte-identical either way. Woody chose `HEAD` when approving (2026-11-03 8:54 AM AZ, selected option "Yes, but pin Ponytail to latest HEAD 96608e0 instead."), so the pin follows the newest upstream commit. The recorded upstream version is `v5.3.3-1-g96608e0` (`git describe --tags`), so a reviewer can see it is one commit past the release.
 3. **Regenerate with `openspec update`, not `openspec init --tools agents`.** `update` refreshes the existing tool's skills in place, and the scratch run shows it produces exactly the version-stamp change. If the real run adds, removes or changes anything beyond the six `generatedBy` lines, stop and report before committing.
-4. **Re-vendor by copying from upstream at `7801d06`** (`git show 7801d06:<path> > <dest>`) even though the bytes do not change, then record SHA-256 of `SKILL.md` and `LICENSE` in each `SOURCE.md`. Adding the `LICENSE` fingerprint makes both vendored files checkable.
-5. **Spec delta.** The current scenario compares vendored copies with openspec-sandbox, which keeps the old pin and is not the source. The modified requirement makes upstream at the recorded commit, plus the recorded SHA-256 values, the reference. The other pin requirements ("Skills live in .agents/skills", "Third-party tools are pinned and license-checked") already speak of "the pinned version" and need no text change.
+4. **Re-vendor by copying from upstream at `96608e0`** (`git show 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846:<path> > <dest>`) even though the bytes do not change, then record SHA-256 of `SKILL.md` and `LICENSE` in each `SOURCE.md`. Adding the `LICENSE` fingerprint makes both vendored files checkable.
+5. **Spec delta.** The current scenario compares vendored copies with openspec-sandbox, which keeps the old pin and is not the source. The modified requirement makes upstream at the recorded commit, plus the recorded SHA-256 values, the reference. The other pin requirements ("Skills live in .agents/skills", "Third-party tools are pinned and license-checked") already speak of "the pinned version" and need no text change. The delta names no commit on purpose: the pin (now `96608e0`) lives in each `SOURCE.md` and `TEMPLATE_SOURCE.md`, which the scenarios check, so a later pin bump does not need a spec change. Woody's switch from v5.3.3 to `HEAD` therefore changes no spec text.
 
 ## Verification plan
 
 - Local: install `@fission-ai/openspec@1.16.0` to a temporary prefix, run `openspec --version`, `openspec update`, then `git diff` shows only the six `generatedBy` lines; `openspec validate --all --strict` passes at 1.16.0.
-- Ponytail: `sha256sum` of each vendored `SKILL.md` and `LICENSE` equals the same file from `git show 7801d06:...` and the values in its `SOURCE.md`; `TEMPLATE_SOURCE.md` and each `SOURCE.md` name `7801d061243d7b753bad0e0b3c057cd250b11755` and `v5.3.3`.
+- Ponytail: `sha256sum` of each vendored `SKILL.md` and `LICENSE` equals the same file from `git show 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846:...` and the values in its `SOURCE.md`; `TEMPLATE_SOURCE.md` and each `SOURCE.md` name `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` and `v5.3.3-1-g96608e0`.
 - Repository checks: `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-workflows.sh`, actionlint, gitleaks full history, `scripts/check-commits.sh` and `git diff --check`.
 - CI: `template-checks` installs 1.16.0 from the bumped line and its log shows the version; `project` green; then Principal QA review and `qa-gate`.
 - `rg -n "1\.14\.3|09c434a"` outside `openspec/changes/archive/` finds nothing.
