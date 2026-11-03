@@ -17,7 +17,7 @@
 
 ## 4. Checks and review
 
-- [ ] 4.1 Run `openspec validate --all --strict` at 1.16.0, `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-workflows.sh`, actionlint, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check` at the head, verify all pass, and save the output in the change folder's `evidence/`.
+- [x] 4.1 Run `openspec validate --all --strict` at 1.16.0, `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-workflows.sh`, actionlint, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check` at the head, verify all pass, and save the output in the change folder's `evidence/`.
 - [ ] 4.2 After 4.1 and after the pull request (follow-up below) is open with green CI, archive the change with `openspec archive update-template-deps-2026-11` (no `--yes`) as the last commit of the implementation pull request, and verify `openspec/specs/agent-guidance/spec.md` holds the modified requirement with both scenarios.
 
 ## Workflow follow-up
