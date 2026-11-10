@@ -23,7 +23,7 @@
 
 ## 5. Full local suite
 
-- [ ] 5.1 Reinstall CI tools with `scripts/install-ci-tools.sh /tmp/citools`, then run `openspec validate --all --strict` at 1.17.0, `scripts/test-template-scripts.sh`, both new checks, `scripts/check-em-dash.sh`, `scripts/check-workflows.sh`, actionlint, shellcheck on the new scripts (informational, CI does not run it), gitleaks over the full history after `git fetch`, `scripts/check-commits.sh` and `git diff --check` at the head; verify all pass and save the output in `evidence/`.
+- [x] 5.1 Reinstall CI tools with `scripts/install-ci-tools.sh /tmp/citools`, then run `openspec validate --all --strict` at 1.17.0, `scripts/test-template-scripts.sh`, both new checks, `scripts/check-em-dash.sh`, `scripts/check-workflows.sh`, actionlint, shellcheck on the new scripts (informational, CI does not run it), gitleaks over the full history after `git fetch`, `scripts/check-commits.sh` and `git diff --check` at the head; verify all pass and save the output in `evidence/`.
 
 ## Workflow follow-up
 
