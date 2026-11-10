@@ -1,0 +1,41 @@
+Archive of update-template-openspec-1-16-1, 2026-11-09 20:41 MST, on top of 546a97b, OpenSpec 1.17.0, after CI run 42750921626 was green on 546a97b
+
+$ printf "y\n" | openspec archive update-template-openspec-1-16-1
+Task status: ✓ Complete
+
+Specs to update:
+  agent-guidance: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/agent-guidance/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'update-template-openspec-1-16-1' archived as '2026-11-09-update-template-openspec-1-16-1'.
+
+$ grep -n -A12 'Requirement: Skills live in .agents/skills' openspec/specs/agent-guidance/spec.md
+90:### Requirement: Skills live in .agents/skills
+91-OpenSpec-generated skills SHALL live in `.agents/skills/openspec-*/` as produced by `openspec init --tools agents` and refreshed with `openspec update` at the pinned OpenSpec version, and `AGENTS.md` SHALL name the skill for each workflow step that has one.
+92-
+93-#### Scenario: Skills present
+94-- **WHEN** a reviewer lists `.agents/skills/`
+95-- **THEN** it contains the six OpenSpec skills (propose, explore, apply-change, update-change, sync-specs, archive-change) unmodified from generation
+96-
+97-#### Scenario: OpenSpec pin records agree
+98-- **WHEN** a reviewer reads the `generatedBy` value in each `.agents/skills/openspec-*/SKILL.md`, the `@fission-ai/openspec` install line in `.github/workflows/ci.yml`, and the OpenSpec rows in the Sources and Tool pins tables of `TEMPLATE_SOURCE.md`
+99-- **THEN** all of them name the same exact OpenSpec version
+
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+exit=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+exit=0
