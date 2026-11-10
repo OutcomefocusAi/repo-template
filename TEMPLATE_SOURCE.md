@@ -30,3 +30,5 @@ In the template itself this section is blank. A repository created from the temp
 | actionlint (binary) | 1.7.12 | linux_amd64 tarball SHA-256 `8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8` | MIT | `scripts/install-ci-tools.sh` |
 | @fission-ai/openspec | 1.17.0 | npm exact version; needs Node.js 22.12.0 or newer | MIT | `.github/workflows/ci.yml` |
 | Node.js | 24.22.1 | exact version | MIT | `.github/workflows/ci.yml` |
+
+CI keeps these records in step. `scripts/check-openspec-pin.sh` fails unless the OpenSpec install pin in `.github/workflows/ci.yml`, both OpenSpec rows in this file and the `generatedBy` stamp of every generated skill name the same exact version. `scripts/check-ponytail-pin.sh` fails unless each vendored Ponytail folder's `SOURCE.md` names the same commit and `git describe` string as the Ponytail row above, and the SHA-256 values it records match the vendored `SKILL.md` and `LICENSE`. Update all of them in the same change.

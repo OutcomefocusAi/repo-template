@@ -46,6 +46,12 @@ jobs:
       - name: Em-dash check
         run: scripts/check-em-dash.sh
 
+      - name: OpenSpec pin agreement
+        run: scripts/check-openspec-pin.sh
+
+      - name: Ponytail pin agreement
+        run: scripts/check-ponytail-pin.sh
+
       - name: Workflow hardening check
         run: scripts/check-workflows.sh
 

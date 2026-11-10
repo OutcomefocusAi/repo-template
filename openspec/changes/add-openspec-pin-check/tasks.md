@@ -18,8 +18,8 @@
 
 ## 4. CI wiring and docs
 
-- [ ] 4.1 Add the steps "OpenSpec pin agreement" (`scripts/check-openspec-pin.sh`) and "Ponytail pin agreement" (`scripts/check-ponytail-pin.sh`) right after "Em-dash check" in the `template-checks` job of `.github/workflows/ci.yml`, and verify `scripts/check-workflows.sh` and `actionlint` pass.
-- [ ] 4.2 Add one or two sentences under the Tool pins table in `TEMPLATE_SOURCE.md` saying CI fails unless the OpenSpec records agree (`scripts/check-openspec-pin.sh`) and unless the Ponytail records agree and match the vendored files (`scripts/check-ponytail-pin.sh`), and verify both checks still pass (the sentences must not create a second matching row).
+- [x] 4.1 Add the steps "OpenSpec pin agreement" (`scripts/check-openspec-pin.sh`) and "Ponytail pin agreement" (`scripts/check-ponytail-pin.sh`) right after "Em-dash check" in the `template-checks` job of `.github/workflows/ci.yml`, and verify `scripts/check-workflows.sh` and `actionlint` pass.
+- [x] 4.2 Add one or two sentences under the Tool pins table in `TEMPLATE_SOURCE.md` saying CI fails unless the OpenSpec records agree (`scripts/check-openspec-pin.sh`) and unless the Ponytail records agree and match the vendored files (`scripts/check-ponytail-pin.sh`), and verify both checks still pass (the sentences must not create a second matching row).
 
 ## 5. Full local suite
 
