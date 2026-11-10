@@ -5,6 +5,8 @@
 #   - the OpenSpec rows of the Sources and Tool pins tables in TEMPLATE_SOURCE.md
 # The CI install pin is the reference; each record that differs gets its own error.
 # Usage: scripts/check-openspec-pin.sh
+# Backticks in the patterns below are literal Markdown, not command substitution.
+# shellcheck disable=SC2016
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 shopt -s nullglob

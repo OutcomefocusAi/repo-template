@@ -6,6 +6,8 @@
 #   - the SHA-256 recorded for SKILL.md and LICENSE in each SOURCE.md equals the file on disk
 # The TEMPLATE_SOURCE.md row is the reference; each record that differs gets its own error.
 # Usage: scripts/check-ponytail-pin.sh
+# Backticks in the patterns below are literal Markdown, not command substitution.
+# shellcheck disable=SC2016
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 shopt -s nullglob
