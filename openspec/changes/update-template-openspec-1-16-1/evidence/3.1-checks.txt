@@ -131,4 +131,3 @@ exit=0
 
 $ git diff --check origin/main HEAD
 exit=0
-
