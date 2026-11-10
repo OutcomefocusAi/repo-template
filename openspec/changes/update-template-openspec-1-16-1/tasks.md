@@ -2,7 +2,7 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Record Woody's approval of this proposal in `proposal.md` (card, selected option or exact words, where and when, covers and not covered) and verify the record is committed before any other task starts.
+- [x] 1.1 Record Woody's approval of this proposal in `proposal.md` (card, selected option or exact words, where and when, covers and not covered) and verify the record is committed before any other task starts.
 - [ ] 1.2 Re-check upstream on the day of apply: `npm view @fission-ai/openspec dist-tags.latest` and `DietrichGebert/ponytail` upstream `HEAD`; verify they are still 1.16.1 and `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846`, and save the output in `evidence/`. If either moved, stop and report so the proposal can be updated and re-approved.
 
 ## 2. OpenSpec 1.16.1

@@ -1,13 +1,13 @@
 # Proposal: update-template-openspec-1-16-1
 
-Tracking issue: [#30](https://github.com/OutcomefocusAi/repo-template/issues/30). Branch: `30-update-template-openspec-1-16-1`. Notion Tasks row: https://app.notion.com/p/413444b092e681dabb19d4ee0c9b2f26. Not docs-only: it changes a pinned dependency in CI, regenerated skills and a requirement in the live `agent-guidance` spec, so it goes through OpenSpec and waits for Woody's approval before apply.
+Tracking issue: [#30](https://github.com/OutcomefocusAi/repo-template/issues/30). Branch: `30-update-template-openspec-1-16-1`. Notion Tasks row: https://app.notion.com/p/413444b092e681dabb19d4ee0c9b2f26. Not docs-only: it changes a pinned dependency in CI, regenerated skills and a requirement in the live `agent-guidance` spec, so it went through OpenSpec and waited for Woody's approval before apply.
 
 ## Approval
 
 | What | Words or selected option text | How given, where and when |
 | --- | --- | --- |
 | Keep the template's OpenSpec and Ponytail current (the request behind this change) | Typed by Woody: "in reference to the template repo I set up I wanna make sure those always have the current version of ponytail and open spec so can you check GitHub once a week to see if they are current and if not get those updated so that template always stays current" | Typed in Woody's chat with Chief of Staff, 2026-11-03 8:46 AM AZ. Relayed by Chief of Staff to Principal Engineer at 2026-11-09 8:10 AM AZ as a drift finding from the weekly check. A request to update, not approval of this proposal |
-| Approve this proposal | Pending | Approval to apply: pending Woody's tap in his chat with Chief of Staff. Task 1.1 records the card, the choice, and what it covers before any other task starts |
+| Approve this proposal | Typed by Woody: "Do it. I thought I'd gave already approval for these things to be done. Did you finish this?" | Typed by Woody in his chat with Principal Engineer at 8:33 PM AZ Nov 9, 2026: "Do it. I thought I'd gave already approval for these things to be done. Did you finish this?" Covers: applying update-template-openspec-1-16-1 as proposed at head e4622f6 (including the new 'OpenSpec pin records agree' scenario), verify, archive as the last commit in the same PR, open the PR, Principal QA review. Not covered: merging, any other scope change. Recorded in task 1.1 before any other apply task |
 
 ## Why
 
