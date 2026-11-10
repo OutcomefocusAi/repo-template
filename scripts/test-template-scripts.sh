@@ -75,6 +75,66 @@ expect 1 "check-workflows: extra top-level write scope" in_repo scripts/check-wo
 grep -v -e '^concurrency:' -e '^  group: x' "$repo/ok.yml" > "$repo/noconc.yml"
 expect 1 "check-workflows: missing concurrency" in_repo scripts/check-workflows.sh noconc.yml
 
+# check-openspec-pin and check-ponytail-pin: the real records pass, then one drift at a time.
+# Each fixture edits the committed copies in the scratch repository and is undone after its case.
+mkdir -p "$repo/.agents"; cp -R "$root/.agents/skills" "$repo/.agents/"; cp "$root/TEMPLATE_SOURCE.md" "$repo/"
+git -C "$repo" add .agents TEMPLATE_SOURCE.md .github/workflows; git -C "$repo" commit -q -m "chore: pin records (#1)"
+pin() { # expected-exit description script fixture-function
+  in_repo "$4"
+  if git -C "$repo" diff --quiet -- .agents TEMPLATE_SOURCE.md .github/workflows; then
+    total=$((total + 1)); fails=$((fails + 1)); echo "FAIL $2 (fixture $4 changed nothing)"
+  else
+    expect "$1" "$2" in_repo "scripts/$3"
+  fi
+  git -C "$repo" checkout -q -- .agents TEMPLATE_SOURCE.md .github/workflows
+}
+V='[0-9]+\.[0-9]+\.[0-9]+'
+os_all_other()   { sed -Ei "s/(generatedBy: \")$V/\10.0.1/" .agents/skills/openspec-*/SKILL.md; sed -Ei "s/(@fission-ai\/openspec@)$V/\10.0.1/" .github/workflows/ci.yml
+                   sed -Ei "s/(\`@fission-ai\/openspec\` )$V/\10.0.1/; s/^(\| @fission-ai\/openspec \| )$V/\10.0.1/" TEMPLATE_SOURCE.md; }
+os_toolpins()    { sed -Ei "s/^(\| @fission-ai\/openspec \| )$V/\10.0.1/" TEMPLATE_SOURCE.md; }
+os_sources()     { sed -Ei "s/(\`@fission-ai\/openspec\` )$V/\10.0.1/" TEMPLATE_SOURCE.md; }
+os_stamp()       { sed -Ei "s/(generatedBy: \")$V/\10.0.1/" .agents/skills/openspec-propose/SKILL.md; }
+os_ci_third()    { os_toolpins; sed -Ei "s/(@fission-ai\/openspec@)$V/\10.0.2/" .github/workflows/ci.yml; }
+os_ci_range()    { sed -Ei "s/(@fission-ai\/openspec@)/\1^/" .github/workflows/ci.yml; }
+os_no_row()      { sed -Ei '/^\| @fission-ai\/openspec \|/d' TEMPLATE_SOURCE.md; }
+os_no_stamp()    { sed -Ei '/generatedBy:/d' .agents/skills/openspec-explore/SKILL.md; }
+os_two_rows()    { sed -Ei '/^\| @fission-ai\/openspec \|/p' TEMPLATE_SOURCE.md; }
+expect 0 "check-openspec-pin: template records agree" in_repo scripts/check-openspec-pin.sh
+pin 0 "check-openspec-pin: all nine records at another version" check-openspec-pin.sh os_all_other
+pin 1 "check-openspec-pin: Tool pins row disagrees" check-openspec-pin.sh os_toolpins
+pin 1 "check-openspec-pin: Sources row disagrees" check-openspec-pin.sh os_sources
+pin 1 "check-openspec-pin: one generatedBy disagrees" check-openspec-pin.sh os_stamp
+pin 1 "check-openspec-pin: CI pin at a third version" check-openspec-pin.sh os_ci_third
+pin 1 "check-openspec-pin: CI pin is a range" check-openspec-pin.sh os_ci_range
+pin 1 "check-openspec-pin: Tool pins row missing" check-openspec-pin.sh os_no_row
+pin 1 "check-openspec-pin: skill without generatedBy" check-openspec-pin.sh os_no_stamp
+pin 1 "check-openspec-pin: Tool pins row twice" check-openspec-pin.sh os_two_rows
+
+PROW='^\| `\.agents\/skills\/ponytail\/`'
+alt=0123456789abcdef0123456789abcdef01234567
+pt_all_other()   { sed -Ei "s/\b[0-9a-f]{40}\b/$alt/g; s/\`v[^\`]*\`/\`v0.0.1\`/" .agents/skills/ponytail*/SOURCE.md
+                   sed -Ei "/$PROW/{s/\b[0-9a-f]{40}\b/$alt/; s/\`v[^\`]*\`/\`v0.0.1\`/}" TEMPLATE_SOURCE.md; }
+pt_commit()      { sed -Ei "/^\| Pinned commit \|/s/[0-9a-f]{40}/$alt/" .agents/skills/ponytail-review/SOURCE.md; }
+pt_row_commit()  { sed -Ei "/$PROW/s/\b[0-9a-f]{40}\b/$alt/" TEMPLATE_SOURCE.md; }
+pt_link()        { sed -Ei "/^\| File at that commit \|/s/[0-9a-f]{40}/$alt/" .agents/skills/ponytail-audit/SOURCE.md; }
+pt_describe()    { sed -Ei "/^\| Upstream version \|/s/\`v[^\`]*\`/\`v0.0.1\`/" .agents/skills/ponytail-audit/SOURCE.md; }
+pt_short()       { sed -Ei 's/\b([0-9a-f]{7})[0-9a-f]{33}\b/\1/g' .agents/skills/ponytail*/SOURCE.md; sed -Ei "/$PROW/s/\b([0-9a-f]{7})[0-9a-f]{33}\b/\1/" TEMPLATE_SOURCE.md; }
+pt_edit_skill()  { echo "local edit" >> .agents/skills/ponytail/SKILL.md; }
+pt_license_hash(){ sed -Ei "/^\| SHA-256 of \`LICENSE\` \|/s/[0-9a-f]{64}/$(printf '0%.0s' {1..64})/" .agents/skills/ponytail/SOURCE.md; }
+pt_no_source()   { rm .agents/skills/ponytail-review/SOURCE.md; }
+pt_no_row()      { sed -Ei "/$PROW/d" TEMPLATE_SOURCE.md; }
+expect 0 "check-ponytail-pin: template records agree" in_repo scripts/check-ponytail-pin.sh
+pin 0 "check-ponytail-pin: all records at another commit" check-ponytail-pin.sh pt_all_other
+pin 1 "check-ponytail-pin: one SOURCE.md commit disagrees" check-ponytail-pin.sh pt_commit
+pin 1 "check-ponytail-pin: TEMPLATE_SOURCE.md row commit disagrees" check-ponytail-pin.sh pt_row_commit
+pin 1 "check-ponytail-pin: link SHA disagrees" check-ponytail-pin.sh pt_link
+pin 1 "check-ponytail-pin: describe string disagrees" check-ponytail-pin.sh pt_describe
+pin 1 "check-ponytail-pin: short SHA everywhere" check-ponytail-pin.sh pt_short
+pin 1 "check-ponytail-pin: edited vendored SKILL.md" check-ponytail-pin.sh pt_edit_skill
+pin 1 "check-ponytail-pin: wrong recorded LICENSE SHA-256" check-ponytail-pin.sh pt_license_hash
+pin 1 "check-ponytail-pin: SOURCE.md missing" check-ponytail-pin.sh pt_no_source
+pin 1 "check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing" check-ponytail-pin.sh pt_no_row
+
 # slot.sh
 expect 0 "slot: warns in the template repository" env GITHUB_REPOSITORY=OutcomefocusAi/repo-template "$root/scripts/slot.sh" lint
 expect 1 "slot: fails in a derived repository" env GITHUB_REPOSITORY=someone/derived "$root/scripts/slot.sh" lint

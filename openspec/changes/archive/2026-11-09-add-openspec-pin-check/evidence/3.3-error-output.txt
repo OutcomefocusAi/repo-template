@@ -1,0 +1,54 @@
+# 3.3 error output on hand-made fixtures, 2026-11-09 21:24 MST, scripts from branch 32-add-openspec-pin-check
+
+## OpenSpec: Tool pins row set to 1.16.1
+::error file=TEMPLATE_SOURCE.md,line=31::OpenSpec version '1.16.1' disagrees with the CI pin '1.17.0'
+check-openspec-pin: records found:
+  .agents/skills/openspec-apply-change/SKILL.md:10 1.17.0
+  .agents/skills/openspec-archive-change/SKILL.md:10 1.17.0
+  .agents/skills/openspec-explore/SKILL.md:10 1.17.0
+  .agents/skills/openspec-propose/SKILL.md:10 1.17.0
+  .agents/skills/openspec-sync-specs/SKILL.md:10 1.17.0
+  .agents/skills/openspec-update-change/SKILL.md:10 1.17.0
+  .github/workflows/ci.yml:41 1.17.0
+  TEMPLATE_SOURCE.md:20 1.17.0
+  TEMPLATE_SOURCE.md:31 1.16.1
+exit 1
+
+## OpenSpec: one generatedBy set to 1.16.0
+::error file=.agents/skills/openspec-propose/SKILL.md,line=10::OpenSpec version '1.16.0' disagrees with the CI pin '1.17.0'
+check-openspec-pin: records found:
+  .agents/skills/openspec-apply-change/SKILL.md:10 1.17.0
+  .agents/skills/openspec-archive-change/SKILL.md:10 1.17.0
+  .agents/skills/openspec-explore/SKILL.md:10 1.17.0
+  .agents/skills/openspec-propose/SKILL.md:10 1.16.0
+  .agents/skills/openspec-sync-specs/SKILL.md:10 1.17.0
+  .agents/skills/openspec-update-change/SKILL.md:10 1.17.0
+  .github/workflows/ci.yml:41 1.17.0
+  TEMPLATE_SOURCE.md:20 1.17.0
+  TEMPLATE_SOURCE.md:31 1.17.0
+exit 1
+
+## OpenSpec: Sources row deleted
+::error file=TEMPLATE_SOURCE.md,line=1::expected exactly one Sources row for .agents/skills/openspec-*/, found 0
+check-openspec-pin: records found:
+  .agents/skills/openspec-apply-change/SKILL.md:10 1.17.0
+  .agents/skills/openspec-archive-change/SKILL.md:10 1.17.0
+  .agents/skills/openspec-explore/SKILL.md:10 1.17.0
+  .agents/skills/openspec-propose/SKILL.md:10 1.17.0
+  .agents/skills/openspec-sync-specs/SKILL.md:10 1.17.0
+  .agents/skills/openspec-update-change/SKILL.md:10 1.17.0
+  .github/workflows/ci.yml:41 1.17.0
+  TEMPLATE_SOURCE.md:30 1.17.0
+exit 1
+
+## Ponytail: ponytail-review Pinned commit changed
+::error file=.agents/skills/ponytail-review/SOURCE.md,line=9::Pinned commit 0123456789abcdef0123456789abcdef01234567 disagrees with TEMPLATE_SOURCE.md line 19 (96608e078b2d5ea607c5c3b8b5a54d1c1fba6846)
+exit 1
+
+## Ponytail: TEMPLATE_SOURCE.md row deleted
+::error file=TEMPLATE_SOURCE.md,line=1::expected exactly one Sources row for .agents/skills/ponytail/, found 0
+exit 1
+
+## Ponytail: edited vendored SKILL.md
+::error file=.agents/skills/ponytail/SKILL.md,line=1::SHA-256 is 8d7c1df5ce5501180c23f5734ed7dd96cf53f8288ff047955161ef6de7582bf2 but .agents/skills/ponytail/SOURCE.md line 15 records '9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509'
+exit 1

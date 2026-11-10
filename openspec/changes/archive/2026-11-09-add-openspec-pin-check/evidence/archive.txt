@@ -1,0 +1,64 @@
+Archive of add-openspec-pin-check, 2026-11-09 21:26 MST, on top of 27fd769, OpenSpec 1.17.0, after CI run 42755805726 was green on 27fd769
+
+$ printf "y\n" | openspec archive add-openspec-pin-check
+
+Proposal warnings in proposal.md (non-blocking):
+  ⚠ Why section should not exceed 1000 characters
+Task status: ✓ Complete
+
+Specs to update:
+  continuous-integration: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'add-openspec-pin-check' archived as '2026-11-09-add-openspec-pin-check'.
+exit 0
+
+$ grep -n -A32 'Requirement: Template checks always run' openspec/specs/continuous-integration/spec.md
+31:### Requirement: Template checks always run
+32-The CI workflow SHALL run template checks on every run: `openspec validate --all --strict`, an em-dash check over hand-written files, a check that every record of the pinned OpenSpec version names the same exact version, a check that the vendored Ponytail skills' pin records agree and match the vendored files, a gitleaks scan of the commits under test, a workflow lint, and the Conventional Commit and issue-reference check on pull requests.
+33-
+34-#### Scenario: Em dash in a hand-written file
+35-- **WHEN** a hand-written tracked file contains U+2014
+36-- **THEN** the em-dash check fails and prints file and line
+37-
+38-#### Scenario: Generated and vendored files
+39-- **WHEN** an OpenSpec-generated skill, a vendored Ponytail file, a LICENSE file, or the release-please CHANGELOG contains U+2014
+40-- **THEN** the em-dash check ignores it
+41-
+42-#### Scenario: OpenSpec invalid
+43-- **WHEN** any change or spec fails `openspec validate --all --strict`
+44-- **THEN** CI fails
+45-
+46-#### Scenario: OpenSpec version records disagree
+47-- **WHEN** the `generatedBy` value in any `.agents/skills/openspec-*/SKILL.md`, the `@fission-ai/openspec` install pin in `.github/workflows/ci.yml`, or the OpenSpec row in the Sources or Tool pins table of `TEMPLATE_SOURCE.md` names a different version from the others
+48-- **THEN** CI fails and prints the file, line and version of each record
+49-
+50-#### Scenario: OpenSpec version record missing or not exact
+51-- **WHEN** one of those records is missing, appears more than once, or is not an exact `MAJOR.MINOR.PATCH` version (for example `^1.17.0` or `latest`)
+52-- **THEN** CI fails and names the file of that record
+53-
+54-#### Scenario: Ponytail pin records disagree
+55-- **WHEN** the pinned commit in any `.agents/skills/ponytail*/SOURCE.md` (its "Pinned commit" value or the commit in its "File at that commit" link), or its `git describe` string, differs from the commit or `git describe` string in the Ponytail row of the Sources table of `TEMPLATE_SOURCE.md`, or any of those records is missing or is not a full 40-character commit SHA
+56-- **THEN** CI fails and names the file and line of each such record
+57-
+58-#### Scenario: Vendored Ponytail file does not match its recorded fingerprint
+59-- **WHEN** the SHA-256 of a vendored Ponytail `SKILL.md` or `LICENSE` differs from the value recorded in that folder's `SOURCE.md`
+60-- **THEN** CI fails and names the file with both values
+61-
+62-### Requirement: Stack steps are marked slots
+63-The CI workflow SHALL contain lint, typecheck, test, coverage gate, and build steps as clearly marked slots. The first project proposal in a derived repository SHALL fill every slot with the stack's real commands.
+
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+exit 0
