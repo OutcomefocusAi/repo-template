@@ -8,7 +8,7 @@
 ## 2. OpenSpec 1.17.0
 
 - [x] 2.1 Bump `@fission-ai/openspec@1.16.0` to `1.17.0` in `.github/workflows/ci.yml` and in both `TEMPLATE_SOURCE.md` rows (Sources and Tool pins), and verify `rg -n "1\.16\.0"` outside `openspec/changes/` finds only the six generated skills.
-- [ ] 2.2 Run `openspec update` with OpenSpec 1.17.0 and verify `git diff --stat .agents/skills/openspec-*` shows exactly six one-line changes (`generatedBy: "1.17.0"`) and no added or removed file; stop if it shows more. Then verify `rg -n "1\.16\.0"` outside `openspec/changes/` finds nothing and the four version records agree (the new "OpenSpec pin records agree" scenario).
+- [x] 2.2 Run `openspec update` with OpenSpec 1.17.0 and verify `git diff --stat .agents/skills/openspec-*` shows exactly six one-line changes (`generatedBy: "1.17.0"`) and no added or removed file; stop if it shows more. Then verify `rg -n "1\.16\.0"` outside `openspec/changes/` finds nothing and the four version records agree (the new "OpenSpec pin records agree" scenario).
 
 ## 3. Checks and archive
 

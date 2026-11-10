@@ -41,3 +41,138 @@ $ rg -n --hidden "1\.16\.0" --glob '!openspec/changes/**' --glob '!.git/**' .   
 ./.agents/skills/openspec-propose/SKILL.md:10:  generatedBy: "1.16.0"
 ./.agents/skills/openspec-sync-specs/SKILL.md:10:  generatedBy: "1.16.0"
 ./.agents/skills/openspec-update-change/SKILL.md:10:  generatedBy: "1.16.0"
+
+# Task 2.2 openspec update at 1.17.0, 2026-11-09 20:38 MST
+$ npx -y @fission-ai/openspec@1.17.0 --version
+1.17.0
+$ openspec update --dry-run
+6 file(s) would change:
+  update  .agents/skills/openspec-apply-change/SKILL.md  (agents)
+  update  .agents/skills/openspec-archive-change/SKILL.md  (agents)
+  update  .agents/skills/openspec-explore/SKILL.md  (agents)
+  update  .agents/skills/openspec-propose/SKILL.md  (agents)
+  update  .agents/skills/openspec-sync-specs/SKILL.md  (agents)
+  update  .agents/skills/openspec-update-change/SKILL.md  (agents)
+$ openspec update
+Updating 1 tool(s): agents (1.16.0 → 1.17.0)
+
+- Updating Other / Universal (shared .agents skills)...
+✔ Updated Other / Universal (shared .agents skills)
+
+✓ Updated: Other / Universal (shared .agents skills) (v1.17.0)
+Note: 6 more workflows are available (new, continue, ff, bulk-archive, verify, onboard).
+Add them with `openspec config profile`.
+Tools: Other / Universal (shared .agents skills)
+
+$ git status --porcelain
+ M .agents/skills/openspec-apply-change/SKILL.md
+ M .agents/skills/openspec-archive-change/SKILL.md
+ M .agents/skills/openspec-explore/SKILL.md
+ M .agents/skills/openspec-propose/SKILL.md
+ M .agents/skills/openspec-sync-specs/SKILL.md
+ M .agents/skills/openspec-update-change/SKILL.md
+ M openspec/changes/update-template-openspec-1-16-1/evidence/2-openspec.txt
+$ git diff --stat .agents/skills/openspec-*
+ .agents/skills/openspec-apply-change/SKILL.md   | 2 +-
+ .agents/skills/openspec-archive-change/SKILL.md | 2 +-
+ .agents/skills/openspec-explore/SKILL.md        | 2 +-
+ .agents/skills/openspec-propose/SKILL.md        | 2 +-
+ .agents/skills/openspec-sync-specs/SKILL.md     | 2 +-
+ .agents/skills/openspec-update-change/SKILL.md  | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+$ git diff .agents/skills/openspec-*
+diff --git a/.agents/skills/openspec-apply-change/SKILL.md b/.agents/skills/openspec-apply-change/SKILL.md
+index 928d36f..3e8ef10 100644
+--- a/.agents/skills/openspec-apply-change/SKILL.md
++++ b/.agents/skills/openspec-apply-change/SKILL.md
+@@ -7,7 +7,7 @@ compatibility: Requires openspec CLI.
+ metadata:
+   author: openspec
+   version: "1.0"
+-  generatedBy: "1.16.0"
++  generatedBy: "1.17.0"
+ ---
+ 
+ Implement tasks from an OpenSpec change.
+diff --git a/.agents/skills/openspec-archive-change/SKILL.md b/.agents/skills/openspec-archive-change/SKILL.md
+index eb82851..2ef3d79 100644
+--- a/.agents/skills/openspec-archive-change/SKILL.md
++++ b/.agents/skills/openspec-archive-change/SKILL.md
+@@ -7,7 +7,7 @@ compatibility: Requires openspec CLI.
+ metadata:
+   author: openspec
+   version: "1.0"
+-  generatedBy: "1.16.0"
++  generatedBy: "1.17.0"
+ ---
+ 
+ Archive a completed change in the experimental workflow.
+diff --git a/.agents/skills/openspec-explore/SKILL.md b/.agents/skills/openspec-explore/SKILL.md
+index de1cafc..66fdeb3 100644
+--- a/.agents/skills/openspec-explore/SKILL.md
++++ b/.agents/skills/openspec-explore/SKILL.md
+@@ -7,7 +7,7 @@ compatibility: Requires openspec CLI.
+ metadata:
+   author: openspec
+   version: "1.0"
+-  generatedBy: "1.16.0"
++  generatedBy: "1.17.0"
+ ---
+ 
+ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.
+diff --git a/.agents/skills/openspec-propose/SKILL.md b/.agents/skills/openspec-propose/SKILL.md
+index 414b78c..f992240 100644
+--- a/.agents/skills/openspec-propose/SKILL.md
++++ b/.agents/skills/openspec-propose/SKILL.md
+@@ -7,7 +7,7 @@ compatibility: Requires openspec CLI.
+ metadata:
+   author: openspec
+   version: "1.0"
+-  generatedBy: "1.16.0"
++  generatedBy: "1.17.0"
+ ---
+ 
+ Propose a new change - create the change and generate all artifacts in one step.
+diff --git a/.agents/skills/openspec-sync-specs/SKILL.md b/.agents/skills/openspec-sync-specs/SKILL.md
+index 9c568a4..b9e5c0f 100644
+--- a/.agents/skills/openspec-sync-specs/SKILL.md
++++ b/.agents/skills/openspec-sync-specs/SKILL.md
+@@ -7,7 +7,7 @@ compatibility: Requires openspec CLI.
+ metadata:
+   author: openspec
+   version: "1.0"
+-  generatedBy: "1.16.0"
++  generatedBy: "1.17.0"
+ ---
+ 
+ Sync delta specs from a change to main specs.
+diff --git a/.agents/skills/openspec-update-change/SKILL.md b/.agents/skills/openspec-update-change/SKILL.md
+index ee99a27..b8d8141 100644
+--- a/.agents/skills/openspec-update-change/SKILL.md
++++ b/.agents/skills/openspec-update-change/SKILL.md
+@@ -7,7 +7,7 @@ compatibility: Requires openspec CLI.
+ metadata:
+   author: openspec
+   version: "1.0"
+-  generatedBy: "1.16.0"
++  generatedBy: "1.17.0"
+ ---
+ 
+ Revise a change's existing planning artifacts and keep them coherent. Never edit code.
+
+# Task 2.2 checks
+$ rg -n --hidden "1\.16\.0" --glob '!openspec/changes/**' --glob '!.git/**' .  (expect nothing)
+exit=1
+# Scenario 'OpenSpec pin records agree':
+$ rg -n --hidden "generatedBy" .agents/skills/openspec-*/SKILL.md
+.agents/skills/openspec-apply-change/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-archive-change/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-explore/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-propose/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-sync-specs/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-update-change/SKILL.md:10:  generatedBy: "1.17.0"
+$ rg -n "@fission-ai/openspec" .github/workflows/ci.yml TEMPLATE_SOURCE.md
+.github/workflows/ci.yml:41:          npm install --global --no-fund --no-audit @fission-ai/openspec@1.17.0
+TEMPLATE_SOURCE.md:20:| `.agents/skills/openspec-*/` | Generated by `@fission-ai/openspec` 1.17.0 (`openspec init --tools agents`, refreshed with `openspec update`), MIT |
+TEMPLATE_SOURCE.md:31:| @fission-ai/openspec | 1.17.0 | npm exact version; needs Node.js 22.12.0 or newer | MIT | `.github/workflows/ci.yml` |
+Distinct versions:       9 1.17.0 
