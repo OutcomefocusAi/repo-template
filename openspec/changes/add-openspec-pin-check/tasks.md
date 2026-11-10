@@ -12,7 +12,7 @@
 
 ## 3. Scripts
 
-- [ ] 3.1 Write `scripts/check-openspec-pin.sh` per design.md Decision 2 (header comment with usage, `set -euo pipefail`, repo root, `::error file=,line=::` per finding, exit 1 on findings, success line naming the count and version) and verify its self-test cases pass and the script on the branch prints "9 records agree on 1.17.0".
+- [x] 3.1 Write `scripts/check-openspec-pin.sh` per design.md Decision 2 (header comment with usage, `set -euo pipefail`, repo root, `::error file=,line=::` per finding, exit 1 on findings, success line naming the count and version) and verify its self-test cases pass and the script on the branch prints "9 records agree on 1.17.0".
 - [ ] 3.2 Write `scripts/check-ponytail-pin.sh` per design.md Decision 4 (same conventions) and verify `scripts/test-template-scripts.sh` passes in full and the script on the branch prints "3 skill(s) agree on 96608e078b2d5ea607c5c3b8b5a54d1c1fba6846 (v5.3.3-1-g96608e0)".
 - [ ] 3.3 Verify by hand that the error output on mismatch fixtures for both scripts (a disagreeing record, a missing row, and for Ponytail an edited `SKILL.md`) names the file, line and both values, and save it in `evidence/`.
 
