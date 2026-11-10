@@ -1,7 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Template checks always run
-The CI workflow SHALL run template checks on every run: `openspec validate --all --strict`, an em-dash check over hand-written files, a check that every record of the pinned OpenSpec version names the same exact version, a gitleaks scan of the commits under test, a workflow lint, and the Conventional Commit and issue-reference check on pull requests.
+The CI workflow SHALL run template checks on every run: `openspec validate --all --strict`, an em-dash check over hand-written files, a check that every record of the pinned OpenSpec version names the same exact version, a check that the vendored Ponytail skills' pin records agree and match the vendored files, a gitleaks scan of the commits under test, a workflow lint, and the Conventional Commit and issue-reference check on pull requests.
 
 #### Scenario: Em dash in a hand-written file
 - **WHEN** a hand-written tracked file contains U+2014
@@ -22,3 +22,11 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 #### Scenario: OpenSpec version record missing or not exact
 - **WHEN** one of those records is missing, appears more than once, or is not an exact `MAJOR.MINOR.PATCH` version (for example `^1.17.0` or `latest`)
 - **THEN** CI fails and names the file of that record
+
+#### Scenario: Ponytail pin records disagree
+- **WHEN** the pinned commit in any `.agents/skills/ponytail*/SOURCE.md` (its "Pinned commit" value or the commit in its "File at that commit" link), or its `git describe` string, differs from the commit or `git describe` string in the Ponytail row of the Sources table of `TEMPLATE_SOURCE.md`, or any of those records is missing or is not a full 40-character commit SHA
+- **THEN** CI fails and names the file and line of each such record
+
+#### Scenario: Vendored Ponytail file does not match its recorded fingerprint
+- **WHEN** the SHA-256 of a vendored Ponytail `SKILL.md` or `LICENSE` differs from the value recorded in that folder's `SOURCE.md`
+- **THEN** CI fails and names the file with both values
