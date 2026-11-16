@@ -1,7 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Template checks always run
-The CI workflow SHALL run template checks on every run: `openspec validate --all --strict`, an em-dash check over hand-written files, a check that every record of the pinned OpenSpec version names the same exact version, a check that the vendored Ponytail skills' pin records agree and match the vendored files, a check that the OpenSpec-generated skill files match what the pinned OpenSpec version generates, a gitleaks scan of the commits under test, a workflow lint, and the Conventional Commit and issue-reference check on pull requests.
+The CI workflow SHALL run template checks on every run: `openspec validate --all --strict`, an em-dash check over hand-written files, a check that all OpenSpec version records name one exact version, a check that the vendored Ponytail pin records agree and match the files, a check that the generated OpenSpec skills match what the pinned version generates, a gitleaks scan of the commits under test, a workflow lint, and the Conventional Commit and issue-reference check on pull requests.
 
 #### Scenario: Em dash in a hand-written file
 - **WHEN** a hand-written tracked file contains U+2014

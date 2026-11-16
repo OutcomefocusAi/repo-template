@@ -40,6 +40,8 @@ A fresh `openspec init --tools agents` in an empty git repository writes `.agent
 6. **Fix text.** Edited: run `npx -y @fission-ai/openspec@<pin> update` and commit, or `git checkout -- <path>`. Missing: run `npx -y @fission-ai/openspec@<pin> init --tools agents --profile core` and commit, or `git checkout -- <path>` (the probes show `update` does not restore a deleted folder). Extra or untracked: delete it, or keep a custom skill under a name that does not start with `openspec-`. CLI version wrong or missing: `npm install --global @fission-ai/openspec@<pin>` or set `OPENSPEC_CMD`.
 7. **Tests first, hermetic.** The self-tests put a stub `openspec` on `PATH` that answers `--version` with a configurable version and, for `init`, copies the generated files from the template's own committed tree and writes a marker file in its working directory. They are committed failing (the script does not exist yet) before the script.
 
+8. **Requirement wording kept under the strict length limit.** At archive, the merged requirement "Template checks always run" came to 541 characters and `openspec validate --all --strict` at 2.0.0 rejected it ("Requirement text is very long (>500 characters)"); the change delta alone validated. Decision: Tapped by Woody in his chat with Chief of Staff at 9:26 AM AZ Mon Nov 16, 2026, relayed by Chief of Staff, choice "Shorten the existing sentence". The sentence stays in that shared requirement and still names every check, in shorter words (489 characters). No scenario, behavior or script changes.
+
 ## Risks / Trade-offs
 
 - [OpenSpec changes what `init` writes in a later release] → The version bump change regenerates the skills; the check then names any file still different, which is intended.
