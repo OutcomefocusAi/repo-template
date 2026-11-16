@@ -1,6 +1,6 @@
 # Proposal: close-openspec-skill-drift-gaps
 
-Tracking issue: [#41](https://github.com/OutcomefocusAi/repo-template/issues/41) (parent #39). Branch: `41-close-openspec-skill-drift-gaps`, from `main` `d7046b4d0aeb5b0cbde6f7833d2242668ba6b3b0`. Notion Tasks row: pending. Not docs-only and not version-only: it changes `scripts/check-openspec-skills.sh`, adds self-tests and extends one `continuous-integration` scenario. Woody approved the proposal and its apply in one tap (see Approval).
+Tracking issue: [#41](https://github.com/OutcomefocusAi/repo-template/issues/41) (parent #39). Branch: `41-close-openspec-skill-drift-gaps`, from `main` `d7046b4d0aeb5b0cbde6f7833d2242668ba6b3b0`. Notion Tasks row: https://app.notion.com/p/41a444b092e681e4b83ad6c058db3b86. Not docs-only and not version-only: it changes `scripts/check-openspec-skills.sh`, adds self-tests and extends one `continuous-integration` scenario. Woody approved the proposal and its apply in one tap (see Approval).
 
 ## Approval
 
