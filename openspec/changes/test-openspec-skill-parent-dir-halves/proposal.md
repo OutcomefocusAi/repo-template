@@ -21,7 +21,7 @@ Woody wants nothing failing silently.
 
 - `scripts/test-template-scripts.sh` gains two self-tests:
   - On-disk only: `.agents/skills` replaced by an uncommitted symlink to an identical copy (the index still holds the real tree). Expects `::error file=.agents/skills,line=1::symlink:`.
-  - Index only: `.agents` recorded in the index as a symlink (mode 120000) while a real, identical `.agents` directory stays on disk, as a `core.symlinks=false` checkout or a staged link would leave it. Expects `::error file=.agents,line=1::symlink:`.
+  - Index only: `.agents` recorded in the index as a symlink (mode 120000) while a real, identical `.agents` directory stays on disk, as a committed link swapped back for a real directory without staging would leave it. Expects `::error file=.agents,line=1::symlink:`.
 - A mutation demo: the on-disk-half and index-half mutants (and QA's two related survivors) survive the current 128 tests, and each is killed after the new tests.
 - `continuous-integration`, requirement "Template checks always run" (text unchanged, 489 characters): one new scenario stating that either half alone fails.
 - No script, workflow or doc change.
