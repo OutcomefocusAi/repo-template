@@ -12,8 +12,8 @@
 
 ## 3. Script
 
-- [ ] 3.1 Change `scripts/check-openspec-skills.sh` per design.md (ancestor check, shared index lookup). Verify every self-test passes and shellcheck is clean.
-- [ ] 3.2 Re-run `evidence/mutants.sh . --d1 --e` and record every mutant killed except the equivalent mutant 6. On a scratch clone with the real 2.0.0 CLI, show `.agents/skills` and `.agents` committed as symlinks each fail with `symlink:`, also in a fresh clone, the clean tree passes, and `git status` is unchanged. Save the output in `evidence/`.
+- [x] 3.1 Change `scripts/check-openspec-skills.sh` per design.md (ancestor check, shared index lookup). Verify every self-test passes and shellcheck is clean.
+- [x] 3.2 Re-run `evidence/mutants.sh . --d1 --e` and record every mutant killed except the equivalent mutant 6. On a scratch clone with the real 2.0.0 CLI, show `.agents/skills` and `.agents` committed as symlinks each fail with `symlink:`, also in a fresh clone, the clean tree passes, and `git status` is unchanged. Save the output in `evidence/`.
 
 ## 4. Checks and archive
 

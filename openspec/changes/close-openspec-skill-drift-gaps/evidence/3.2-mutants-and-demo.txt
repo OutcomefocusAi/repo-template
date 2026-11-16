@@ -1,0 +1,110 @@
+# 3.2 mutation rerun and live E1 demo, 2026-11-16 10:33 MST
+
+## Mutation rerun: QA's 8 PR #38 mutants, the 3 #39 D1 mutants (--d1), QA's 3 PR #40 survivors and the new E1 mutant (--e)
+# mutants.sh prints HEAD (ce27974) but copies the working-tree script and tests into each scratch copy, so this ran on the changed script and the 128 self-tests
+$ evidence/mutants.sh . --d1 --e
+mutants.sh at ce27974dd5186b7f821cf654d18c78ddd4cc4cb3
+unmutated: test-template-scripts: 128/128 passed
+KILLED   mutant 1 matches-but-untracked branch disabled: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: generated file matches but is not committed (exit 0, expected 1)
+KILLED   mutant 2 init failure ignored: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: init fails (output lacks: init --tools agents --profile core' failed)
+KILLED   mutant 3 'generated no skill files' guard removed: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: init writes nothing (output lacks: ::error file=.github/workflows/ci.yml)
+KILLED   mutant 4 disagreeing-pins branch removed: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: two CI pins disagree (exit 0, expected 1)
+KILLED   mutant 5 cleanup trap removed: test-template-scripts: 126/128 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (left in TMPDIR: tmp.uGLWivojaQ )
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (left in TMPDIR: tmp.lt3De2xD4p tmp.uGLWivojaQ )
+SURVIVED mutant 6 symlinked-folder guard removed: test-template-scripts: 128/128 passed
+KILLED   mutant 7 temporary XDG_CONFIG_HOME/XDG_DATA_HOME removed: test-template-scripts: 126/128 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (stub did not see temporary XDG directories: xdg /tmp/tmp.6gvTyrhOM0/sk-user/config /tmp/tmp.6gvTyrhOM0/sk-user/data)
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (stub did not see temporary XDG directories: xdg /tmp/tmp.6gvTyrhOM0/sk-user/config /tmp/tmp.6gvTyrhOM0/sk-user/data)
+KILLED   mutant 8 exact MAJOR.MINOR.PATCH regex weakened to non-empty: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: inexact pin even when the CLI reports it (exit 0, expected 1)
+KILLED   mutant 9 symlink branch disabled: test-template-scripts: 125/128 passed
+           FAIL check-openspec-skills: SKILL.md as a symlink to an identical copy (output lacks: ::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:)
+           FAIL check-openspec-skills: untracked symlink at a generated path (output lacks: ::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:)
+           FAIL check-openspec-skills: uncommitted symlink over a tracked SKILL.md (output lacks: ::error file=.agents/skills/openspec-archive-change/SKILL.md,line=1::symlink:)
+KILLED   mutant 10 mode branch disabled: test-template-scripts: 125/128 passed
+           FAIL check-openspec-skills: exec bit in the index, mode 100755 (exit 0, expected 1)
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+           FAIL check-openspec-skills: untracked executable generated file (output lacks: ::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::mode: git mode 100755 but OpenSpec 2.0.0 generates 100644)
+KILLED   mutant 11 index mode ignored, file system only: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+KILLED   mutant 12 index mode wins over an on-disk symlink (QA D1d): test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: uncommitted symlink over a tracked SKILL.md (exit 0, expected 1)
+KILLED   mutant 13 fsmode ignores -x (QA D1f): test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: untracked executable generated file (output lacks: ::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::mode: git mode 100755 but OpenSpec 2.0.0 generates 100644)
+KILLED   mutant 14 untracked mode fix text replaced (QA D1j): test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: untracked executable generated file (output lacks: run 'chmod -x .agents/skills/openspec-update-change/SKILL.md' and commit it with 'git add -- .agents/skills/openspec-update-change/SKILL.md')
+KILLED   mutant 15 ancestor symlink check disabled (E1): test-template-scripts: 126/128 passed
+           FAIL check-openspec-skills: .agents/skills committed as a symlink to an identical copy (exit 0, expected 1)
+           FAIL check-openspec-skills: .agents committed as a symlink to an identical copy (exit 0, expected 1)
+
+Result: every mutant is killed except mutant 6, which stays equivalent (proof in the #39 archived evidence, confirmed by QA on PR #40).
+
+## Live E1 demo with the real OpenSpec 2.0.0 CLI (scratch clone /tmp/demo41 of ce27974dd5186b7f821cf654d18c78ddd4cc4cb3 plus the changed script, committed in the scratch clone only), 2026-11-16 10:32 MST
+
+### Clean tree
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+$ git status --porcelain | wc -l (after): 0
+
+### .agents/skills committed as a symlink to an identical copy (QA case 36)
+$ git ls-files -s .agents/skills: 120000 .agents/skills
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+### Fresh clone of that commit (what CI sees)
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+### Fresh clone with core.symlinks=false (the link is checked out as a small text file; the index entry still says 120000)
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+::error file=.agents/skills/.openspec-target,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/.openspec-target'
+::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-apply-change/SKILL.md'
+::error file=.agents/skills/openspec-archive-change/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-archive-change/SKILL.md'
+::error file=.agents/skills/openspec-explore/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-explore/SKILL.md'
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-propose/SKILL.md'
+::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-sync-specs/SKILL.md'
+::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-update-change/SKILL.md'
+check-openspec-skills: 8 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+### .agents committed as a symlink to an identical copy (QA case 36b)
+$ git ls-files -s .agents: 120000 .agents
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+### Fresh clone of that commit
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+### Clean again
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+$ git status --porcelain | wc -l (after): 0

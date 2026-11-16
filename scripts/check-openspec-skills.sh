@@ -6,7 +6,7 @@
 # directory with a temporary OpenSpec config, so this checkout and the user's global OpenSpec
 # config are never written. Content, git mode and file type are compared: each edited, missing,
 # extra or untracked file, symlink, or file with another mode gets its own ::error annotation
-# with the fix.
+# with the fix. .agents and .agents/skills must be real directories, not symlinks.
 # Usage: scripts/check-openspec-skills.sh
 #   OPENSPEC_CMD overrides the CLI (default: openspec), for example
 #   OPENSPEC_CMD="npx -y @fission-ai/openspec@<pin>". It must report the pinned version.
@@ -64,7 +64,7 @@ list() { # print the generated-skill files under the current directory, sorted
 (cd "$tmp/ref" && list) >"$tmp/ref.txt"
 list >"$tmp/work.txt"
 git ls-files --others -- .agents/skills | LC_ALL=C sort >"$tmp/untracked.txt"
-git -c core.quotePath=false ls-files -s -- .agents/skills >"$tmp/index.txt"
+git -c core.quotePath=false ls-files -s -- .agents >"$tmp/index.txt"
 total=$(grep -c . "$tmp/ref.txt" || true)
 if [ "$total" -eq 0 ]; then
   err "$ci" "$pin_line" "'${cmd[*]} init --tools agents --profile core' generated no skill files"; exit 1
@@ -76,12 +76,21 @@ untracked() { grep -qxF -- "$1" "$tmp/untracked.txt"; }
 fsmode() { # git mode of a path from the file system: 120000 symlink, 100755 executable, else 100644
   if [ -L "$1" ]; then echo 120000; elif [ -x "$1" ]; then echo 100755; else echo 100644; fi
 }
+idx_mode() { # git mode of a path's own index entry, empty if it has none
+  awk -v f="$1" '{ t = index($0, "\t"); if (substr($0, t + 1) == f) { print $1; exit } }' "$tmp/index.txt"
+}
 mode_of() { # git mode of a checkout path: the index mode if tracked, else the file system's; a symlink is always 120000
   local m
-  m=$(awk -v f="$1" '{ t = index($0, "\t"); if (substr($0, t + 1) == f) { print $1; exit } }' "$tmp/index.txt")
+  m=$(idx_mode "$1")
   if [ -L "$1" ] || [ -z "$m" ]; then fsmode "$1"; else echo "$m"; fi
 }
 drift=0
+for d in .agents .agents/skills; do
+  if [ -L "$d" ] || [ "$(idx_mode "$d")" = 120000 ]; then
+    drift=$((drift + 1))
+    err "$d" 1 "symlink: this directory is a symbolic link (git mode 120000) but OpenSpec $pin generates a real directory. Fix: delete the link, run '$up init --tools agents --profile core' and commit the real directory"
+  fi
+done
 while IFS= read -r f; do
   drift=$((drift + 1))
   err "$f" 1 "missing: OpenSpec $pin generates this file but it is not in the checkout. Fix: run '$up init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- $f'"
