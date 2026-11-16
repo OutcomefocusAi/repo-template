@@ -1,0 +1,60 @@
+# 2.1 pin bump
+$ git diff --stat
+ .github/workflows/ci.yml | 2 +-
+ TEMPLATE_SOURCE.md       | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+$ rg -n "1\.17\.0" --hidden -g !.git -g !openspec/changes/**
+openspec/specs/continuous-integration/spec.md:51:- **WHEN** one of those records is missing, appears more than once, or is not an exact `MAJOR.MINOR.PATCH` version (for example `^1.17.0` or `latest`)
+.agents/skills/openspec-explore/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-apply-change/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-sync-specs/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-archive-change/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-propose/SKILL.md:10:  generatedBy: "1.17.0"
+.agents/skills/openspec-update-change/SKILL.md:10:  generatedBy: "1.17.0"
+
+# 2.2 openspec update at 2.0.0
+$ npx -y @fission-ai/openspec@2.0.0 --version
+2.0.0
+$ openspec update
+Updating 1 tool(s): agents (1.17.0 → 2.0.0)
+
+- Updating Other / Universal (shared .agents skills)...
+✔ Updated Other / Universal (shared .agents skills)
+
+✓ Updated: Other / Universal (shared .agents skills) (v2.0.0)
+Note: 6 more workflows are available (new, continue, ff, bulk-archive, verify, onboard).
+Add them with `openspec config profile`.
+Tools: Other / Universal (shared .agents skills)
+
+exit=0
+$ git status --porcelain --untracked-files=all
+ M .agents/skills/openspec-apply-change/SKILL.md
+ M .agents/skills/openspec-archive-change/SKILL.md
+ M .agents/skills/openspec-explore/SKILL.md
+ M .agents/skills/openspec-propose/SKILL.md
+ M .agents/skills/openspec-sync-specs/SKILL.md
+ M .agents/skills/openspec-update-change/SKILL.md
+ M .github/workflows/ci.yml
+ M TEMPLATE_SOURCE.md
+?? openspec/changes/update-template-openspec-2-0-0/evidence/2-openspec.txt
+$ git diff --stat
+ .agents/skills/openspec-apply-change/SKILL.md   | 12 ++++++------
+ .agents/skills/openspec-archive-change/SKILL.md |  8 ++++----
+ .agents/skills/openspec-explore/SKILL.md        | 18 +++++++++---------
+ .agents/skills/openspec-propose/SKILL.md        |  8 ++++----
+ .agents/skills/openspec-sync-specs/SKILL.md     |  8 ++++----
+ .agents/skills/openspec-update-change/SKILL.md  | 16 ++++++++--------
+ .github/workflows/ci.yml                        |  2 +-
+ TEMPLATE_SOURCE.md                              |  4 ++--
+ 8 files changed, 38 insertions(+), 38 deletions(-)
+$ diff of the skill changes vs the 2026-11-16 scratch assessment diff (index lines ignored)
+identical
+$ scripts/check-openspec-pin.sh
+check-openspec-pin: 9 records agree on 2.0.0
+exit=0
+$ rg -n "/openspec-|/opsx|slash command" .agents/skills/openspec-*/
+rg exit=1 (1 = no matches)
+$ find . -path ./.git -prune -o -type d \( -path "*/commands/opsx" -o -path "*/commands/openspec" \) -print
+(no output = no OpenSpec command folder)
+$ rg -n "1\.17\.0" outside openspec/changes
+openspec/specs/continuous-integration/spec.md:51:- **WHEN** one of those records is missing, appears more than once, or is not an exact `MAJOR.MINOR.PATCH` version (for example `^1.17.0` or `latest`)

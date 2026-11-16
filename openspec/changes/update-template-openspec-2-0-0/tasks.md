@@ -7,8 +7,8 @@
 
 ## 2. OpenSpec 2.0.0
 
-- [ ] 2.1 Bump `@fission-ai/openspec@1.17.0` to `2.0.0` in `.github/workflows/ci.yml` and in both `TEMPLATE_SOURCE.md` rows (Sources and Tool pins), and verify `rg -n "1\.17\.0"` outside `openspec/changes/` finds only the six generated skills and the `^1.17.0` example in `openspec/specs/continuous-integration/spec.md`.
-- [ ] 2.2 Run `openspec update` with OpenSpec 2.0.0 and verify `git diff --stat` shows only the six `.agents/skills/openspec-*/SKILL.md` files, no added or removed file, and that `git diff` holds only the stamp and wording changes listed in proposal.md; stop if it shows more. Then verify `scripts/check-openspec-pin.sh` reports 9 records agree on 2.0.0 and the "Skills are invoked by name" scenario holds (`rg -n "/openspec-|/opsx|slash command" .agents/skills/openspec-*/` finds nothing and no OpenSpec command folder exists). Save the output in `evidence/`.
+- [x] 2.1 Bump `@fission-ai/openspec@1.17.0` to `2.0.0` in `.github/workflows/ci.yml` and in both `TEMPLATE_SOURCE.md` rows (Sources and Tool pins), and verify `rg -n "1\.17\.0"` outside `openspec/changes/` finds only the six generated skills and the `^1.17.0` example in `openspec/specs/continuous-integration/spec.md`.
+- [x] 2.2 Run `openspec update` with OpenSpec 2.0.0 and verify `git diff --stat` shows only the six `.agents/skills/openspec-*/SKILL.md` files, no added or removed file, and that `git diff` holds only the stamp and wording changes listed in proposal.md; stop if it shows more. Then verify `scripts/check-openspec-pin.sh` reports 9 records agree on 2.0.0 and the "Skills are invoked by name" scenario holds (`rg -n "/openspec-|/opsx|slash command" .agents/skills/openspec-*/` finds nothing and no OpenSpec command folder exists). Save the output in `evidence/`.
 
 ## 3. Checks and archive
 
