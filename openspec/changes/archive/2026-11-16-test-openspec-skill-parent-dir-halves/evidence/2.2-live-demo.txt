@@ -1,0 +1,46 @@
+# Live demo, real OpenSpec 2.0.0, unchanged scripts/check-openspec-skills.sh from 00cd2321f273bf69f9dac7bd73fdc7ecc6d05dc8, 2026-11-16 11:10 MST
+
+## A. .agents/skills a symlink on disk only (not staged), scratch clone /tmp/demo44a
+$ git ls-files -s .agents/skills | head -1: 100644 4a33ff62f00fc099dc0218f6d3dd593e7ed6424f 0	.agents/skills/.openspec-target
+$ test -L .agents/skills: yes
+$ git status --porcelain | wc -l (before): 18
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+exit=1
+$ git status --porcelain | wc -l (after): 18
+
+## B. .agents a committed symlink, cloned with core.symlinks=false (index 120000; on disk Git writes a plain file), scratch /tmp/demo44b
+$ git ls-files -s .agents: 120000 245c4db19365652b7cac33fdb0ea3b3e8b4b6dcf 0	.agents
+$ ls -ld .agents (core.symlinks=false writes the link as a plain file): regular file
+Note: a core.symlinks=false checkout leaves .agents as a plain text file, not a directory; the self-test's index-only fixture keeps a real directory on disk instead (design.md decision 2). Both are index-only for the link check.
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+::error file=.agents/skills/.openspec-target,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/.openspec-target'
+::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-apply-change/SKILL.md'
+::error file=.agents/skills/openspec-archive-change/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-archive-change/SKILL.md'
+::error file=.agents/skills/openspec-explore/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-explore/SKILL.md'
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-propose/SKILL.md'
+::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-sync-specs/SKILL.md'
+::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-update-change/SKILL.md'
+check-openspec-skills: 8 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+exit=1
+$ git status --porcelain | wc -l (after): 0
+
+## C. .agents a symlink in the index only, real directory on disk (the self-test fixture), scratch /tmp/demo44c
+$ git ls-files -s .agents: 120000 245c4db19365652b7cac33fdb0ea3b3e8b4b6dcf 0	.agents
+$ stat -c %F .agents: directory
+$ git status --porcelain | wc -l (before): 17
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents,line=1::symlink: this directory is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a real directory. Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the real directory
+::error file=.agents/skills/.openspec-target,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/.openspec-target'
+::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/openspec-apply-change/SKILL.md'
+::error file=.agents/skills/openspec-archive-change/SKILL.md,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/openspec-archive-change/SKILL.md'
+::error file=.agents/skills/openspec-explore/SKILL.md,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/openspec-explore/SKILL.md'
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/openspec-propose/SKILL.md'
+::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/openspec-sync-specs/SKILL.md'
+::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::untracked: matches OpenSpec 2.0.0 but is not committed, so CI would see it as missing. Fix: commit it with 'git add -- .agents/skills/openspec-update-change/SKILL.md'
+check-openspec-skills: 8 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+exit=1
+$ git status --porcelain | wc -l (after): 17

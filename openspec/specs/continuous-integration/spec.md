@@ -75,6 +75,10 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 - **WHEN** a file the pinned version does not generate exists under `.agents/skills/openspec-*/`, including a new `openspec-*` folder, whether tracked or untracked
 - **THEN** CI fails with a `::error file=<path>,line=1::` annotation for each such file that says it is extra (or untracked) and gives the fix: delete it, or keep a custom skill under a name that does not start with `openspec-`
 
+#### Scenario: Parent directory linked only on disk or only in the index
+- **WHEN** `.agents` or `.agents/skills` is a symbolic link in the working tree while the index still records a real directory (an uncommitted link), or the index records it as a link (mode 120000) while the working tree holds a real directory
+- **THEN** CI fails with a `::error file=<dir>,line=1::` annotation for that directory that says `symlink`, so neither half of the check depends on the other
+
 #### Scenario: Generated file present but not committed
 - **WHEN** a file the pinned version generates is in the checkout with the generated content but is not committed
 - **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says it is untracked and gives the fix: commit it with `git add`
