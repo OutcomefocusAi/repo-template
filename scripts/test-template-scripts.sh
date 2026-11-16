@@ -176,7 +176,10 @@ skills() { # expected-exit description fixture-function expected-text...
   total=$((total + 1))
   if [ -z "$why" ]; then echo "ok   $name"; else
     echo "FAIL $name ($why)"; sed 's/^/     /' "$scratch/out"; fails=$((fails + 1)); fi
-  git -C "$repo" reset -q -- .agents .github/workflows; git -C "$repo" checkout -q -- .agents .github/workflows
+  # A fixture may replace .agents or .agents/skills with a link; drop the links and copies first.
+  for l in "$repo/.agents/skills" "$repo/.agents"; do [ ! -L "$l" ] || rm "$l"; done
+  rm -rf "$repo/.agents/skills-real" "$repo/.agents-real"
+  git -C "$repo" reset -q -- .agents .agents-real .github/workflows; git -C "$repo" checkout -q -- .agents .github/workflows
   git -C "$repo" clean -fdq -- .agents; rm -f "$repo/.stub-init-ran"; SKENV=()
 }
 sk_edit()      { echo "local edit" >> .agents/skills/openspec-apply-change/SKILL.md; }
@@ -218,6 +221,18 @@ sk_exec_idx()  { git update-index --chmod=+x .agents/skills/openspec-sync-specs/
 skills 1 "check-openspec-skills: exec bit only in the index, as a Windows commit would set it" sk_exec_idx "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::mode: git mode 100755"
 skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:"
 skills 1 "check-openspec-skills: untracked symlink at a generated path" sk_link_untr "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:"
+# Linked parent directories (#41 E1): init writes real directories.
+sk_skills_link() { mv .agents/skills .agents/skills-real; ln -s skills-real .agents/skills; git add -A .agents; }
+sk_agents_link() { mv .agents .agents-real; ln -s .agents-real .agents; git add -A .agents .agents-real; }
+skills 1 "check-openspec-skills: .agents/skills committed as a symlink to an identical copy" sk_skills_link "::error file=.agents/skills,line=1::symlink:" "real directory"
+skills 1 "check-openspec-skills: .agents committed as a symlink to an identical copy" sk_agents_link "::error file=.agents,line=1::symlink:" "real directory"
+# Cases that kill the PR #40 QA survivors (#41 E2): an on-disk link beats the index mode, and an
+# untracked executable file gets mode: with the chmod and git add fix.
+sk_link_over() { cp .agents/skills/openspec-archive-change/SKILL.md .agents/skills/copy-of-archive.md; rm .agents/skills/openspec-archive-change/SKILL.md
+                 ln -s ../copy-of-archive.md .agents/skills/openspec-archive-change/SKILL.md; }
+sk_exec_untr() { git rm -q --cached .agents/skills/openspec-update-change/SKILL.md; chmod +x .agents/skills/openspec-update-change/SKILL.md; }
+skills 1 "check-openspec-skills: uncommitted symlink over a tracked SKILL.md" sk_link_over "::error file=.agents/skills/openspec-archive-change/SKILL.md,line=1::symlink:"
+skills 1 "check-openspec-skills: untracked executable generated file" sk_exec_untr "::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::mode: git mode 100755 but OpenSpec $pinv generates 100644" "run 'chmod -x .agents/skills/openspec-update-change/SKILL.md' and commit it with 'git add -- .agents/skills/openspec-update-change/SKILL.md'"
 # Cases that pin behavior the PR #38 QA mutants could break unnoticed (#39 D2).
 sk_untr_match() { git rm -q --cached .agents/skills/.openspec-target; }
 sk_pin_two()    { sed -Ei 's/^( *)(npm install .*@fission-ai\/openspec@.*)$/\1\2\n\1# also @fission-ai\/openspec@0.0.1/' .github/workflows/ci.yml; }

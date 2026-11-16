@@ -80,8 +80,8 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 - **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says it is untracked and gives the fix: commit it with `git add`
 
 #### Scenario: Generated skill mode or file type changed
-- **WHEN** a generated path in the checkout is a symbolic link, including a link to an identical copy, or its git mode differs from what the pinned version writes (for example a committed `chmod +x`, mode 100755, where `init` writes 100644), tracked or untracked
-- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says `symlink` or `mode` with both modes, and gives the fix: replace the link with the generated file, or reset the mode with `git update-index --chmod=-x` (or `+x`) and `chmod`, and commit
+- **WHEN** a generated path in the checkout is a symbolic link, including a link to an identical copy and an uncommitted link over a tracked file, or `.agents` or `.agents/skills` is a symbolic link on disk or in the index, or a generated file's git mode differs from what the pinned version writes (for example a committed `chmod +x`, mode 100755, where `init` writes 100644), tracked or untracked
+- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file or directory that says `symlink` or `mode` with both modes, and gives the fix: replace the link with the generated file or a real directory, or reset the mode with `git update-index --chmod=-x` (or `+x`) and `chmod` (for an untracked file, `chmod` and `git add`), and commit
 
 #### Scenario: Reference version comes from the CI pin
 - **WHEN** the `@fission-ai/openspec@<version>` install line in `.github/workflows/ci.yml` is missing or not an exact `MAJOR.MINOR.PATCH` (even when the CLI reports the same string), two such lines name different versions, or the OpenSpec CLI the check runs reports a different version from that pin

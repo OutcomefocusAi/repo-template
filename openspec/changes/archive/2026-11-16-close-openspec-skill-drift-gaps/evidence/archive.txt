@@ -1,0 +1,51 @@
+# archive evidence, close-openspec-skill-drift-gaps (#41)
+# 2026-11-16 10:34 MST, on 80e619451ad4a95b59d00b83354a088d8fa29644 plus the archive (uncommitted at run time); dry run first in 4.2-dry-archive.txt
+
+$ printf "y\n" | openspec archive close-openspec-skill-drift-gaps   # 2.0.0, no --yes
+
+Proposal warnings in proposal.md (non-blocking):
+  ⚠ Why section should not exceed 1000 characters
+Task status: ✓ Complete
+
+Specs to update:
+  continuous-integration: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'close-openspec-skill-drift-gaps' archived as '2026-11-16-close-openspec-skill-drift-gaps'.
+
+$ requirement text length (merged spec)
+489
+
+$ grep -n -A1 "Scenario: Generated skill mode or file type changed" openspec/specs/continuous-integration/spec.md
+82:#### Scenario: Generated skill mode or file type changed
+83-- **WHEN** a generated path in the checkout is a symbolic link, including a link to an identical copy and an uncommitted link over a tracked file, or `.agents` or `.agents/skills` is a symbolic link on disk or in the index, or a generated file's git mode differs from what the pinned version writes (for example a committed `chmod +x`, mode 100755, where `init` writes 100644), tracked or untracked
+
+$ openspec validate --all --strict   # 2.0.0
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+rc=0
+
+$ scripts/test-template-scripts.sh | tail -1
+test-template-scripts: 128/128 passed
+
+$ scripts/check-openspec-pin.sh
+check-openspec-pin: 9 records agree on 2.0.0
+rc=0
+
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+rc=0
