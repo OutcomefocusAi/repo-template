@@ -7,8 +7,8 @@
 
 ## 2. Self-tests first
 
-- [ ] 2.1 Copy `mutants.sh` into `evidence/`, add `--e` (QA's D1d, D1f, D1j and an E1-check mutant), and record that D1d, D1f and D1j survive the current tests.
-- [ ] 2.2 Add the E1 and E2 cases and the harness cleanup from design.md to `scripts/test-template-scripts.sh`. Verify the E1 cases fail and every other case passes, commit, and save the run in `evidence/`.
+- [x] 2.1 Copy `mutants.sh` into `evidence/`, add `--e` (QA's D1d, D1f, D1j and an E1-check mutant), and record that D1d, D1f and D1j survive the current tests.
+- [x] 2.2 Add the E1 and E2 cases and the harness cleanup from design.md to `scripts/test-template-scripts.sh`. Verify the E1 cases fail and every other case passes, commit, and save the run in `evidence/`.
 
 ## 3. Script
 

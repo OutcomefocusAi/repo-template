@@ -1,0 +1,37 @@
+# 2.1 mutation run with the #39 self-tests (124, before any new test), 2026-11-16 10:31 MST
+# evidence/mutants.sh (copied from the #39 archive, extended with --e) at 4aef2dc68d6841f43807be190e8b2961e9a406ec
+
+$ evidence/mutants.sh . --d1 --e
+mutants.sh at 4aef2dc68d6841f43807be190e8b2961e9a406ec
+unmutated: test-template-scripts: 124/124 passed
+KILLED   mutant 1 matches-but-untracked branch disabled: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: generated file matches but is not committed (exit 0, expected 1)
+KILLED   mutant 2 init failure ignored: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: init fails (output lacks: init --tools agents --profile core' failed)
+KILLED   mutant 3 'generated no skill files' guard removed: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: init writes nothing (output lacks: ::error file=.github/workflows/ci.yml)
+KILLED   mutant 4 disagreeing-pins branch removed: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: two CI pins disagree (exit 0, expected 1)
+KILLED   mutant 5 cleanup trap removed: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (left in TMPDIR: tmp.5lnLMaXhcN )
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (left in TMPDIR: tmp.5lnLMaXhcN tmp.BoKCwJGGr3 )
+SURVIVED mutant 6 symlinked-folder guard removed: test-template-scripts: 124/124 passed
+KILLED   mutant 7 temporary XDG_CONFIG_HOME/XDG_DATA_HOME removed: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (stub did not see temporary XDG directories: xdg /tmp/tmp.S8gGDjZdwl/sk-user/config /tmp/tmp.S8gGDjZdwl/sk-user/data)
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (stub did not see temporary XDG directories: xdg /tmp/tmp.S8gGDjZdwl/sk-user/config /tmp/tmp.S8gGDjZdwl/sk-user/data)
+KILLED   mutant 8 exact MAJOR.MINOR.PATCH regex weakened to non-empty: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: inexact pin even when the CLI reports it (exit 0, expected 1)
+KILLED   mutant 9 symlink branch disabled: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: SKILL.md as a symlink to an identical copy (output lacks: ::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:)
+           FAIL check-openspec-skills: untracked symlink at a generated path (output lacks: ::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:)
+KILLED   mutant 10 mode branch disabled: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: exec bit in the index, mode 100755 (exit 0, expected 1)
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+KILLED   mutant 11 index mode ignored, file system only: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+SURVIVED mutant 12 index mode wins over an on-disk symlink (QA D1d): test-template-scripts: 124/124 passed
+SURVIVED mutant 13 fsmode ignores -x (QA D1f): test-template-scripts: 124/124 passed
+SURVIVED mutant 14 untracked mode fix text replaced (QA D1j): test-template-scripts: 124/124 passed
+ERROR    mutant 15 ancestor symlink check disabled (E1): pattern found 0 times
+
+Result: QA's PR #40 survivors D1d (12), D1f (13) and D1j (14) survive the 124 self-tests, as QA reported. Mutant 6 stays equivalent. Mutant 15 targets the E1 code, which does not exist yet.
