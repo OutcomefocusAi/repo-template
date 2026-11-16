@@ -2,7 +2,7 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Record Woody's approval of this proposal in `proposal.md` (card, selected option or exact words, where and when, covers and not covered), and verify the record is committed before any other task starts.
+- [x] 1.1 Record Woody's approval of this proposal in `proposal.md` (card, selected option or exact words, where and when, covers and not covered), and verify the record is committed before any other task starts.
 - [ ] 1.2 Re-check on the day of apply that the CI pin is still `@fission-ai/openspec@2.0.0` and that npm `latest` is still 2.0.0, and re-run the design's probes (`init --tools agents --profile core` in an empty directory is byte-identical to the committed generated skills; a deleted skill folder is not restored by `update`); save the output in `evidence/`. If the pin or the probe results changed, stop and report.
 
 ## 2. Failing self-tests first

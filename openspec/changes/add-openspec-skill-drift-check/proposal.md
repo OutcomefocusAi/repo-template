@@ -1,13 +1,13 @@
 # Proposal: add-openspec-skill-drift-check
 
-Tracking issue: [#37](https://github.com/OutcomefocusAi/repo-template/issues/37). Branch: `37-add-openspec-skill-drift-check`, from `main` `94df7b221389b98fda62901731a988c0834f76a5`. Notion Tasks row: https://app.notion.com/p/41a444b092e68198baa9f1d5d0f26f81. Not docs-only and not version-only: it adds a script, a CI step, self-tests and a requirement change, so it needs Woody's approval of this proposal before apply.
+Tracking issue: [#37](https://github.com/OutcomefocusAi/repo-template/issues/37). Branch: `37-add-openspec-skill-drift-check`, from `main` `94df7b221389b98fda62901731a988c0834f76a5`. Notion Tasks row: https://app.notion.com/p/41a444b092e68198baa9f1d5d0f26f81. Not docs-only and not version-only: it adds a script, a CI step, self-tests and a requirement change, so it needed Woody's approval of this proposal before apply (given 2026-11-16 9:12 AM AZ, see Approval).
 
 ## Approval
 
 | What | Words or selected option text | How given, where and when |
 | --- | --- | --- |
 | Fix QA's PR #36 info item N1 (the request behind this change) | Typed by Woody: "Just trying to fix whatever it is, I don't need anything failing silently or whatever" | Typed in Woody's chat with Chief of Staff at 8:47 AM AZ Mon Nov 16, 2026, relayed by Chief of Staff as his yes to Principal QA's PR #36 info item (a CI step that fails when `openspec update` would change the skill files, with a clear error naming what drifted and how to fix it). A request to build, not approval of this proposal |
-| Approve this proposal | Pending | Not yet given. Apply does not start until Woody approves |
+| Approve this proposal | Selected option: "Yes, approve the drift check proposal" on the card "approve the skill drift check for repo-template (issue #37)" | Tapped by Woody in his chat with Chief of Staff at 9:12 AM AZ Mon Nov 16, 2026, relayed by Chief of Staff. Covers: applying add-openspec-skill-drift-check (proposal head ef308ee) only. Not covered: merging (this adds CI behavior, so the merge comes back to Woody) |
 
 ## Why
 
