@@ -1,0 +1,11 @@
+# 1.2 upstream re-check, 2026-11-16 08:24 MST
+$ npm view @fission-ai/openspec dist-tags.latest
+2.0.0
+$ gh release list -R Fission-AI/OpenSpec -L 3
+v2.0.0 - Skills in .agents/skills, /opsx commands removed	Latest	v2.0.0	2026-11-11T22:41:44Z
+v1.17.0 - Safe upgrades, 2.0 notice		v1.17.0	2026-11-09T23:46:31Z
+v1.16.1 - Spec parsing, version checks		v1.16.1	2026-11-07T00:44:30Z
+$ gh api repos/DietrichGebert/ponytail/commits/HEAD -q .sha
+96608e078b2d5ea607c5c3b8b5a54d1c1fba6846
+$ gh api repos/DietrichGebert/ponytail/tags -q ".[0].name"
+v5.3.3
