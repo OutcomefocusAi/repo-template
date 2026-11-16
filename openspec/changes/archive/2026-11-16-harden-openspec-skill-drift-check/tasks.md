@@ -22,7 +22,7 @@
 ## 5. Checks and archive
 
 - [x] 5.1 Run `openspec validate --all --strict` at 2.0.0, `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-openspec-pin.sh`, `scripts/check-openspec-skills.sh` (2.0.0), `scripts/check-ponytail-pin.sh`, `scripts/check-workflows.sh`, actionlint, shellcheck on the changed script, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check`; verify all pass and save the output in `evidence/`.
-- [ ] 5.2 After 5.1 and after the pull request is open with green CI, archive in a scratch clone and run `openspec validate --all --strict` (must pass, requirement text stays 500 characters or fewer), then archive for real with `openspec archive harden-openspec-skill-drift-check` at 2.0.0 (no `--yes`) as the last commit, and re-run `validate --all --strict`.
+- [x] 5.2 After 5.1 and after the pull request is open with green CI, archive in a scratch clone and run `openspec validate --all --strict` (must pass, requirement text stays 500 characters or fewer), then archive for real with `openspec archive harden-openspec-skill-drift-check` at 2.0.0 (no `--yes`) as the last commit, and re-run `validate --all --strict`.
 
 ## Workflow follow-up
 
