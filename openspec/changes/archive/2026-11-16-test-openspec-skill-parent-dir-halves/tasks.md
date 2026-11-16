@@ -12,7 +12,7 @@
 ## 3. Checks and archive
 
 - [x] 3.1 Run `openspec validate --all --strict` at 2.0.0, `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-openspec-pin.sh`, `scripts/check-openspec-skills.sh` (2.0.0), `scripts/check-ponytail-pin.sh`, `scripts/check-workflows.sh`, actionlint, shellcheck, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check`; verify all pass and save the output in `evidence/`.
-- [ ] 3.2 After 3.1 and after the pull request is open with green CI, archive in a scratch clone and run `openspec validate --all --strict` (must pass, requirement text 500 characters or fewer), then archive for real with `openspec archive test-openspec-skill-parent-dir-halves` at 2.0.0 (no `--yes`) as the last commit, and re-run `validate --all --strict`.
+- [x] 3.2 After 3.1 and after the pull request is open with green CI, archive in a scratch clone and run `openspec validate --all --strict` (must pass, requirement text 500 characters or fewer), then archive for real with `openspec archive test-openspec-skill-parent-dir-halves` at 2.0.0 (no `--yes`) as the last commit, and re-run `validate --all --strict`.
 
 ## Workflow follow-up
 

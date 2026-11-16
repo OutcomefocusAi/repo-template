@@ -1,0 +1,30 @@
+# 3.2 dry archive, scratch clone of 70974b83fd87891a1722e005852519f8de5d9198 (/tmp/dry44b), task 3.2 ticked in the scratch copy only, 2026-11-16 11:14 MST
+
+$ printf "y\n" | openspec archive test-openspec-skill-parent-dir-halves   # 2.0.0
+Task status: ✓ Complete
+
+Specs to update:
+  continuous-integration: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'test-openspec-skill-parent-dir-halves' archived as '2026-11-16-test-openspec-skill-parent-dir-halves'.
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+exit=0
+$ merged requirement text length (characters)
+489
+$ requirement text identical to main: yes (cmp)
+# note: the first length measurement in this run read one line too far and printed 0; the value above is re-measured on the same scratch clone
+$ scenarios under the requirement
+17
