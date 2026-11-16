@@ -22,7 +22,7 @@
 ## 5. Checks and archive
 
 - [x] 5.1 Run `openspec validate --all --strict` at 2.0.0, `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-openspec-pin.sh`, `scripts/check-openspec-skills.sh`, `scripts/check-ponytail-pin.sh`, `scripts/check-workflows.sh`, actionlint, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check` at the head, verify all pass, and save the output in `evidence/`.
-- [ ] 5.2 After 5.1 and after the pull request (follow-up below) is open with green CI, archive the change with `openspec archive add-openspec-skill-drift-check` at 2.0.0 (no `--yes`) as the last commit of the implementation pull request, before Principal QA reviews, and verify `openspec/specs/continuous-integration/spec.md` holds the modified requirement with the six new scenarios.
+- [x] 5.2 After 5.1 and after the pull request (follow-up below) is open with green CI, archive the change with `openspec archive add-openspec-skill-drift-check` at 2.0.0 (no `--yes`) as the last commit of the implementation pull request, before Principal QA reviews, and verify `openspec/specs/continuous-integration/spec.md` holds the modified requirement with the six new scenarios.
 
 ## Workflow follow-up
 
