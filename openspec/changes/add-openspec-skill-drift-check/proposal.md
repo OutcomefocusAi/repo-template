@@ -1,6 +1,6 @@
 # Proposal: add-openspec-skill-drift-check
 
-Tracking issue: [#37](https://github.com/OutcomefocusAi/repo-template/issues/37). Branch: `37-add-openspec-skill-drift-check`, from `main` `94df7b221389b98fda62901731a988c0834f76a5`. Notion Tasks row: pending (added in the next commit). Not docs-only and not version-only: it adds a script, a CI step, self-tests and a requirement change, so it needs Woody's approval of this proposal before apply.
+Tracking issue: [#37](https://github.com/OutcomefocusAi/repo-template/issues/37). Branch: `37-add-openspec-skill-drift-check`, from `main` `94df7b221389b98fda62901731a988c0834f76a5`. Notion Tasks row: https://app.notion.com/p/41a444b092e68198baa9f1d5d0f26f81. Not docs-only and not version-only: it adds a script, a CI step, self-tests and a requirement change, so it needs Woody's approval of this proposal before apply.
 
 ## Approval
 
