@@ -2,8 +2,8 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Verify Woody's approval (typed 9:41 AM AZ Nov 16, 2026, relayed by Chief of Staff, covering this proposal and its apply for D1 and D2 only) is recorded in `proposal.md` and in #39 before any other task starts.
-- [ ] 1.2 Re-check that the CI pin and npm `latest` are still `@fission-ai/openspec@2.0.0`, that the 7 committed generated paths are 100644, and reproduce QA's two D1 cases (committed `chmod +x`, symlink to an identical copy) passing on the current script with the real 2.0.0 CLI; save the output in `evidence/`. If any of this changed, stop and report.
+- [x] 1.1 Verify Woody's approval (typed 9:41 AM AZ Nov 16, 2026, relayed by Chief of Staff, covering this proposal and its apply for D1 and D2 only) is recorded in `proposal.md` and in #39 before any other task starts.
+- [x] 1.2 Re-check that the CI pin and npm `latest` are still `@fission-ai/openspec@2.0.0`, that the 7 committed generated paths are 100644, and reproduce QA's two D1 cases (committed `chmod +x`, symlink to an identical copy) passing on the current script with the real 2.0.0 CLI; save the output in `evidence/`. If any of this changed, stop and report.
 
 ## 2. Self-tests first
 
