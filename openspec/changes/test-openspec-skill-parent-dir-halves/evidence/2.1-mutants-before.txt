@@ -1,0 +1,48 @@
+# 2.1 mutation run with the #41 self-tests (128, before any new test), 2026-11-16 11:08 MST
+# evidence/mutants.sh (copied from the #41 archive, extended with --f: mutants 16 to 19) on branch head 00cd2321f273bf69f9dac7bd73fdc7ecc6d05dc8, scripts unchanged from main 47155c5
+
+$ evidence/mutants.sh . --d1 --e --f
+mutants.sh at 00cd2321f273bf69f9dac7bd73fdc7ecc6d05dc8
+unmutated: test-template-scripts: 128/128 passed
+KILLED   mutant 1 matches-but-untracked branch disabled: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: generated file matches but is not committed (exit 0, expected 1)
+KILLED   mutant 2 init failure ignored: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: init fails (output lacks: init --tools agents --profile core' failed)
+KILLED   mutant 3 'generated no skill files' guard removed: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: init writes nothing (output lacks: ::error file=.github/workflows/ci.yml)
+KILLED   mutant 4 disagreeing-pins branch removed: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: two CI pins disagree (exit 0, expected 1)
+KILLED   mutant 5 cleanup trap removed: test-template-scripts: 126/128 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (left in TMPDIR: tmp.Dk0IrK6rpp )
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (left in TMPDIR: tmp.Dk0IrK6rpp tmp.Gz25zJMB6q )
+SURVIVED mutant 6 symlinked-folder guard removed: test-template-scripts: 128/128 passed
+KILLED   mutant 7 temporary XDG_CONFIG_HOME/XDG_DATA_HOME removed: test-template-scripts: 126/128 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (stub did not see temporary XDG directories: xdg /tmp/tmp.0PrEhIdXyr/sk-user/config /tmp/tmp.0PrEhIdXyr/sk-user/data)
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (stub did not see temporary XDG directories: xdg /tmp/tmp.0PrEhIdXyr/sk-user/config /tmp/tmp.0PrEhIdXyr/sk-user/data)
+KILLED   mutant 8 exact MAJOR.MINOR.PATCH regex weakened to non-empty: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: inexact pin even when the CLI reports it (exit 0, expected 1)
+KILLED   mutant 9 symlink branch disabled: test-template-scripts: 125/128 passed
+           FAIL check-openspec-skills: SKILL.md as a symlink to an identical copy (output lacks: ::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:)
+           FAIL check-openspec-skills: untracked symlink at a generated path (output lacks: ::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:)
+           FAIL check-openspec-skills: uncommitted symlink over a tracked SKILL.md (output lacks: ::error file=.agents/skills/openspec-archive-change/SKILL.md,line=1::symlink:)
+KILLED   mutant 10 mode branch disabled: test-template-scripts: 125/128 passed
+           FAIL check-openspec-skills: exec bit in the index, mode 100755 (exit 0, expected 1)
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+           FAIL check-openspec-skills: untracked executable generated file (output lacks: ::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::mode: git mode 100755 but OpenSpec 2.0.0 generates 100644)
+KILLED   mutant 11 index mode ignored, file system only: test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+KILLED   mutant 12 index mode wins over an on-disk symlink (QA D1d): test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: uncommitted symlink over a tracked SKILL.md (exit 0, expected 1)
+KILLED   mutant 13 fsmode ignores -x (QA D1f): test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: untracked executable generated file (output lacks: ::error file=.agents/skills/openspec-update-change/SKILL.md,line=1::mode: git mode 100755 but OpenSpec 2.0.0 generates 100644)
+KILLED   mutant 14 untracked mode fix text replaced (QA D1j): test-template-scripts: 127/128 passed
+           FAIL check-openspec-skills: untracked executable generated file (output lacks: run 'chmod -x .agents/skills/openspec-update-change/SKILL.md' and commit it with 'git add -- .agents/skills/openspec-update-change/SKILL.md')
+KILLED   mutant 15 ancestor symlink check disabled (E1): test-template-scripts: 126/128 passed
+           FAIL check-openspec-skills: .agents/skills committed as a symlink to an identical copy (exit 0, expected 1)
+           FAIL check-openspec-skills: .agents committed as a symlink to an identical copy (exit 0, expected 1)
+SURVIVED mutant 16 on-disk half of the parent-dir check dropped (QA E1-4): test-template-scripts: 128/128 passed
+SURVIVED mutant 17 index half of the parent-dir check dropped (QA E1-5): test-template-scripts: 128/128 passed
+SURVIVED mutant 18 index read narrowed to .agents/skills (QA E1-6): test-template-scripts: 128/128 passed
+SURVIVED mutant 19 parent-dir index check compares 160000 (QA E1-11): test-template-scripts: 128/128 passed
+
+Result: mutants 16 to 19 (QA E1-4, E1-5, E1-6, E1-11) SURVIVE 128/128, which is F1. Mutant 6 is the known equivalent mutant (GNU find -P), reported in #39.
