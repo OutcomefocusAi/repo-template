@@ -1,6 +1,6 @@
 # Proposal: harden-openspec-skill-drift-check
 
-Tracking issue: [#39](https://github.com/OutcomefocusAi/repo-template/issues/39) (parent #37). Branch: `39-harden-openspec-skill-drift-check`, from `main` `cb04d40db7e6af7a0997576ea146954589ff0c37`. Notion Tasks row: pending. Not docs-only and not version-only: it changes `scripts/check-openspec-skills.sh`, adds self-tests and changes `continuous-integration` scenarios. Woody approved the proposal and its apply in one message (see Approval).
+Tracking issue: [#39](https://github.com/OutcomefocusAi/repo-template/issues/39) (parent #37). Branch: `39-harden-openspec-skill-drift-check`, from `main` `cb04d40db7e6af7a0997576ea146954589ff0c37`. Notion Tasks row: https://app.notion.com/p/41a444b092e681c6b5d4d8290d8af0ad. Not docs-only and not version-only: it changes `scripts/check-openspec-skills.sh`, adds self-tests and changes `continuous-integration` scenarios. Woody approved the proposal and its apply in one message (see Approval).
 
 ## Approval
 
