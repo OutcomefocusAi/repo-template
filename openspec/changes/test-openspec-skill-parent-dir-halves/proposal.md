@@ -1,6 +1,6 @@
 # Proposal: test-openspec-skill-parent-dir-halves
 
-Tracking issue: [#44](https://github.com/OutcomefocusAi/repo-template/issues/44) (parent #41). Branch: `44-test-openspec-skill-parent-dir-halves`, from `main` `47155c57c3790e30e038c629ff8788960387fcc0`. Notion Tasks row: pending. Test-only: it adds self-tests and one spec scenario; `scripts/check-openspec-skills.sh` does not change. Woody approved the proposal and its apply in one tap (see Approval).
+Tracking issue: [#44](https://github.com/OutcomefocusAi/repo-template/issues/44) (parent #41). Branch: `44-test-openspec-skill-parent-dir-halves`, from `main` `47155c57c3790e30e038c629ff8788960387fcc0`. Notion Tasks row: https://app.notion.com/p/41a444b092e681548a67ef9b4f8245a7. Test-only: it adds self-tests and one spec scenario; `scripts/check-openspec-skills.sh` does not change. Woody approved the proposal and its apply in one tap (see Approval).
 
 ## Approval
 
