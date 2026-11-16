@@ -16,8 +16,8 @@
 
 ## 4. CI step and docs
 
-- [ ] 4.1 Add the step "OpenSpec skills match generation" (`run: scripts/check-openspec-skills.sh`) to `template-checks` in `.github/workflows/ci.yml` right after "OpenSpec pin agreement", and verify `scripts/check-workflows.sh` and actionlint pass.
-- [ ] 4.2 Add one sentence to `TEMPLATE_SOURCE.md` under the Tool pins table naming `scripts/check-openspec-skills.sh`, what it compares and the fix command, and verify `scripts/check-em-dash.sh` passes.
+- [x] 4.1 Add the step "OpenSpec skills match generation" (`run: scripts/check-openspec-skills.sh`) to `template-checks` in `.github/workflows/ci.yml` right after "OpenSpec pin agreement", and verify `scripts/check-workflows.sh` and actionlint pass.
+- [x] 4.2 Add one sentence to `TEMPLATE_SOURCE.md` under the Tool pins table naming `scripts/check-openspec-skills.sh`, what it compares and the fix command, and verify `scripts/check-em-dash.sh` passes.
 
 ## 5. Checks and archive
 
