@@ -1,0 +1,33 @@
+# 1.2 re-check, 2026-11-16 09:45 MST, main cb04d40db7e6af7a0997576ea146954589ff0c37, branch head 235d611f8731d27c4b3428fa702d604e79a37025
+
+$ grep -n "@fission-ai/openspec@" .github/workflows/ci.yml
+41:          npm install --global --no-fund --no-audit @fission-ai/openspec@2.0.0
+
+$ npm view @fission-ai/openspec version   # the latest dist-tag
+2.0.0
+
+$ git ls-files -s -- .agents/skills/.openspec-target ".agents/skills/openspec-*" | awk "{print \$1, \$4}"
+100644 .agents/skills/.openspec-target
+100644 .agents/skills/openspec-apply-change/SKILL.md
+100644 .agents/skills/openspec-archive-change/SKILL.md
+100644 .agents/skills/openspec-explore/SKILL.md
+100644 .agents/skills/openspec-propose/SKILL.md
+100644 .agents/skills/openspec-sync-specs/SKILL.md
+100644 .agents/skills/openspec-update-change/SKILL.md
+
+## D1 repro on a scratch clone (/tmp/d1repro) with the merged script and the real 2.0.0 CLI
+$ (clean) OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+$ chmod +x .agents/skills/openspec-propose/SKILL.md && git commit -am x && git ls-files -s .agents/skills/openspec-propose/SKILL.md
+100755 .agents/skills/openspec-propose/SKILL.md
+$ scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+$ cp .agents/skills/openspec-propose/SKILL.md copy.md; ln -sf ../../../copy.md .agents/skills/openspec-propose/SKILL.md; git add -A; git commit
+120000 .agents/skills/openspec-propose/SKILL.md
+$ scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+
+Result: both D1 cases pass (exit 0) on the merged script, as QA reported. Pin and npm latest are 2.0.0; all 7 generated paths are 100644.

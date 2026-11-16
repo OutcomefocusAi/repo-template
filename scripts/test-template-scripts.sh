@@ -138,7 +138,8 @@ pin 1 "check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing" check-ponyta
 # check-openspec-skills: the generated OpenSpec skill files must equal what the pinned version
 # generates. A stub openspec on PATH stands in for the CLI so these cases need no network: its
 # init copies the template's committed generated files (the reference) into its working
-# directory, drops a marker file there and logs where and how it ran.
+# directory, drops a marker file there and logs where and how it ran, and the XDG_CONFIG_HOME and
+# XDG_DATA_HOME it saw. STUB_INIT_MODE=fail makes init exit 3; STUB_INIT_MODE=empty writes nothing.
 stub="$scratch/stub"; ref="$scratch/skills-ref"; mkdir -p "$stub" "$ref/.agents/skills"
 cp "$root/.agents/skills/.openspec-target" "$ref/.agents/skills/"; cp -R "$root"/.agents/skills/openspec-* "$ref/.agents/skills/"
 cat > "$stub/openspec" <<'STUB'
@@ -146,6 +147,11 @@ cat > "$stub/openspec" <<'STUB'
 case "${1:-}" in
   --version) echo "${STUB_OPENSPEC_VERSION:?}" ;;
   init) printf '%s %s\n' "$PWD" "$*" >> "${STUB_LOG:?}"; touch .stub-init-ran
+        printf 'xdg %s %s\n' "${XDG_CONFIG_HOME:-}" "${XDG_DATA_HOME:-}" >> "$STUB_LOG"
+        case "${STUB_INIT_MODE:-}" in
+          fail) echo "stub init failed on purpose" >&2; exit 3 ;;
+          empty) exit 0 ;;
+        esac
         mkdir -p .agents/skills; cp -R "${STUB_REF:?}/.agents/skills/." .agents/skills/ ;;
   *) echo "stub openspec: unsupported: $*" >&2; exit 2 ;;
 esac
@@ -201,6 +207,49 @@ skills 1 "check-openspec-skills: CI pin is a range" sk_pin_range "::error file=.
 skills 1 "check-openspec-skills: CI pin line missing" sk_pin_gone "::error file=.github/workflows/ci.yml"
 SKENV=(OPENSPEC_CMD=no-such-openspec-command)
 skills 1 "check-openspec-skills: no OpenSpec CLI" none "::error file=.github/workflows/ci.yml" "no-such-openspec-command"
+# File mode and type (#39 D1): init writes regular 100644 files, so an exec bit or a symlink is drift.
+sk_exec()      { chmod +x .agents/skills/openspec-propose/SKILL.md; git add .agents/skills/openspec-propose/SKILL.md; }
+sk_link()      { cp .agents/skills/openspec-propose/SKILL.md .agents/skills/copy-of-propose.md
+                 ln -sf ../copy-of-propose.md .agents/skills/openspec-propose/SKILL.md; git add -A .agents; }
+sk_link_untr() { git rm -q --cached .agents/skills/openspec-explore/SKILL.md; cp .agents/skills/openspec-explore/SKILL.md .agents/skills/copy-of-explore.md
+                 ln -sf ../copy-of-explore.md .agents/skills/openspec-explore/SKILL.md; }
+skills 1 "check-openspec-skills: exec bit in the index, mode 100755" sk_exec "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::mode: git mode 100755" "100644" "git update-index --chmod=-x"
+sk_exec_idx()  { git update-index --chmod=+x .agents/skills/openspec-sync-specs/SKILL.md; }
+skills 1 "check-openspec-skills: exec bit only in the index, as a Windows commit would set it" sk_exec_idx "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::mode: git mode 100755"
+skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:"
+skills 1 "check-openspec-skills: untracked symlink at a generated path" sk_link_untr "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:"
+# Cases that pin behavior the PR #38 QA mutants could break unnoticed (#39 D2).
+sk_untr_match() { git rm -q --cached .agents/skills/.openspec-target; }
+sk_pin_two()    { sed -Ei 's/^( *)(npm install .*@fission-ai\/openspec@.*)$/\1\2\n\1# also @fission-ai\/openspec@0.0.1/' .github/workflows/ci.yml; }
+sk_pin_rc()     { sed -Ei 's/(@fission-ai\/openspec@)[0-9.]+/\12.0.0-rc.1/' .github/workflows/ci.yml; }
+sk_dir_link()   { cp -R .agents/skills/openspec-propose .agents/skills/propose-copy; rm -r .agents/skills/openspec-propose
+                  ln -s propose-copy .agents/skills/openspec-propose; git add -A .agents; }
+skills 1 "check-openspec-skills: generated file matches but is not committed" sk_untr_match "::error file=.agents/skills/.openspec-target,line=1::untracked: matches" "git add -- .agents/skills/.openspec-target"
+skills 1 "check-openspec-skills: two CI pins disagree" sk_pin_two "::error file=.github/workflows/ci.yml" "disagrees"
+SKENV=(STUB_OPENSPEC_VERSION=2.0.0-rc.1)
+skills 1 "check-openspec-skills: inexact pin even when the CLI reports it" sk_pin_rc "::error file=.github/workflows/ci.yml" "not an exact MAJOR.MINOR.PATCH"
+skills 1 "check-openspec-skills: openspec-* folder replaced by a symlink" sk_dir_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing" "::error file=.agents/skills/openspec-propose,line=1::extra"
+SKENV=(STUB_INIT_MODE=fail)
+skills 1 "check-openspec-skills: init fails" none "::error file=.github/workflows/ci.yml" "init --tools agents --profile core' failed" "stub init failed on purpose"
+SKENV=(STUB_INIT_MODE=empty)
+skills 1 "check-openspec-skills: init writes nothing" none "::error file=.github/workflows/ci.yml" "generated no skill files"
+# A dedicated TMPDIR must be empty after a passing and a failing run, and the stub must see
+# temporary XDG directories inside it, never the caller's.
+sktmp="$scratch/sk-tmp"; skuser="$scratch/sk-user"; mkdir -p "$sktmp" "$skuser/config" "$skuser/data"
+sk_tmp_check() { # description
+  local why=""
+  [ -z "$(ls -A "$sktmp")" ] || why="left in TMPDIR: $(ls -A "$sktmp" | tr '\n' ' ')"
+  [ -n "$why" ] || [ -z "$(find "$skuser" -mindepth 2 -print -quit)" ] || why="wrote the caller's XDG directories"
+  [ -n "$why" ] || grep -qE "^xdg $sktmp/[^ ]+ $sktmp/[^ ]+\$" "$scratch/stub.log" || why="stub did not see temporary XDG directories: $(grep '^xdg' "$scratch/stub.log")"
+  total=$((total + 1))
+  if [ -z "$why" ]; then echo "ok   $1"; else echo "FAIL $1 ($why)"; fails=$((fails + 1)); fi
+}
+SKENV=(TMPDIR="$sktmp" XDG_CONFIG_HOME="$skuser/config" XDG_DATA_HOME="$skuser/data")
+skills 0 "check-openspec-skills: passes with a caller XDG and a dedicated TMPDIR" none "match OpenSpec $pinv"
+sk_tmp_check "check-openspec-skills: temporary dir removed and caller XDG unused after a passing run"
+SKENV=(TMPDIR="$sktmp" XDG_CONFIG_HOME="$skuser/config" XDG_DATA_HOME="$skuser/data")
+skills 1 "check-openspec-skills: fails with a caller XDG and a dedicated TMPDIR" sk_edit "::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::edited"
+sk_tmp_check "check-openspec-skills: temporary dir removed and caller XDG unused after a failing run"
 
 # slot.sh
 expect 0 "slot: warns in the template repository" env GITHUB_REPOSITORY=OutcomefocusAi/repo-template "$root/scripts/slot.sh" lint

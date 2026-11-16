@@ -75,13 +75,25 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 - **WHEN** a file the pinned version does not generate exists under `.agents/skills/openspec-*/`, including a new `openspec-*` folder, whether tracked or untracked
 - **THEN** CI fails with a `::error file=<path>,line=1::` annotation for each such file that says it is extra (or untracked) and gives the fix: delete it, or keep a custom skill under a name that does not start with `openspec-`
 
+#### Scenario: Generated file present but not committed
+- **WHEN** a file the pinned version generates is in the checkout with the generated content but is not committed
+- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says it is untracked and gives the fix: commit it with `git add`
+
+#### Scenario: Generated skill mode or file type changed
+- **WHEN** a generated path in the checkout is a symbolic link, including a link to an identical copy, or its git mode differs from what the pinned version writes (for example a committed `chmod +x`, mode 100755, where `init` writes 100644), tracked or untracked
+- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says `symlink` or `mode` with both modes, and gives the fix: replace the link with the generated file, or reset the mode with `git update-index --chmod=-x` (or `+x`) and `chmod`, and commit
+
 #### Scenario: Reference version comes from the CI pin
-- **WHEN** the `@fission-ai/openspec@<version>` install line in `.github/workflows/ci.yml` is missing or not an exact `MAJOR.MINOR.PATCH`, or the OpenSpec CLI the check runs reports a different version from that pin
+- **WHEN** the `@fission-ai/openspec@<version>` install line in `.github/workflows/ci.yml` is missing or not an exact `MAJOR.MINOR.PATCH` (even when the CLI reports the same string), two such lines name different versions, or the OpenSpec CLI the check runs reports a different version from that pin
 - **THEN** CI fails with a `::error file=` annotation naming `.github/workflows/ci.yml` (and both versions when they differ) and never generates the reference from `latest` or another version
 
 #### Scenario: Check leaves the checkout unchanged
 - **WHEN** the generated-skills check runs, whether it passes or fails
-- **THEN** it generates the reference only in a temporary directory outside the checkout with a temporary OpenSpec config directory, and `git status --porcelain --untracked-files=all` of the checkout is the same before and after, so later CI steps see the files as committed
+- **THEN** it generates the reference only in a temporary directory outside the checkout with temporary OpenSpec config and data directories (never the caller's `XDG_CONFIG_HOME` or `XDG_DATA_HOME`), removes that temporary directory when it exits, and `git status --porcelain --untracked-files=all` of the checkout is the same before and after, so later CI steps see the files as committed
+
+#### Scenario: Reference generation fails
+- **WHEN** `openspec init --tools agents --profile core` exits non-zero in the temporary directory, or exits zero but writes no generated skill files
+- **THEN** CI fails with a `::error file=` annotation naming `.github/workflows/ci.yml` that says the generation failed (with its output) or generated no skill files, and never reports a match
 
 ### Requirement: Stack steps are marked slots
 The CI workflow SHALL contain lint, typecheck, test, coverage gate, and build steps as clearly marked slots. The first project proposal in a derived repository SHALL fill every slot with the stack's real commands.

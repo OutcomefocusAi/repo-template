@@ -1,0 +1,15 @@
+# 2.1 mutation run with the merged self-tests (before any new test), 2026-11-16 09:49 MST
+# evidence/mutants.sh at 0178ff273f7316e9483e0fbe3e50e6930798364b; first version of mutants.sh (it counted any FAIL as a kill; no test failed unmutated here, so the result is the same)
+
+mutants.sh at 0178ff273f7316e9483e0fbe3e50e6930798364b
+unmutated: test-template-scripts: 110/110 passed
+SURVIVED mutant 1 matches-but-untracked branch disabled: test-template-scripts: 110/110 passed
+SURVIVED mutant 2 init failure ignored: test-template-scripts: 110/110 passed
+SURVIVED mutant 3 'generated no skill files' guard removed: test-template-scripts: 110/110 passed
+SURVIVED mutant 4 disagreeing-pins branch removed: test-template-scripts: 110/110 passed
+SURVIVED mutant 5 cleanup trap removed: test-template-scripts: 110/110 passed
+SURVIVED mutant 6 symlinked-folder guard removed: test-template-scripts: 110/110 passed
+SURVIVED mutant 7 temporary XDG_CONFIG_HOME/XDG_DATA_HOME removed: test-template-scripts: 110/110 passed
+SURVIVED mutant 8 exact MAJOR.MINOR.PATCH regex weakened to non-empty: test-template-scripts: 110/110 passed
+
+Result: all 8 of QA's surviving mutants survive the merged 110 self-tests, as QA reported.
