@@ -97,4 +97,3 @@ $ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills
 check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
 rc=0
 $ git status --porcelain | wc -l (after): 0
-
