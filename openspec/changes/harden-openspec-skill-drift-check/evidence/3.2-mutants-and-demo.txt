@@ -1,0 +1,100 @@
+# 3.2 mutation rerun and live demo, 2026-11-16 09:52 MST
+
+## Mutation rerun: QA's 8 mutants plus 3 mutants of the new D1 code (--d1)
+# mutants.sh prints HEAD (397bfde) but copies the working-tree script and tests into each scratch copy, so this ran on the changed script and the 124 self-tests
+$ evidence/mutants.sh . --d1
+mutants.sh at 397bfded81ee609631e7f02c7f6474252f648b3e
+unmutated: test-template-scripts: 124/124 passed
+KILLED   mutant 1 matches-but-untracked branch disabled: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: generated file matches but is not committed (exit 0, expected 1)
+KILLED   mutant 2 init failure ignored: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: init fails (output lacks: init --tools agents --profile core' failed)
+KILLED   mutant 3 'generated no skill files' guard removed: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: init writes nothing (output lacks: ::error file=.github/workflows/ci.yml)
+KILLED   mutant 4 disagreeing-pins branch removed: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: two CI pins disagree (exit 0, expected 1)
+KILLED   mutant 5 cleanup trap removed: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (left in TMPDIR: tmp.FVKoEpZMU2 )
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (left in TMPDIR: tmp.FVKoEpZMU2 tmp.SCedAj073w )
+SURVIVED mutant 6 symlinked-folder guard removed: test-template-scripts: 124/124 passed
+KILLED   mutant 7 temporary XDG_CONFIG_HOME/XDG_DATA_HOME removed: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (stub did not see temporary XDG directories: xdg /tmp/tmp.jvcyWxYZvd/sk-user/config /tmp/tmp.jvcyWxYZvd/sk-user/data)
+           FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (stub did not see temporary XDG directories: xdg /tmp/tmp.jvcyWxYZvd/sk-user/config /tmp/tmp.jvcyWxYZvd/sk-user/data)
+KILLED   mutant 8 exact MAJOR.MINOR.PATCH regex weakened to non-empty: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: inexact pin even when the CLI reports it (exit 0, expected 1)
+KILLED   mutant 9 symlink branch disabled: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: SKILL.md as a symlink to an identical copy (output lacks: ::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:)
+           FAIL check-openspec-skills: untracked symlink at a generated path (output lacks: ::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:)
+KILLED   mutant 10 mode branch disabled: test-template-scripts: 122/124 passed
+           FAIL check-openspec-skills: exec bit in the index, mode 100755 (exit 0, expected 1)
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+KILLED   mutant 11 index mode ignored, file system only: test-template-scripts: 123/124 passed
+           FAIL check-openspec-skills: exec bit only in the index, as a Windows commit would set it (exit 0, expected 1)
+
+Result: QA's mutants 1 to 5, 7 and 8 and the D1 mutants 9 to 11 are killed. Mutant 6 survives because it is equivalent (proof in the demo below).
+
+
+## Live demo with the real OpenSpec 2.0.0 CLI (scratch clone /tmp/demo39 of 397bfded81ee609631e7f02c7f6474252f648b3e plus the changed script)
+
+## Clean tree
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+$ git status --porcelain | wc -l (after): 0
+
+## Committed chmod +x (QA repro 1)
+$ git ls-files -s: 100755 .agents/skills/openspec-propose/SKILL.md
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::mode: git mode 100755 but OpenSpec 2.0.0 generates 100644. Fix: run 'git update-index --chmod=-x -- .agents/skills/openspec-propose/SKILL.md' and 'chmod -x .agents/skills/openspec-propose/SKILL.md', and commit
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+## Committed symlink to an identical copy (QA repro 2)
+$ git ls-files -s: 120000 .agents/skills/openspec-propose/SKILL.md
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink: is a symbolic link (git mode 120000) but OpenSpec 2.0.0 generates a regular file (git mode 100644). Fix: delete the link, run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the regular file
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 0
+
+## Exec bit set only in the index (git update-index --chmod=+x, worktree unchanged), committed. The worktree file stays 644, so git status shows 1 mode change before and after; the check reads the index.
+$ git status --porcelain | wc -l (before): 1
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills/openspec-explore/SKILL.md,line=1::mode: git mode 100755 but OpenSpec 2.0.0 generates 100644. Fix: run 'git update-index --chmod=-x -- .agents/skills/openspec-explore/SKILL.md' and 'chmod -x .agents/skills/openspec-explore/SKILL.md', and commit
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+rc=1
+$ git status --porcelain | wc -l (after): 1
+
+## Mutant 6 equivalence: openspec-propose/ replaced by a symlink to a copy, committed; original script vs the guard-removed mutant
+$ diff scripts/check-openspec-skills.sh mutant6.sh
+61c61
+<     if [ -d "$p" ] && [ ! -L "$p" ]; then find "$p" \( -type f -o -type l \) -print; elif [ -e "$p" ] || [ -L "$p" ]; then echo "$p"; fi
+---
+>     if [ -d "$p" ]; then find "$p" \( -type f -o -type l \) -print; elif [ -e "$p" ] || [ -L "$p" ]; then echo "$p"; fi
+$ original: rc=1
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-propose/SKILL.md'
+::error file=.agents/skills/openspec-propose,line=1::extra: OpenSpec 2.0.0 does not generate this file. Fix: delete it, or keep a custom skill under a name that does not start with 'openspec-'
+check-openspec-skills: 2 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+$ mutant 6: rc=1
+::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-propose/SKILL.md'
+::error file=.agents/skills/openspec-propose,line=1::extra: OpenSpec 2.0.0 does not generate this file. Fix: delete it, or keep a custom skill under a name that does not start with 'openspec-'
+check-openspec-skills: 2 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+$ diff original-output mutant-output
+(identical)
+$ find .agents/skills/openspec-propose \( -type f -o -type l \) -print   # GNU find default -P on a symlinked start point
+.agents/skills/openspec-propose
+find (GNU findutils) 4.10.0
+
+Why mutant 6 is equivalent: the guard only matters when an openspec-* path is a symlink to a directory. With the guard the path is printed by the 'echo' branch; without it, find (default -P, no -L/-H) does not follow a symlink given as a start point, matches it as -type l and prints the same single path. Both give 'missing' for its files and 'extra' for the link. No test can tell them apart, so the guard stays as a statement of intent for any find that follows start-point links.
+
+## Clean again
+$ git status --porcelain | wc -l (before): 0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+$ git status --porcelain | wc -l (after): 0
+

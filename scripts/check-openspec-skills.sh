@@ -4,8 +4,9 @@
 #   .agents/skills/.openspec-target and every file under .agents/skills/openspec-*/
 # The reference comes from `openspec init --tools agents --profile core` run in a temporary
 # directory with a temporary OpenSpec config, so this checkout and the user's global OpenSpec
-# config are never written. Each edited, missing, extra or untracked file gets its own
-# ::error annotation with the fix.
+# config are never written. Content, git mode and file type are compared: each edited, missing,
+# extra or untracked file, symlink, or file with another mode gets its own ::error annotation
+# with the fix.
 # Usage: scripts/check-openspec-skills.sh
 #   OPENSPEC_CMD overrides the CLI (default: openspec), for example
 #   OPENSPEC_CMD="npx -y @fission-ai/openspec@<pin>". It must report the pinned version.
@@ -63,6 +64,7 @@ list() { # print the generated-skill files under the current directory, sorted
 (cd "$tmp/ref" && list) >"$tmp/ref.txt"
 list >"$tmp/work.txt"
 git ls-files --others -- .agents/skills | LC_ALL=C sort >"$tmp/untracked.txt"
+git -c core.quotePath=false ls-files -s -- .agents/skills >"$tmp/index.txt"
 total=$(grep -c . "$tmp/ref.txt" || true)
 if [ "$total" -eq 0 ]; then
   err "$ci" "$pin_line" "'${cmd[*]} init --tools agents --profile core' generated no skill files"; exit 1
@@ -71,6 +73,14 @@ fi
 # 4. Compare.
 up="npx -y @fission-ai/openspec@$pin"
 untracked() { grep -qxF -- "$1" "$tmp/untracked.txt"; }
+fsmode() { # git mode of a path from the file system: 120000 symlink, 100755 executable, else 100644
+  if [ -L "$1" ]; then echo 120000; elif [ -x "$1" ]; then echo 100755; else echo 100644; fi
+}
+mode_of() { # git mode of a checkout path: the index mode if tracked, else the file system's; a symlink is always 120000
+  local m
+  m=$(awk -v f="$1" '{ t = index($0, "\t"); if (substr($0, t + 1) == f) { print $1; exit } }' "$tmp/index.txt")
+  if [ -L "$1" ] || [ -z "$m" ]; then fsmode "$1"; else echo "$m"; fi
+}
 drift=0
 while IFS= read -r f; do
   drift=$((drift + 1))
@@ -85,7 +95,17 @@ while IFS= read -r f; do
   fi
 done < <(LC_ALL=C comm -13 "$tmp/ref.txt" "$tmp/work.txt")
 while IFS= read -r f; do
-  if ! cmp -s -- "$tmp/ref/$f" "$f"; then
+  want=$(fsmode "$tmp/ref/$f"); have=$(mode_of "$f")
+  if [ "$have" != "$want" ] && [ "$have" = 120000 ]; then
+    drift=$((drift + 1))
+    err "$f" 1 "symlink: is a symbolic link (git mode 120000) but OpenSpec $pin generates a regular file (git mode $want). Fix: delete the link, run '$up init --tools agents --profile core' and commit the regular file"
+  elif [ "$have" != "$want" ]; then
+    drift=$((drift + 1))
+    x=-x; [ "$want" != 100755 ] || x=+x
+    if untracked "$f"; then fixmode="run 'chmod $x $f' and commit it with 'git add -- $f'"
+    else fixmode="run 'git update-index --chmod=$x -- $f' and 'chmod $x $f', and commit"; fi
+    err "$f" 1 "mode: git mode $have but OpenSpec $pin generates $want. Fix: $fixmode"
+  elif ! cmp -s -- "$tmp/ref/$f" "$f"; then
     drift=$((drift + 1))
     err "$f" 1 "edited: differs from what OpenSpec $pin generates. Fix: run '$up update' and commit the result, or revert the hand edit with 'git checkout -- $f'"
   elif untracked "$f"; then

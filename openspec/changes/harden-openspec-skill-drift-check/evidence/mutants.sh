@@ -5,7 +5,7 @@
 # script fails) or SURVIVED. Self-tests that already fail unmutated (for example tests committed
 # before the fix) are listed once and do not count as kills.
 # Each mutant is a literal text replacement; a replacement that matches nothing is an ERROR.
-# Usage: mutants.sh [repo-dir]   (default: the current repository). Writes only under mktemp.
+# Usage: mutants.sh [repo-dir] [--d1]   (default: the current repository). Writes only under mktemp.
 set -uo pipefail
 src=$(git -C "${1:-.}" rev-parse --show-toplevel)
 work=$(mktemp -d); trap 'rm -rf "$work"' EXIT
@@ -19,6 +19,10 @@ names=(
   "7 temporary XDG_CONFIG_HOME/XDG_DATA_HOME removed"
   "8 exact MAJOR.MINOR.PATCH regex weakened to non-empty"
 )
+# With --d1, three mutants of the #39 D1 code are added.
+if [ "${2:-}" = --d1 ]; then
+  names+=("9 symlink branch disabled" "10 mode branch disabled" "11 index mode ignored, file system only")
+fi
 mutate() { # n file
   python3 - "$1" "$2" <<'PY'
 import sys
@@ -33,6 +37,9 @@ m = {
  "6": ('[ -d "$p" ] && [ ! -L "$p" ]', '[ -d "$p" ]'),
  "7": ('env XDG_CONFIG_HOME="$tmp/xdg" XDG_DATA_HOME="$tmp/data" ', 'env '),
  "8": ('[[ ! "$v" =~ ^[0-9]+\\.[0-9]+\\.[0-9]+$ ]]', '[ -z "$v" ]'),
+ "9": ('if [ "$have" != "$want" ] && [ "$have" = 120000 ]; then', 'if false; then'),
+ "10": ('  elif [ "$have" != "$want" ]; then', '  elif false; then'),
+ "11": ('if [ -L "$1" ] || [ -z "$m" ]; then fsmode', 'if true; then fsmode'),
 }[n]
 if s.count(m[0]) != 1:
     sys.exit("pattern found %d times" % s.count(m[0]))

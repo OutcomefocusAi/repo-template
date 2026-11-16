@@ -214,6 +214,8 @@ sk_link()      { cp .agents/skills/openspec-propose/SKILL.md .agents/skills/copy
 sk_link_untr() { git rm -q --cached .agents/skills/openspec-explore/SKILL.md; cp .agents/skills/openspec-explore/SKILL.md .agents/skills/copy-of-explore.md
                  ln -sf ../copy-of-explore.md .agents/skills/openspec-explore/SKILL.md; }
 skills 1 "check-openspec-skills: exec bit in the index, mode 100755" sk_exec "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::mode: git mode 100755" "100644" "git update-index --chmod=-x"
+sk_exec_idx()  { git update-index --chmod=+x .agents/skills/openspec-sync-specs/SKILL.md; }
+skills 1 "check-openspec-skills: exec bit only in the index, as a Windows commit would set it" sk_exec_idx "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::mode: git mode 100755"
 skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:"
 skills 1 "check-openspec-skills: untracked symlink at a generated path" sk_link_untr "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:"
 # Cases that pin behavior the PR #38 QA mutants could break unnoticed (#39 D2).

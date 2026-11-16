@@ -12,8 +12,8 @@
 
 ## 3. Script
 
-- [ ] 3.1 Change `scripts/check-openspec-skills.sh` per design.md (git mode per path, `symlink` and `mode` annotations with fixes, first match wins). Verify every self-test passes and shellcheck is clean.
-- [ ] 3.2 Re-run `evidence/mutants.sh` and record each of the 8 mutants as killed, or as equivalent with the reason. On a scratch clone with the real 2.0.0 CLI, show a committed `chmod +x` and a committed symlink each fail with the expected annotation, the clean tree passes, and `git status` is unchanged. Save the output in `evidence/`.
+- [x] 3.1 Change `scripts/check-openspec-skills.sh` per design.md (git mode per path, `symlink` and `mode` annotations with fixes, first match wins). Verify every self-test passes and shellcheck is clean.
+- [x] 3.2 Re-run `evidence/mutants.sh` and record each of the 8 mutants as killed, or as equivalent with the reason. On a scratch clone with the real 2.0.0 CLI, show a committed `chmod +x` and a committed symlink each fail with the expected annotation, the clean tree passes, and `git status` is unchanged. Save the output in `evidence/`.
 
 ## 4. Docs
 
