@@ -1,13 +1,13 @@
 # Proposal: update-template-openspec-2-0-0
 
-Tracking issue: [#35](https://github.com/OutcomefocusAi/repo-template/issues/35). Branch: `35-update-template-openspec-2-0-0`, from `main` `8c529c4428f67672bbfb59f73e3ff29514e4f827` (OpenSpec 1.17.0). Notion Tasks row: https://app.notion.com/p/41a444b092e681e7ad82d54e5e82e5e1. Not docs-only and not covered by the standing OK for version-only bumps: OpenSpec 2.0.0 is a major release and its `openspec update` changes the instruction text of all six generated skills, not just their version stamp, so it needs Woody's approval of this proposal before apply.
+Tracking issue: [#35](https://github.com/OutcomefocusAi/repo-template/issues/35). Branch: `35-update-template-openspec-2-0-0`, from `main` `8c529c4428f67672bbfb59f73e3ff29514e4f827` (OpenSpec 1.17.0). Notion Tasks row: https://app.notion.com/p/41a444b092e681e7ad82d54e5e82e5e1. Not docs-only and not covered by the standing OK for version-only bumps: OpenSpec 2.0.0 is a major release and its `openspec update` changes the instruction text of all six generated skills, not just their version stamp, so it needed Woody's approval of this proposal before apply (given 2026-11-16 8:23 AM AZ, see Approval).
 
 ## Approval
 
 | What | Words or selected option text | How given, where and when |
 | --- | --- | --- |
 | Keep the template's OpenSpec current (the request behind this change) | Typed by Woody: "in reference to the template repo I set up I wanna make sure those always have the current version of ponytail and open spec so can you check GitHub once a week to see if they are current and if not get those updated so that template always stays current" | Typed in Woody's chat with Chief of Staff, 2026-11-03 8:46 AM AZ. Relayed by Chief of Staff to Principal Engineer on 2026-11-16 as a drift finding from the weekly check (OpenSpec 1.17.0 pinned, npm `latest` 2.0.0). A request to update, not approval of this proposal |
-| Approve this proposal | Pending | Not yet given. Apply does not start until Woody approves |
+| Approve this proposal | Selected option: "Yes, approve the OpenSpec 2.0.0 proposal" on the card "approve the OpenSpec 2.0.0 update for repo-template" | Tapped by Woody in his chat with Chief of Staff at 8:23 AM AZ Mon Nov 16, 2026, relayed by Chief of Staff. Covers: applying update-template-openspec-2-0-0 (issue #35, proposal head 2f6d238) only. Not covered: merging (this change is not version-only, so the merge comes back to Woody) |
 
 ## Why
 
