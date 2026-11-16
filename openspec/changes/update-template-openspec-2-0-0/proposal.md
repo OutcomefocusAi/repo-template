@@ -1,6 +1,6 @@
 # Proposal: update-template-openspec-2-0-0
 
-Tracking issue: [#35](https://github.com/OutcomefocusAi/repo-template/issues/35). Branch: `35-update-template-openspec-2-0-0`, from `main` `8c529c4428f67672bbfb59f73e3ff29514e4f827` (OpenSpec 1.17.0). Notion Tasks row: pending (added in the next commit). Not docs-only and not covered by the standing OK for version-only bumps: OpenSpec 2.0.0 is a major release and its `openspec update` changes the instruction text of all six generated skills, not just their version stamp, so it needs Woody's approval of this proposal before apply.
+Tracking issue: [#35](https://github.com/OutcomefocusAi/repo-template/issues/35). Branch: `35-update-template-openspec-2-0-0`, from `main` `8c529c4428f67672bbfb59f73e3ff29514e4f827` (OpenSpec 1.17.0). Notion Tasks row: https://app.notion.com/p/41a444b092e681e7ad82d54e5e82e5e1. Not docs-only and not covered by the standing OK for version-only bumps: OpenSpec 2.0.0 is a major release and its `openspec update` changes the instruction text of all six generated skills, not just their version stamp, so it needs Woody's approval of this proposal before apply.
 
 ## Approval
 
