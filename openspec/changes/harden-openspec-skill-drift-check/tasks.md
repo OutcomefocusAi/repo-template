@@ -7,8 +7,8 @@
 
 ## 2. Self-tests first
 
-- [ ] 2.1 Write `evidence/mutants.sh`, which applies each of QA's 8 surviving mutants to a scratch copy of the repository and runs `scripts/test-template-scripts.sh`, and record that all 8 survive on the current tests.
-- [ ] 2.2 Add to `scripts/test-template-scripts.sh` the D1 cases (committed `chmod +x` on a `SKILL.md`, a committed symlink to an identical copy, an untracked symlink at a generated path) and the D2 cases from design.md (stub `STUB_INIT_MODE` and XDG logging). Verify the D1 cases fail and every other case passes, commit, and save the run in `evidence/`.
+- [x] 2.1 Write `evidence/mutants.sh`, which applies each of QA's 8 surviving mutants to a scratch copy of the repository and runs `scripts/test-template-scripts.sh`, and record that all 8 survive on the current tests.
+- [x] 2.2 Add to `scripts/test-template-scripts.sh` the D1 cases (committed `chmod +x` on a `SKILL.md`, a committed symlink to an identical copy, an untracked symlink at a generated path) and the D2 cases from design.md (stub `STUB_INIT_MODE` and XDG logging). Verify the D1 cases fail and every other case passes, commit, and save the run in `evidence/`.
 
 ## 3. Script
 
