@@ -49,6 +49,9 @@ jobs:
       - name: OpenSpec pin agreement
         run: scripts/check-openspec-pin.sh
 
+      - name: OpenSpec skills match generation
+        run: scripts/check-openspec-skills.sh
+
       - name: Ponytail pin agreement
         run: scripts/check-ponytail-pin.sh
 

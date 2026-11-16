@@ -1,0 +1,23 @@
+# dry archive in a scratch clone of a35244336741a3aa11b89f05ca162a92e7c9e962 (/tmp/dry37), task 5.2 checked first as in the real run
+$ printf "y\n" | openspec archive add-openspec-skill-drift-check   # 2.0.0
+Task status: ✓ Complete
+
+Specs to update:
+  continuous-integration: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'add-openspec-skill-drift-check' archived as '2026-11-16-add-openspec-skill-drift-check'.
+$ openspec validate --all --strict
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+rc=0

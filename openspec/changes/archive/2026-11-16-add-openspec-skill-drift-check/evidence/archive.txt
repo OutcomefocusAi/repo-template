@@ -1,0 +1,71 @@
+# archive evidence, add-openspec-skill-drift-check (#37)
+# 2026-11-16 09:27 MST, on a35244336741a3aa11b89f05ca162a92e7c9e962 plus the archive (uncommitted at run time)
+
+# First attempt at 648d32b (9:25 AM AZ, reverted, not committed): validate --all --strict failed on spec/continuous-integration, "Requirement text is very long (>500 characters)" (541 characters). Reworded in a35244336741a3aa11b89f05ca162a92e7c9e962 after Woody's 9:26 AM AZ decision; dry run in 5.2-dry-archive.txt.
+
+$ printf "y\n" | openspec archive add-openspec-skill-drift-check   # 2.0.0, no --yes
+Task status: ✓ Complete
+
+Specs to update:
+  continuous-integration: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'add-openspec-skill-drift-check' archived as '2026-11-16-add-openspec-skill-drift-check'.
+
+$ requirement text length (merged spec)
+489
+
+$ grep -n "Requirement: Template checks always run\|Scenario:" openspec/specs/continuous-integration/spec.md
+12:#### Scenario: Pull request opened
+16:#### Scenario: Forbidden trigger
+23:#### Scenario: Unpinned action
+27:#### Scenario: Job without timeout
+31:### Requirement: Template checks always run
+34:#### Scenario: Em dash in a hand-written file
+38:#### Scenario: Generated and vendored files
+42:#### Scenario: OpenSpec invalid
+46:#### Scenario: OpenSpec version records disagree
+50:#### Scenario: OpenSpec version record missing or not exact
+54:#### Scenario: Ponytail pin records disagree
+58:#### Scenario: Vendored Ponytail file does not match its recorded fingerprint
+62:#### Scenario: Generated skills match the pinned OpenSpec version
+66:#### Scenario: Generated skill edited
+70:#### Scenario: Generated skill file missing
+74:#### Scenario: Extra or untracked file in generated skills
+78:#### Scenario: Reference version comes from the CI pin
+82:#### Scenario: Check leaves the checkout unchanged
+89:#### Scenario: Slot markers
+96:#### Scenario: Derived repository with unfilled slot
+100:#### Scenario: Template repository
+107:#### Scenario: Coverage below bar
+114:#### Scenario: Runner choice
+
+$ openspec validate --all --strict   # 2.0.0
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+rc=0
+
+$ scripts/test-template-scripts.sh | tail -1
+test-template-scripts: 110/110 passed
+
+$ scripts/check-openspec-pin.sh
+check-openspec-pin: 9 records agree on 2.0.0
+rc=0
+
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+rc=0

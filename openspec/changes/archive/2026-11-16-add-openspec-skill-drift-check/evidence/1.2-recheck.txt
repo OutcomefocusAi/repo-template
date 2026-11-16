@@ -1,0 +1,16 @@
+# 1.2 re-check, 2026-11-16 09:13 MST, base 2ae62c6
+$ grep -n "@fission-ai/openspec@" .github/workflows/ci.yml
+41:          npm install --global --no-fund --no-audit @fission-ai/openspec@2.0.0
+$ npm view @fission-ai/openspec dist-tags.latest
+2.0.0
+
+$ (in an empty git repo) openspec init --tools agents --profile core
+exit=0
+$ diff -r <reference>/.agents/skills .agents/skills --exclude="ponytail*"
+identical
+
+$ (scratch copy) rm -rf .agents/skills/openspec-explore; openspec update; git status --porcelain
+exit=0
+ D .agents/skills/openspec-explore/SKILL.md
+?? openspec/changes/add-openspec-skill-drift-check/evidence/
+(still deleted: update does not restore a deleted folder)

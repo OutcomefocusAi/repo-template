@@ -135,6 +135,73 @@ pin 1 "check-ponytail-pin: wrong recorded LICENSE SHA-256" check-ponytail-pin.sh
 pin 1 "check-ponytail-pin: SOURCE.md missing" check-ponytail-pin.sh pt_no_source
 pin 1 "check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing" check-ponytail-pin.sh pt_no_row
 
+# check-openspec-skills: the generated OpenSpec skill files must equal what the pinned version
+# generates. A stub openspec on PATH stands in for the CLI so these cases need no network: its
+# init copies the template's committed generated files (the reference) into its working
+# directory, drops a marker file there and logs where and how it ran.
+stub="$scratch/stub"; ref="$scratch/skills-ref"; mkdir -p "$stub" "$ref/.agents/skills"
+cp "$root/.agents/skills/.openspec-target" "$ref/.agents/skills/"; cp -R "$root"/.agents/skills/openspec-* "$ref/.agents/skills/"
+cat > "$stub/openspec" <<'STUB'
+#!/usr/bin/env bash
+case "${1:-}" in
+  --version) echo "${STUB_OPENSPEC_VERSION:?}" ;;
+  init) printf '%s %s\n' "$PWD" "$*" >> "${STUB_LOG:?}"; touch .stub-init-ran
+        mkdir -p .agents/skills; cp -R "${STUB_REF:?}/.agents/skills/." .agents/skills/ ;;
+  *) echo "stub openspec: unsupported: $*" >&2; exit 2 ;;
+esac
+STUB
+chmod +x "$stub/openspec"
+pinv=$(sed -nE 's/.*@fission-ai\/openspec@([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' "$root/.github/workflows/ci.yml" | head -n1)
+SKENV=()
+skills() { # expected-exit description fixture-function expected-text...
+  local want=$1 name=$2 fixture=$3; shift 3
+  local before after got why=""
+  before=$(git -C "$repo" status --porcelain --untracked-files=all)
+  [ "$fixture" = none ] || in_repo "$fixture"
+  after=$(git -C "$repo" status --porcelain --untracked-files=all)
+  if [ "$fixture" != none ] && [ "$before" = "$after" ]; then why="fixture $fixture changed nothing"; fi
+  : > "$scratch/stub.log"
+  (cd "$repo" && env PATH="$stub:$PATH" STUB_OPENSPEC_VERSION="$pinv" STUB_REF="$ref" STUB_LOG="$scratch/stub.log" \
+    "${SKENV[@]}" scripts/check-openspec-skills.sh) >"$scratch/out" 2>&1; got=$?
+  [ -n "$why" ] || [ "$got" -eq "$want" ] || why="exit $got, expected $want"
+  for t in "$@"; do [ -n "$why" ] || grep -qF -- "$t" "$scratch/out" || why="output lacks: $t"; done
+  [ -n "$why" ] || [ "$after" = "$(git -C "$repo" status --porcelain --untracked-files=all)" ] || why="the check changed the checkout"
+  [ -n "$why" ] || [ ! -e "$repo/.stub-init-ran" ] || why="generation ran inside the checkout"
+  total=$((total + 1))
+  if [ -z "$why" ]; then echo "ok   $name"; else
+    echo "FAIL $name ($why)"; sed 's/^/     /' "$scratch/out"; fails=$((fails + 1)); fi
+  git -C "$repo" reset -q -- .agents .github/workflows; git -C "$repo" checkout -q -- .agents .github/workflows
+  git -C "$repo" clean -fdq -- .agents; rm -f "$repo/.stub-init-ran"; SKENV=()
+}
+sk_edit()      { echo "local edit" >> .agents/skills/openspec-apply-change/SKILL.md; }
+sk_stamp()     { sed -Ei 's/(generatedBy: ")[0-9.]+/\10.0.1/' .agents/skills/openspec-propose/SKILL.md; }
+sk_rm_file()   { rm .agents/skills/openspec-sync-specs/SKILL.md; }
+sk_rm_dir()    { rm -r .agents/skills/openspec-explore; }
+sk_rm_target() { rm .agents/skills/.openspec-target; }
+sk_extra()     { echo "notes" > .agents/skills/openspec-propose/notes.md; git add .agents/skills/openspec-propose/notes.md; }
+sk_untracked() { mkdir .agents/skills/openspec-extra; echo "mine" > .agents/skills/openspec-extra/SKILL.md; }
+sk_pin_range() { sed -Ei 's/(@fission-ai\/openspec@)/\1^/' .github/workflows/ci.yml; }
+sk_pin_gone()  { sed -Ei '/@fission-ai\/openspec@/d' .github/workflows/ci.yml; }
+fix="npx -y @fission-ai/openspec@$pinv"
+skills 0 "check-openspec-skills: generated skills match" none "check-openspec-skills: 7 generated file(s) match OpenSpec $pinv"
+total=$((total + 1))
+if grep -q -- " init --tools agents --profile core$" "$scratch/stub.log" && ! grep -qF -e "$repo/" -e "$repo " "$scratch/stub.log"; then
+  echo "ok   check-openspec-skills: reference from init --tools agents --profile core outside the checkout"
+else echo "FAIL check-openspec-skills: reference from init --tools agents --profile core outside the checkout"; sed 's/^/     /' "$scratch/stub.log"; fails=$((fails + 1)); fi
+skills 1 "check-openspec-skills: edited skill text" sk_edit "::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::edited" "$fix update"
+skills 1 "check-openspec-skills: edited generatedBy stamp" sk_stamp "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::edited"
+skills 1 "check-openspec-skills: deleted SKILL.md" sk_rm_file "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing" "$fix init --tools agents --profile core"
+skills 1 "check-openspec-skills: deleted skill folder" sk_rm_dir "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::missing"
+skills 1 "check-openspec-skills: deleted .openspec-target" sk_rm_target "::error file=.agents/skills/.openspec-target,line=1::missing"
+skills 1 "check-openspec-skills: extra tracked file in a skill folder" sk_extra "::error file=.agents/skills/openspec-propose/notes.md,line=1::extra"
+skills 1 "check-openspec-skills: untracked new openspec-* folder" sk_untracked "::error file=.agents/skills/openspec-extra/SKILL.md,line=1::untracked"
+SKENV=(STUB_OPENSPEC_VERSION=0.0.1)
+skills 1 "check-openspec-skills: CLI at another version than the CI pin" none "::error file=.github/workflows/ci.yml" "0.0.1" "$pinv"
+skills 1 "check-openspec-skills: CI pin is a range" sk_pin_range "::error file=.github/workflows/ci.yml"
+skills 1 "check-openspec-skills: CI pin line missing" sk_pin_gone "::error file=.github/workflows/ci.yml"
+SKENV=(OPENSPEC_CMD=no-such-openspec-command)
+skills 1 "check-openspec-skills: no OpenSpec CLI" none "::error file=.github/workflows/ci.yml" "no-such-openspec-command"
+
 # slot.sh
 expect 0 "slot: warns in the template repository" env GITHUB_REPOSITORY=OutcomefocusAi/repo-template "$root/scripts/slot.sh" lint
 expect 1 "slot: fails in a derived repository" env GITHUB_REPOSITORY=someone/derived "$root/scripts/slot.sh" lint
