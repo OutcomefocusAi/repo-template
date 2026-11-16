@@ -12,7 +12,7 @@
 ## 3. Script
 
 - [x] 3.1 Write `scripts/check-openspec-skills.sh` per design.md (pin from `ci.yml`, CLI version check, reference from `init --tools agents --profile core` in a temporary directory with a temporary `XDG_CONFIG_HOME`, `cmp` comparison, one `::error file=<path>,line=1::` per drifted file with the fix, success line with count and version). Verify every self-test passes and shellcheck is clean on the new script.
-- [ ] 3.2 Run the script on the real tree with the real OpenSpec 2.0.0 CLI (`OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0"`, npm cache in `/tmp`): verify it passes, then on a scratch copy verify an edited skill, a deleted folder and an untracked extra file each produce the expected annotations and fix text, and that `git status` is unchanged by each run. Save the output in `evidence/`.
+- [x] 3.2 Run the script on the real tree with the real OpenSpec 2.0.0 CLI (`OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0"`, npm cache in `/tmp`): verify it passes, then on a scratch copy verify an edited skill, a deleted folder and an untracked extra file each produce the expected annotations and fix text, and that `git status` is unchanged by each run. Save the output in `evidence/`.
 
 ## 4. CI step and docs
 

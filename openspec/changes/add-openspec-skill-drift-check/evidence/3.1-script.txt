@@ -115,7 +115,7 @@ ok   release state: this repository
 test-template-scripts: 110/110 passed
 exit=0
 
-# Mutation check of the new self-tests (script edited in place, then restored; outputs from the run above this file was written)
+# Mutation check of the new self-tests (run on the box before this file was written; each mutation edited the script in place and the script was restored afterwards)
 - cmp comparison disabled: 2 FAIL (edited skill text, edited generatedBy stamp), 108/110
 - extra/untracked loop disabled: 2 FAIL (extra tracked file, untracked new folder), 108/110
 - reference generated inside the checkout instead of the temp dir: 9 FAIL, 101/110

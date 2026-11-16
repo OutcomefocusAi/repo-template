@@ -1,0 +1,44 @@
+# 3.2 live demo with the real OpenSpec 2.0.0 CLI via npx (npm cache /tmp), 2026-11-16 09:15 MST
+OpenSpec CLI: 2.0.0
+
+## real tree, branch head 2cc5540
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+exit=0
+git status --porcelain --untracked-files=all: unchanged by the check
+
+Scratch clone of the branch head at a temporary path (shown as <scratch>).
+
+## scratch: clean
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+exit=0
+git status --porcelain --untracked-files=all: unchanged by the check
+
+$ echo "local edit" >> .agents/skills/openspec-apply-change/SKILL.md
+
+## scratch: edited skill
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::edited: differs from what OpenSpec 2.0.0 generates. Fix: run 'npx -y @fission-ai/openspec@2.0.0 update' and commit the result, or revert the hand edit with 'git checkout -- .agents/skills/openspec-apply-change/SKILL.md'
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+exit=1
+git status --porcelain --untracked-files=all: unchanged by the check
+
+$ rm -r .agents/skills/openspec-explore
+
+## scratch: deleted skill folder
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills/openspec-explore/SKILL.md,line=1::missing: OpenSpec 2.0.0 generates this file but it is not in the checkout. Fix: run 'npx -y @fission-ai/openspec@2.0.0 init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- .agents/skills/openspec-explore/SKILL.md'
+check-openspec-skills: 1 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+exit=1
+git status --porcelain --untracked-files=all: unchanged by the check
+
+$ echo notes > .agents/skills/openspec-propose/notes.md; git add it; mkdir .agents/skills/openspec-extra; echo mine > .agents/skills/openspec-extra/SKILL.md (untracked)
+
+## scratch: extra tracked file and untracked extra skill
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+::error file=.agents/skills/openspec-extra/SKILL.md,line=1::untracked: OpenSpec 2.0.0 does not generate this file and it is not committed. Fix: delete it, or keep a custom skill under a name that does not start with 'openspec-'
+::error file=.agents/skills/openspec-propose/notes.md,line=1::extra: OpenSpec 2.0.0 does not generate this file. Fix: delete it, or keep a custom skill under a name that does not start with 'openspec-'
+check-openspec-skills: 2 file(s) drifted from what OpenSpec 2.0.0 generates (7 generated file(s) expected)
+exit=1
+git status --porcelain --untracked-files=all: unchanged by the check
