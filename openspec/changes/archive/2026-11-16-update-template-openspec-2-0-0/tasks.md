@@ -13,7 +13,7 @@
 ## 3. Checks and archive
 
 - [x] 3.1 Run `openspec validate --all --strict` at 2.0.0, `scripts/test-template-scripts.sh`, `scripts/check-em-dash.sh`, `scripts/check-ponytail-pin.sh`, `scripts/check-workflows.sh`, actionlint, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check` at the head, verify all pass, and save the output in the change folder's `evidence/`.
-- [ ] 3.2 After 3.1 and after the pull request (follow-up below) is open with green CI, archive the change with `openspec archive update-template-openspec-2-0-0` at 2.0.0 (no `--yes`) as the last commit of the implementation pull request, before Principal QA reviews, and verify `openspec/specs/agent-guidance/spec.md` holds the modified requirement with all three scenarios.
+- [x] 3.2 After 3.1 and after the pull request (follow-up below) is open with green CI, archive the change with `openspec archive update-template-openspec-2-0-0` at 2.0.0 (no `--yes`) as the last commit of the implementation pull request, before Principal QA reviews, and verify `openspec/specs/agent-guidance/spec.md` holds the modified requirement with all three scenarios.
 
 ## Workflow follow-up
 
