@@ -7,7 +7,7 @@
 ## 2. Mutation demo, then tests
 
 - [x] 2.1 Copy `mutants.sh` into `evidence/`, add `--f` (mutants 16 to 19 from design.md), and record that all four survive the current 128 self-tests.
-- [ ] 2.2 Add the on-disk-only and index-only self-tests from design.md to `scripts/test-template-scripts.sh`. Verify they pass, every other case still passes, and the mutation run now kills mutants 16 to 19 (16 by the on-disk-only test, 17 to 19 by the index-only test). Save both runs in `evidence/` and commit.
+- [x] 2.2 Add the on-disk-only and index-only self-tests from design.md to `scripts/test-template-scripts.sh`. Verify they pass, every other case still passes, and the mutation run now kills mutants 16 to 19 (16 by the on-disk-only test, 17 to 19 by the index-only test). Save both runs in `evidence/` and commit.
 
 ## 3. Checks and archive
 

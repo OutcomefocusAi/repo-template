@@ -226,6 +226,13 @@ sk_skills_link() { mv .agents/skills .agents/skills-real; ln -s skills-real .age
 sk_agents_link() { mv .agents .agents-real; ln -s .agents-real .agents; git add -A .agents .agents-real; }
 skills 1 "check-openspec-skills: .agents/skills committed as a symlink to an identical copy" sk_skills_link "::error file=.agents/skills,line=1::symlink:" "real directory"
 skills 1 "check-openspec-skills: .agents committed as a symlink to an identical copy" sk_agents_link "::error file=.agents,line=1::symlink:" "real directory"
+# Each half of that check on its own (#44): a link only on disk (not staged), and a link only in the
+# index (mode 120000) with the real directory still on disk, as an unstaged swap of a committed link leaves it.
+sk_skills_link_disk() { mv .agents/skills .agents/skills-real; ln -s skills-real .agents/skills; }
+sk_agents_link_idx()  { git rm -r -q --cached .agents
+                        git update-index --add --cacheinfo "120000,$(printf .agents-real | git hash-object -w --stdin),.agents"; }
+skills 1 "check-openspec-skills: .agents/skills a symlink on disk only, not staged" sk_skills_link_disk "::error file=.agents/skills,line=1::symlink:" "real directory"
+skills 1 "check-openspec-skills: .agents a symlink in the index only, real directory on disk" sk_agents_link_idx "::error file=.agents,line=1::symlink:" "real directory"
 # Cases that kill the PR #40 QA survivors (#41 E2): an on-disk link beats the index mode, and an
 # untracked executable file gets mode: with the chmod and git add fix.
 sk_link_over() { cp .agents/skills/openspec-archive-change/SKILL.md .agents/skills/copy-of-archive.md; rm .agents/skills/openspec-archive-change/SKILL.md
