@@ -1,0 +1,28 @@
+# dry archive at proposal, scratch clone of ad304d9f6806d8b5ae3302b24346ed17e2edafc1 (/tmp/dry41), all tasks ticked in the scratch copy only, 2026-11-16 10:27 MST
+$ printf "y\n" | openspec archive close-openspec-skill-drift-gaps   # 2.0.0
+
+Proposal warnings in proposal.md (non-blocking):
+  ⚠ Why section should not exceed 1000 characters
+Task status: ✓ Complete
+
+Specs to update:
+  continuous-integration: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 1, - 0, → 0
+Specs updated successfully.
+Change 'close-openspec-skill-drift-gaps' archived as '2026-11-16-close-openspec-skill-drift-gaps'.
+$ openspec validate --all --strict
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+rc=0
+$ merged requirement length
+489

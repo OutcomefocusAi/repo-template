@@ -2,8 +2,8 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Verify Woody's approval (tapped 10:24 AM AZ Nov 16, 2026, relayed by Chief of Staff, covering this proposal and its apply for E1 and E2 only) is recorded in `proposal.md` and in #41 before any other task starts.
-- [ ] 1.2 Re-check that the CI pin and npm `latest` are still 2.0.0 and reproduce E1 (`.agents/skills` and `.agents` committed as symlinks to identical copies pass, also in a fresh clone) on the current script with the real 2.0.0 CLI; save the output in `evidence/`. If anything changed, stop and report.
+- [x] 1.1 Verify Woody's approval (tapped 10:24 AM AZ Nov 16, 2026, relayed by Chief of Staff, covering this proposal and its apply for E1 and E2 only) is recorded in `proposal.md` and in #41 before any other task starts.
+- [x] 1.2 Re-check that the CI pin and npm `latest` are still 2.0.0 and reproduce E1 (`.agents/skills` and `.agents` committed as symlinks to identical copies pass, also in a fresh clone) on the current script with the real 2.0.0 CLI; save the output in `evidence/`. If anything changed, stop and report.
 
 ## 2. Self-tests first
 

@@ -1,0 +1,36 @@
+# 1.2 re-check, 2026-11-16 10:28 MST, main d7046b4d0aeb5b0cbde6f7833d2242668ba6b3b0, branch head 2649fe5736593f16b0e9ede1f72c62c50150b22a
+
+$ grep -n "@fission-ai/openspec@" .github/workflows/ci.yml
+41:          npm install --global --no-fund --no-audit @fission-ai/openspec@2.0.0
+$ npm view @fission-ai/openspec version   # the latest dist-tag
+2.0.0
+
+## E1 repro on a scratch clone (/tmp/e1repro) with the merged script and the real 2.0.0 CLI
+### clean
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+### .agents/skills committed as a symlink to an identical copy
+$ mv .agents/skills .agents/skills-real && ln -s skills-real .agents/skills && git add -A && git commit
+$ git ls-files -s .agents/skills: 120000 .agents/skills
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+### fresh clone of that commit (what CI sees)
+$ ls -l .agents: lrwxrwxrwx skills -> skills-real
+drwxr-xr-x skills-real
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+### .agents committed as a symlink to an identical copy
+$ mv .agents agents-real && ln -s agents-real .agents && git add -A && git commit
+$ git ls-files -s .agents: 120000 .agents
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+### fresh clone of that commit
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.0.0" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.0.0
+rc=0
+
+Result: all four E1 runs pass (exit 0) on the merged script, as QA reported. Pin and npm latest are 2.0.0.
