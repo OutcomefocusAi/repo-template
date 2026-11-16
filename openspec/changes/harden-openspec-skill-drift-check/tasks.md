@@ -17,7 +17,7 @@
 
 ## 4. Docs
 
-- [ ] 4.1 Update the `TEMPLATE_SOURCE.md` sentence on `check-openspec-skills.sh` to name mode and symlink drift, and verify `scripts/check-em-dash.sh` passes.
+- [x] 4.1 Update the `TEMPLATE_SOURCE.md` sentence on `check-openspec-skills.sh` to name mode and symlink drift, and verify `scripts/check-em-dash.sh` passes.
 
 ## 5. Checks and archive
 
