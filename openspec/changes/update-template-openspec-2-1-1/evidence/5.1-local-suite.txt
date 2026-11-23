@@ -1,4 +1,4 @@
-# Local suite at 46bf1a80b09195ed21f2ce4a20de4fe9f82fe530, 2026-11-23 08:34 MST
+# Local suite at 0a8e7c02a5c833f5b02cd8b921575011d5e478ec, 2026-11-23 08:43 MST
 node v24.22.1, npm 11.21.1, actionlint 1.7.12, gitleaks 8.30.1
 
 $ scripts/install-ci-tools.sh /tmp/citools
@@ -68,6 +68,8 @@ ok   check-openspec-pin: workflow writes ~/.npmrc before the install
 ok   check-openspec-pin: workflow runs npm config set before the install
 ok   check-openspec-pin: install line continued from the line before
 ok   check-openspec-pin: install inside a folded run: > block
+ok   check-openspec-pin: install inside another step's script: | block
+ok   check-openspec-pin: blank line inside the run: | block before the install
 ok   check-openspec-pin: .yaml workflow installs OpenSpec without a cutoff
 ok   check-openspec-pin: cutoff is a date with no time
 ok   check-openspec-pin: cutoff time has no Z
@@ -88,7 +90,7 @@ ok   check-ponytail-pin: SOURCE.md missing
 ok   check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing
 ok   check-openspec-skills: generated skills match
 ok   check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout
-ok   check-openspec-skills: init runs with a temporary HOME, not the caller's
+ok   check-openspec-skills: init runs with a temporary HOME that exists, not the caller's
 ok   check-openspec-skills: edited skill text
 ok   check-openspec-skills: added or edited generatedBy stamp
 ok   check-openspec-skills: deleted SKILL.md
@@ -184,7 +186,7 @@ ok   release state: include-component-in-tag is the string "false", not the bool
 ok   release state: initial-version not set
 ok   release state: version is not MAJOR.MINOR.PATCH
 ok   release state: this repository
-test-template-scripts: 161/161 passed
+test-template-scripts: 163/163 passed
 exit=0
 
 $ scripts/check-em-dash.sh
@@ -211,13 +213,13 @@ $ /tmp/citools/actionlint -color
 exit=0
 
 $ /tmp/citools/gitleaks git --redact --no-banner .
-8:34AM INF 199 commits scanned.
-8:34AM INF scanned ~2214960 bytes (2.21 MB) in 304ms
-8:34AM INF no leaks found
+8:43AM INF 202 commits scanned.
+8:43AM INF scanned ~2243835 bytes (2.24 MB) in 319ms
+8:43AM INF no leaks found
 exit=0
 
 $ scripts/check-commits.sh origin/main HEAD 47-update-template-openspec-2-1-1
-check-commits: 8 commit(s) pass on 47-update-template-openspec-2-1-1
+check-commits: 11 commit(s) pass on 47-update-template-openspec-2-1-1
 exit=0
 
 $ git diff --check origin/main...HEAD
