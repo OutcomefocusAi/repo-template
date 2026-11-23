@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.1](https://github.com/OutcomefocusAi/repo-template/compare/v0.1.0...v0.1.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* catch mode and symlink drift in check-openspec-skills and kill surviving mutants ([#39](https://github.com/OutcomefocusAi/repo-template/issues/39)) ([#40](https://github.com/OutcomefocusAi/repo-template/issues/40)) ([d7046b4](https://github.com/OutcomefocusAi/repo-template/commit/d7046b4d0aeb5b0cbde6f7833d2242668ba6b3b0))
+* **ci:** update OpenSpec to 2.1.1 and Ponytail to ebd8654 with an install cutoff ([#47](https://github.com/OutcomefocusAi/repo-template/issues/47)) ([#48](https://github.com/OutcomefocusAi/repo-template/issues/48)) ([3e538bc](https://github.com/OutcomefocusAi/repo-template/commit/3e538bcf96e3b7cc80995bdf8a4ab308186d889b))
+* fail check-openspec-skills on symlinked .agents dirs and kill index-vs-disk mutants ([#41](https://github.com/OutcomefocusAi/repo-template/issues/41)) ([#43](https://github.com/OutcomefocusAi/repo-template/issues/43)) ([47155c5](https://github.com/OutcomefocusAi/repo-template/commit/47155c57c3790e30e038c629ff8788960387fcc0))
+
 ## 0.1.0 (2026-10-21)
 
 
