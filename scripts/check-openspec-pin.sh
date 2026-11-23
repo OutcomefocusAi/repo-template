@@ -60,20 +60,23 @@ done
 
 ci=0; cutoffs=(); cutoff_at=(); now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 run_block() { # file line: the install line must be inside a literal `run: |` block, not continued
-  local f=$1 n=$2 i text ind run_ind
+  local f=$1 n=$2 i text sp
   if [ "$n" -gt 1 ] && sed -n "$((n - 1))p" "$f" | grep -qE '\\[[:space:]]*$'; then
     err "$f" "$n" "the OpenSpec install line continues the line before it (trailing backslash), so other options can join the command"
   fi
-  ind=$(sed -n "${n}p" "$f" | sed -E 's/^([[:space:]]*).*/\1/' | wc -c)
+  # The block's parent is the nearest non-blank line above with less indentation; it must be the
+  # run key with a literal block indicator (|, |- or |+), not a folded > or another key's block.
+  text=$(sed -n "${n}p" "$f"); sp=${text%%[![:space:]]*}; sp=${#sp}
   for ((i = n - 1; i >= 1; i--)); do
     text=$(sed -n "${i}p" "$f")
-    if [[ "$text" =~ ^([[:space:]]*(-[[:space:]]+)?)run:(.*)$ ]]; then
-      run_ind=$(( ${#BASH_REMATCH[1]} + 1 ))
-      if [[ "${BASH_REMATCH[3]}" =~ ^[[:space:]]*\|[-+]?[[:space:]]*(#.*)?$ ]] && [ "$run_ind" -lt "$ind" ]; then return 0; fi
+    [[ "$text" =~ ^[[:space:]]*$ ]] && continue
+    local lead=${text%%[![:space:]]*}
+    if [ "${#lead}" -lt "$sp" ]; then
+      [[ "$text" =~ ^[[:space:]]*(-[[:space:]]+)?run:[[:space:]]*\|[-+]?[[:space:]]*(#.*)?$ ]] && return 0
       break
     fi
   done
-  err "$f" "$n" "the OpenSpec install line must be inside a literal run: | block (not a folded run: > block), so no other line joins the command"
+  err "$f" "$n" "the OpenSpec install line must be inside a literal run: | block (not a folded run: > block or another key's block), so no other line joins the command"
 }
 for f in .github/workflows/*.yml .github/workflows/*.yaml; do
   while IFS= read -r hit; do
