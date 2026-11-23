@@ -6,11 +6,11 @@ This folder is a vendored copy of a third-party agent skill. Do not edit `SKILL.
 |-------|-------|
 | Upstream repository | https://github.com/DietrichGebert/ponytail |
 | Upstream path | `skills/ponytail/SKILL.md` |
-| Pinned commit | `96608e078b2d5ea607c5c3b8b5a54d1c1fba6846` |
-| Upstream version | 5.3.3 plus one docs commit (`git describe --tags`: `v5.3.3-1-g96608e0`) |
-| File at that commit | https://github.com/DietrichGebert/ponytail/blob/96608e078b2d5ea607c5c3b8b5a54d1c1fba6846/skills/ponytail/SKILL.md |
+| Pinned commit | `ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10` |
+| Upstream version | 5.3.3 plus four commits, none touching the vendored files (`git describe --tags`: `v5.3.3-4-gebd8654`) |
+| File at that commit | https://github.com/DietrichGebert/ponytail/blob/ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10/skills/ponytail/SKILL.md |
 | License | MIT, Copyright (c) 2026 DietrichGebert (see `LICENSE` in this folder) |
-| Date vendored | 2026-11-03 |
+| Date vendored | 2026-11-23 |
 | Modified | No. `SKILL.md` and `LICENSE` are byte-for-byte copies of the upstream files at the pinned commit. |
 | SHA-256 of `SKILL.md` | `9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509` |
 | SHA-256 of `LICENSE` | `fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab` |
