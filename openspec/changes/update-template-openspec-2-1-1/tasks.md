@@ -13,7 +13,7 @@
 ## 3. Generated-skills check at 2.1.x
 
 - [x] 3.1 In `scripts/test-template-scripts.sh`, make the stub log `HOME`, then assert that the reference comes from `init --scope project --tools agents --profile core`, that the stub sees a temporary `HOME` inside the check's temporary directory (never the caller's), and that fix hints name `init --scope project`. Run against the unchanged script, verify the new assertions fail, save the output in `evidence/3.1-failing-self-tests.txt`, and commit as `test(ci): ... (#47)`.
-- [ ] 3.2 Implement design.md decision 5 in `scripts/check-openspec-skills.sh` and update the `init` command text in `TEMPLATE_SOURCE.md`; verify the whole self-test suite passes.
+- [x] 3.2 Implement design.md decision 5 in `scripts/check-openspec-skills.sh` and update the `init` command text in `TEMPLATE_SOURCE.md`; verify the whole self-test suite passes.
 
 ## 4. OpenSpec 2.1.1 and Ponytail ebd8654
 
