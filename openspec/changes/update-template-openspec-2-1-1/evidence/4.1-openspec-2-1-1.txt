@@ -1,0 +1,39 @@
+# 4.1 OpenSpec 2.1.1, 2026-11-23 08:33 MST
+$ git diff --stat (after npx -y @fission-ai/openspec@2.1.1 update, with a temporary HOME and XDG dirs)
+ .agents/skills/openspec-apply-change/SKILL.md   |  5 ++---
+ .agents/skills/openspec-archive-change/SKILL.md | 20 +++++++++++++-------
+ .agents/skills/openspec-explore/SKILL.md        | 11 +++++------
+ .agents/skills/openspec-propose/SKILL.md        |  3 +--
+ .agents/skills/openspec-sync-specs/SKILL.md     |  1 -
+ .agents/skills/openspec-update-change/SKILL.md  | 19 +++++++++----------
+ .github/workflows/ci.yml                        |  2 +-
+ TEMPLATE_SOURCE.md                              |  6 +++---
+ openspec/config.yaml                            |  4 ++++
+ 9 files changed, 38 insertions(+), 33 deletions(-)
+
+$ git diff -- .agents | diff against the scratch run of the same command on main 3166c89: identical
+$ grep -c generatedBy .agents/skills/openspec-*/SKILL.md
+.agents/skills/openspec-apply-change/SKILL.md:0
+.agents/skills/openspec-archive-change/SKILL.md:0
+.agents/skills/openspec-explore/SKILL.md:0
+.agents/skills/openspec-propose/SKILL.md:0
+.agents/skills/openspec-sync-specs/SKILL.md:0
+.agents/skills/openspec-update-change/SKILL.md:0
+$ scripts/check-openspec-pin.sh
+check-openspec-pin: 3 records agree on 2.1.1
+exit=0
+$ OPENSPEC_CMD="npx -y @fission-ai/openspec@2.1.1" scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.1.1
+exit=0
+$ rg -n "/openspec-|/opsx|slash command" .agents/skills/openspec-*/ ; find . -path "*/commands/opsx" -o -path "*/commands/openspec"
+rg exit=1 (1 = no match)
+$ openspec update at 2.1.1 again (non-interactive): tree unchanged
+✓ All 1 tool(s) up to date (v2.1.1)
+unchanged
+$ keepsProjectSkills() from @fission-ai/openspec 2.1.1 dist/core/project-skills-scope.js
+this branch: true  main 3166c89 copy: false
+$ script -qec "openspec update" (pseudo-terminal, 2.1.1), this branch vs main
+this branch: ✓ All 1 tool(s) up to date (v2.1.1)   (no prompt)
+main 3166c89: ? Where should OpenSpec keep this project’s skills?  ❯ Keep in this project / Switch to global
+$ ls $HOME/.agents (the real home)
+ls: cannot access '/home/box/.agents': No such file or directory

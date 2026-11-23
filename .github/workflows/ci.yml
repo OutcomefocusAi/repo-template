@@ -38,7 +38,7 @@ jobs:
       - name: Install pinned tools (gitleaks, actionlint, OpenSpec)
         run: |
           scripts/install-ci-tools.sh
-          npm install --global --no-fund --no-audit --before=2026-11-21T00:00:00Z @fission-ai/openspec@2.0.0
+          npm install --global --no-fund --no-audit --before=2026-11-21T00:00:00Z @fission-ai/openspec@2.1.1
 
       - name: Self-test of the template check scripts and the qa-gate verdict filter
         run: scripts/test-template-scripts.sh
