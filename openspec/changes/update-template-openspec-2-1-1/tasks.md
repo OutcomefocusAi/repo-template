@@ -23,8 +23,8 @@
 ## 5. Verification and archive
 
 - [ ] 5.1 Run `openspec validate --all --strict` at 2.1.1, `scripts/test-template-scripts.sh`, every `scripts/check-*.sh` (the generated-skills check with OpenSpec 2.1.1), actionlint, gitleaks over the full history, `scripts/check-commits.sh` and `git diff --check`; verify all pass and save the output in `evidence/`.
-- [ ] 5.2 Run a mutation pass on the new conditions in `check-openspec-pin.sh` and `check-openspec-skills.sh` (each mutant flips one condition) and verify every mutant fails at least one self-test; save the results in `evidence/`, and add a failing-first test for any survivor before fixing it.
-- [ ] 5.3 Run the Ponytail review on `git diff main...HEAD`, fix every must-fix finding, and save the review in `evidence/`.
+- [x] 5.2 Run a mutation pass on the new conditions in `check-openspec-pin.sh` and `check-openspec-skills.sh` (each mutant flips one condition) and verify every mutant fails at least one self-test; save the results in `evidence/`, and add a failing-first test for any survivor before fixing it.
+- [x] 5.3 Run the Ponytail review on `git diff main...HEAD`, fix every must-fix finding, and save the review in `evidence/`.
 - [ ] 5.4 With every other task checked and the pull request open with green `template-checks` and `project`, archive the change with `openspec archive update-template-openspec-2-1-1` (no `--yes`) as the last commit on the branch, verify `openspec validate --all --strict` passes after archive and the merged specs hold the modified requirements, and rerun the suite on that head.
 
 ## Workflow follow-up

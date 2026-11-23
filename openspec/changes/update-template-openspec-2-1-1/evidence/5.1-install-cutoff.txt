@@ -1,0 +1,48 @@
+# Install cutoff, 2026-11-23 08:40 MST, Node v24.22.1, npm 11.21.1, empty prefix and cache for each run
+$ npm install --global --no-fund --no-audit --before=2026-11-21T00:00:00Z @fission-ai/openspec@2.1.1   (A, the CI line)
+$ npm install --global --no-fund --no-audit @fission-ai/openspec@2.1.1   (B, no cutoff)
+$ diff <(A dependency tree) <(B dependency tree)   (name@version of every package under @fission-ai/openspec/node_modules)
+1,16c1,16
+< @inquirer/ansi@2.1.0
+< @inquirer/checkbox@5.3.0
+< @inquirer/confirm@6.4.0
+< @inquirer/core@12.1.0
+< @inquirer/editor@5.4.0
+< @inquirer/expand@5.2.0
+< @inquirer/external-editor@3.1.0
+< @inquirer/figures@2.1.0
+< @inquirer/input@5.2.0
+< @inquirer/number@4.3.0
+< @inquirer/password@5.3.0
+< @inquirer/prompts@8.8.0
+< @inquirer/rawlist@5.4.0
+< @inquirer/search@4.4.0
+< @inquirer/select@5.3.0
+< @inquirer/type@4.3.0
+---
+> @inquirer/ansi@2.1.1
+> @inquirer/checkbox@5.3.1
+> @inquirer/confirm@6.4.1
+> @inquirer/core@12.1.1
+> @inquirer/editor@5.5.0
+> @inquirer/expand@5.2.1
+> @inquirer/external-editor@3.1.1
+> @inquirer/figures@2.1.1
+> @inquirer/input@5.2.1
+> @inquirer/number@4.3.1
+> @inquirer/password@5.3.1
+> @inquirer/prompts@8.8.1
+> @inquirer/rawlist@5.4.1
+> @inquirer/search@4.4.1
+> @inquirer/select@5.3.1
+> @inquirer/type@4.3.1
+44c44
+< mute-stream@4.0.0
+---
+> mute-stream@3.0.0
+$ npm view @inquirer/expand time (tail)
+  "5.2.0": "2026-11-10T22:15:22.108Z",
+  "5.2.1": "2026-11-22T00:04:12.167Z"
+}
+A: 2.1.1, B: 2.1.1
+Cutoff before the publish (2026-11-19T00:00:00Z): ETARGET, see 1.2-upstream.txt
