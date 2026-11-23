@@ -1,0 +1,228 @@
+# Local suite at 46bf1a80b09195ed21f2ce4a20de4fe9f82fe530, 2026-11-23 08:34 MST
+node v24.22.1, npm 11.21.1, actionlint 1.7.12, gitleaks 8.30.1
+
+$ scripts/install-ci-tools.sh /tmp/citools
+installed gitleaks to /tmp/citools/gitleaks (sha256 verified)
+installed actionlint to /tmp/citools/actionlint (sha256 verified)
+exit=0
+
+$ openspec --version (npx -y @fission-ai/openspec@2.1.1, temporary HOME)
+2.1.1
+
+$ os validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+✓ change/update-template-openspec-2-1-1
+Totals: 9 passed, 0 failed (9 items)
+exit=0
+
+$ scripts/test-template-scripts.sh
+ok   check-commits: conventional commit with issue reference
+ok   check-commits: missing issue reference
+ok   check-commits: dependabot branch skips issue reference
+ok   check-commits: not a conventional commit
+ok   check-em-dash: clean tree
+ok   check-em-dash: em dash in a hand-written file
+ok   check-workflows: template workflows
+ok   check-workflows: unpinned, unbounded, privileged workflow
+ok   check-workflows: minimal hardened workflow
+ok   check-workflows: flow-style uses mapping
+ok   check-workflows: extra top-level write scope
+ok   check-workflows: missing concurrency
+ok   check-openspec-pin: template records agree
+ok   check-openspec-pin: every record at another version
+ok   check-openspec-pin: Tool pins row disagrees
+ok   check-openspec-pin: Sources row disagrees
+ok   check-openspec-pin: one generatedBy disagrees
+ok   check-openspec-pin: every skill stamped with the pinned version
+ok   check-openspec-pin: CI pin at a third version
+ok   check-openspec-pin: CI pin is a range
+ok   check-openspec-pin: Tool pins row missing
+ok   check-openspec-pin: one skill without the generatedBy stamp the others carry
+ok   check-openspec-pin: only one skill carries a stamp, even the pinned version
+ok   check-openspec-pin: two generatedBy lines in one skill
+ok   check-openspec-pin: every skill stamped with another version
+ok   check-openspec-pin: no skill carries a generatedBy stamp (as 2.1.x generates)
+ok   check-openspec-pin: Tool pins row twice
+ok   check-openspec-pin: another valid cutoff in both records
+ok   check-openspec-pin: CI cutoff differs from the Tool pins row
+ok   check-openspec-pin: Tool pins row cutoff differs from CI
+ok   check-openspec-pin: Tool pins row records no cutoff
+ok   check-openspec-pin: install line without a --before cutoff
+ok   check-openspec-pin: install line with two --before cutoffs
+ok   check-openspec-pin: second cutoff in space form (npm uses the last)
+ok   check-openspec-pin: --enjoy-by alias overrides the cutoff
+ok   check-openspec-pin: min-release-age-exclude flag exempts packages
+ok   check-openspec-pin: unprotected fallback after ||
+ok   check-openspec-pin: unprotected install before the protected one
+ok   check-openspec-pin: cutoff only inside a shell comment
+ok   check-openspec-pin: npm config set through workflow env
+ok   check-openspec-pin: lowercase npm_config_ in workflow env
+ok   check-openspec-pin: workflow writes ~/.npmrc before the install
+ok   check-openspec-pin: workflow runs npm config set before the install
+ok   check-openspec-pin: install line continued from the line before
+ok   check-openspec-pin: install inside a folded run: > block
+ok   check-openspec-pin: .yaml workflow installs OpenSpec without a cutoff
+ok   check-openspec-pin: cutoff is a date with no time
+ok   check-openspec-pin: cutoff time has no Z
+ok   check-openspec-pin: empty cutoff
+ok   check-openspec-pin: cutoff in the right shape but not a real time (npm would ignore it)
+ok   check-openspec-pin: cutoff in the future (no effective cutoff)
+ok   check-openspec-pin: year-0000 cutoff (npm ignores it)
+ok   check-ponytail-pin: template records agree
+ok   check-ponytail-pin: all records at another commit
+ok   check-ponytail-pin: one SOURCE.md commit disagrees
+ok   check-ponytail-pin: TEMPLATE_SOURCE.md row commit disagrees
+ok   check-ponytail-pin: link SHA disagrees
+ok   check-ponytail-pin: describe string disagrees
+ok   check-ponytail-pin: short SHA everywhere
+ok   check-ponytail-pin: edited vendored SKILL.md
+ok   check-ponytail-pin: wrong recorded LICENSE SHA-256
+ok   check-ponytail-pin: SOURCE.md missing
+ok   check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing
+ok   check-openspec-skills: generated skills match
+ok   check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout
+ok   check-openspec-skills: init runs with a temporary HOME, not the caller's
+ok   check-openspec-skills: edited skill text
+ok   check-openspec-skills: added or edited generatedBy stamp
+ok   check-openspec-skills: deleted SKILL.md
+ok   check-openspec-skills: deleted skill folder
+ok   check-openspec-skills: deleted .openspec-target
+ok   check-openspec-skills: extra tracked file in a skill folder
+ok   check-openspec-skills: untracked new openspec-* folder
+ok   check-openspec-skills: CLI at another version than the CI pin
+ok   check-openspec-skills: CI pin is a range
+ok   check-openspec-skills: CI pin line missing
+ok   check-openspec-skills: no OpenSpec CLI
+ok   check-openspec-skills: exec bit in the index, mode 100755
+ok   check-openspec-skills: exec bit only in the index, as a Windows commit would set it
+ok   check-openspec-skills: SKILL.md as a symlink to an identical copy
+ok   check-openspec-skills: untracked symlink at a generated path
+ok   check-openspec-skills: .agents/skills committed as a symlink to an identical copy
+ok   check-openspec-skills: .agents committed as a symlink to an identical copy
+ok   check-openspec-skills: .agents/skills a symlink on disk only, not staged
+ok   check-openspec-skills: .agents a symlink in the index only, real directory on disk
+ok   check-openspec-skills: uncommitted symlink over a tracked SKILL.md
+ok   check-openspec-skills: untracked executable generated file
+ok   check-openspec-skills: generated file matches but is not committed
+ok   check-openspec-skills: two CI pins disagree
+ok   check-openspec-skills: inexact pin even when the CLI reports it
+ok   check-openspec-skills: openspec-* folder replaced by a symlink
+ok   check-openspec-skills: init fails
+ok   check-openspec-skills: init writes nothing
+ok   check-openspec-skills: passes with a caller XDG and a dedicated TMPDIR
+ok   check-openspec-skills: temporary dir removed and caller XDG unused after a passing run
+ok   check-openspec-skills: fails with a caller XDG and a dedicated TMPDIR
+ok   check-openspec-skills: temporary dir removed and caller XDG unused after a failing run
+ok   slot: warns in the template repository
+ok   slot: fails in a derived repository
+ok   template-drift: no drift
+ok   template-drift: changed managed file
+ok   qa-gate: no comments
+ok   qa-gate: comment that is not a verdict
+ok   qa-gate: QA 1: plain SHIP, SHA on line 2
+ok   qa-gate: QA 2: SHIP from a non-allowlisted login
+ok   qa-gate: QA 3: SHIP from any agent on the shared login (known limit, see README)
+ok   qa-gate: QA 4: SHIP naming only an old head
+ok   qa-gate: QA 5: SHIP naming an old head but mentioning the current SHA
+ok   qa-gate: QA 6: SHIP in a blockquote
+ok   qa-gate: QA 7: SHIP in a code block
+ok   qa-gate: QA 8: SHIP line not first
+ok   qa-gate: QA 9: bold first line
+ok   qa-gate: QA 10: lowercase ship
+ok   qa-gate: QA 11: trailing space after SHIP
+ok   qa-gate: QA 12: SHIP-WITH-FIXES
+ok   qa-gate: QA 13: SHIP WITH FIXES
+ok   qa-gate: QA 14: NO-SHIP is not read as SHIP
+ok   qa-gate: QA 15: SHIP then a later NO-SHIP
+ok   qa-gate: QA 16: SHIP then a later malformed 'NO SHIP' (fail closed)
+ok   qa-gate: QA 17: SHIP then a later NO-SHIP with trailing space (fail closed)
+ok   qa-gate: QA 18: SHIP then a later NO-SHIP naming only a short SHA (fail closed)
+ok   qa-gate: QA 19: NO-SHIP at T2, older SHIP comment edited at T3
+ok   qa-gate: QA 20: SHIP with prose after the verdict on line 1
+ok   qa-gate: QA 21: reviewer name containing ': NO-SHIP'
+ok   qa-gate: SHIP then a later verdict in another spelling ('Ship-With-Fixes')
+ok   qa-gate: SHIP then a later verdict naming a different full SHA
+ok   qa-gate: non-allowlisted NO-SHIP after SHIP is ignored
+ok   qa-gate: SHIP after an earlier NO-SHIP
+ok   qa-gate: deleted SHIP comment (no longer returned by the API)
+ok   qa-gate: dismissed SHIP review
+ok   qa-gate: COMMENTED SHIP review
+ok   qa-gate: CRLF first line
+ok   qa-gate: malformed verdict in the same second as a SHIP blocks it
+ok   qa-gate: malformed verdict in the same second, listed first, blocks
+ok   qa-gate: NO-SHIP in the same second as a SHIP, listed first, blocks
+ok   qa-gate: two SHIPs in the same second pass
+ok   qa-gate: pending SHIP review (state PENDING, no submitted_at) never counts
+ok   qa-gate: SHIP review with no submitted_at and no state never counts
+ok   qa-gate: pending SHIP review does not override an earlier NO-SHIP
+ok   qa-gate: later first line containing 'independent qa by' mid-line, lowercase, blocks
+ok   qa-gate: later first line in upper case blocks
+ok   qa-gate: later comment that only mentions QA without the phrase does not block
+ok   qa-gate: re-runs on deleted comments and dismissed reviews
+ok   qa-gate release: release-please pull request from this repository
+ok   qa-gate release: fork branch named release-please--*
+ok   qa-gate release: same-repository branch named release-please--* opened by an agent
+ok   qa-gate release: ordinary branch
+ok   release state: before any release (0.0.0, no changelog)
+ok   release state: first release 0.1.0 (release pull request or merged)
+ok   release state: later release 0.2.0 with a linked heading
+ok   release state: manifest and version.txt disagree
+ok   release state: newest changelog heading disagrees
+ok   release state: 0.0.0 with an inherited released changelog
+ok   release state: bump-minor-pre-major not set
+ok   release state: bump-minor-pre-major is the string "true", not the boolean
+ok   release state: include-component-in-tag not set (tag would be repo-template-v0.1.0)
+ok   release state: include-component-in-tag true
+ok   release state: include-component-in-tag is the string "false", not the boolean
+ok   release state: initial-version not set
+ok   release state: version is not MAJOR.MINOR.PATCH
+ok   release state: this repository
+test-template-scripts: 161/161 passed
+exit=0
+
+$ scripts/check-em-dash.sh
+check-em-dash: no em dashes in hand-written files
+exit=0
+
+$ scripts/check-openspec-pin.sh
+check-openspec-pin: 3 records agree on 2.1.1
+exit=0
+
+$ env OPENSPEC_CMD=npx -y @fission-ai/openspec@2.1.1 npm_config_cache=/tmp/npmt/cache scripts/check-openspec-skills.sh
+check-openspec-skills: 7 generated file(s) match OpenSpec 2.1.1
+exit=0
+
+$ scripts/check-ponytail-pin.sh
+check-ponytail-pin: 3 skill(s) agree on ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10 (v5.3.3-4-gebd8654)
+exit=0
+
+$ scripts/check-workflows.sh
+check-workflows: 4 workflow file(s) pass
+exit=0
+
+$ /tmp/citools/actionlint -color
+exit=0
+
+$ /tmp/citools/gitleaks git --redact --no-banner .
+8:34AM INF 199 commits scanned.
+8:34AM INF scanned ~2214960 bytes (2.21 MB) in 304ms
+8:34AM INF no leaks found
+exit=0
+
+$ scripts/check-commits.sh origin/main HEAD 47-update-template-openspec-2-1-1
+check-commits: 8 commit(s) pass on 47-update-template-openspec-2-1-1
+exit=0
+
+$ git diff --check origin/main...HEAD
+exit=0
+
+$ git status --porcelain (must be empty)
+
+SUITE RESULT: PASS

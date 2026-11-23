@@ -168,6 +168,10 @@ ob_npmrc()       { ob_before 'echo "min-release-age-exclude=@inquirer/*" >> ~/.n
 ob_npm_set()     { ob_before 'npm config set min-release-age-exclude "@inquirer/*"'; }
 ob_continued()   { sed -Ei "$((ciline - 1))s%\$% \\\\%" .github/workflows/ci.yml; }
 ob_folded()      { sed -Ei "$((ciline - 2))s%run: \|%run: >%; ${ciline}s%\$%\n          --min-release-age-exclude=@inquirer/*%" .github/workflows/ci.yml; }
+# An install moved into another literal block (github-script's script: |) after a run: | step is
+# not in a run block, while a blank line inside the run: | block is still fine.
+ob_script_block(){ sed -Ei "${ciline}s%^.*\$%          echo moved\n      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1\n        with:\n          script: |\n            npm install --global --no-fund --no-audit --before=2026-11-21T00:00:00Z @fission-ai/openspec@$opin%" .github/workflows/ci.yml; }
+ob_blank_in_block(){ sed -Ei "$((ciline - 1))s%\$%\n%" .github/workflows/ci.yml; }
 # the-ordinary-things#26: a .yaml workflow is read too (intent-to-add so the fixture shows as a change).
 ob_yaml()        { printf 'on: [push]\njobs:\n  x:\n    runs-on: ubuntu-24.04\n    steps:\n      - run: |\n          npm install --global --no-fund --no-audit @fission-ai/openspec@%s\n' "$opin" > .github/workflows/extra.yaml
                    git add -N .github/workflows/extra.yaml; }
@@ -195,6 +199,8 @@ pin 1 "check-openspec-pin: workflow writes ~/.npmrc before the install" check-op
 pin 1 "check-openspec-pin: workflow runs npm config set before the install" check-openspec-pin.sh ob_npm_set "::error file=.github/workflows/ci.yml,line=$ciline::" "npm config"
 pin 1 "check-openspec-pin: install line continued from the line before" check-openspec-pin.sh ob_continued "$ann" "continues the line before"
 pin 1 "check-openspec-pin: install inside a folded run: > block" check-openspec-pin.sh ob_folded "$ann" "literal run: |"
+pin 1 "check-openspec-pin: install inside another step's script: | block" check-openspec-pin.sh ob_script_block ".github/workflows/ci.yml,line=$((ciline + 4))::" "literal run: |"
+pin 0 "check-openspec-pin: blank line inside the run: | block before the install" check-openspec-pin.sh ob_blank_in_block
 pin 1 "check-openspec-pin: .yaml workflow installs OpenSpec without a cutoff" check-openspec-pin.sh ob_yaml "::error file=.github/workflows/extra.yaml,line=7::" "$shape"
 git -C "$repo" rm -q -f --cached .github/workflows/extra.yaml 2>/dev/null; rm -f "$repo/.github/workflows/extra.yaml"
 pin 1 "check-openspec-pin: cutoff is a date with no time" check-openspec-pin.sh ob_date_only "$ann" "$realt"
@@ -243,6 +249,7 @@ case "${1:-}" in
   init) printf '%s %s\n' "$PWD" "$*" >> "${STUB_LOG:?}"; touch .stub-init-ran
         printf 'xdg %s %s\n' "${XDG_CONFIG_HOME:-}" "${XDG_DATA_HOME:-}" >> "$STUB_LOG"
         printf 'home %s\n' "${HOME:-}" >> "$STUB_LOG"
+        [ -d "${HOME:-}" ] || printf 'home-missing\n' >> "$STUB_LOG"
         case "${STUB_INIT_MODE:-}" in
           fail) echo "stub init failed on purpose" >&2; exit 3 ;;
           empty) exit 0 ;;
@@ -295,9 +302,9 @@ else echo "FAIL check-openspec-skills: reference from init --scope project --too
 # 2.1.x init installs skills globally under $HOME unless scoped, so the check also gives it a temporary HOME.
 total=$((total + 1))
 skhome=$(sed -n 's/^home //p' "$scratch/stub.log")
-if [ -n "$skhome" ] && [ "$skhome" != "${HOME:-}" ] && [[ "$skhome" != "$repo"* ]] && [[ "$skhome" == "${TMPDIR:-/tmp}"/* ]]; then
-  echo "ok   check-openspec-skills: init runs with a temporary HOME, not the caller's"
-else echo "FAIL check-openspec-skills: init runs with a temporary HOME, not the caller's (stub saw HOME='$skhome')"; fails=$((fails + 1)); fi
+if [ -n "$skhome" ] && ! grep -q '^home-missing' "$scratch/stub.log" && [ "$skhome" != "${HOME:-}" ] && [[ "$skhome" != "$repo"* ]] && [[ "$skhome" == "${TMPDIR:-/tmp}"/* ]]; then
+  echo "ok   check-openspec-skills: init runs with a temporary HOME that exists, not the caller's"
+else echo "FAIL check-openspec-skills: init runs with a temporary HOME that exists, not the caller's (stub saw HOME='$skhome')"; fails=$((fails + 1)); fi
 skills 1 "check-openspec-skills: edited skill text" sk_edit "::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::edited" "$fix update"
 skills 1 "check-openspec-skills: added or edited generatedBy stamp" sk_stamp "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::edited"
 skills 1 "check-openspec-skills: deleted SKILL.md" sk_rm_file "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing" "$fix init --scope project --tools agents --profile core"
