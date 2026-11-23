@@ -2,8 +2,8 @@
 
 ## 1. Preconditions
 
-- [ ] 1.1 Verify Woody's approval records (proposal drafting card, and his typed approval of the proposal, apply, fixes and merge) are in `proposal.md` with where and when, and that the commit holding them is on the branch before any other task starts.
-- [ ] 1.2 Re-check upstream on the day of apply: `npm view @fission-ai/openspec dist-tags.latest` is still 2.1.1, `git ls-remote https://github.com/DietrichGebert/ponytail HEAD` is still `ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10`, and the CI install with `--before=2026-11-21T00:00:00Z` into an empty prefix prints `openspec --version` 2.1.1; save the output in `evidence/`. If anything moved, stop and report.
+- [x] 1.1 Verify Woody's approval records (proposal drafting card, and his typed approval of the proposal, apply, fixes and merge) are in `proposal.md` with where and when, and that the commit holding them is on the branch before any other task starts.
+- [x] 1.2 Re-check upstream on the day of apply: `npm view @fission-ai/openspec dist-tags.latest` is still 2.1.1, `git ls-remote https://github.com/DietrichGebert/ponytail HEAD` is still `ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10`, and the CI install with `--before=2026-11-21T00:00:00Z` into an empty prefix prints `openspec --version` 2.1.1; save the output in `evidence/`. If anything moved, stop and report.
 
 ## 2. Pin check: install cutoff and stamp-free skills
 
