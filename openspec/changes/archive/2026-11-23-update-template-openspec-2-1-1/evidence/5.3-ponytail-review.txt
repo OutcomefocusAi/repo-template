@@ -1,0 +1,38 @@
+# 5.3 Ponytail review (.agents/skills/ponytail-review/SKILL.md) of git diff main...HEAD at 4da297ca0d02c503a305730dc048b3adbb677cf9, 2026-11-23 08:40 MST
+# Load assumed: CI checks run once per push or pull request on one runner; one maintainer bumps pins weekly.
+# Read: the full branch diff, every caller of the changed scripts (.github/workflows/ci.yml steps,
+# scripts/test-template-scripts.sh), TEMPLATE_SOURCE.md, the three spec deltas, and the regenerated skills.
+
+What this change does: It moves the template to OpenSpec 2.1.1 and Ponytail ebd8654. Because 2.1.1 stops
+writing a version stamp into its skills and installs skills into the home folder unless told not to,
+the pin check now accepts skills with no stamp (but still rejects stale or mixed stamps), and the
+skills check asks OpenSpec to write the skills into a scratch repository with a scratch home folder.
+It also makes CI install OpenSpec's dependencies only from versions published before a fixed time,
+and rejects the ways QA found to get around that.
+
+Findings found during review and already fixed on this branch (test first):
+1. **Install moved into another step's literal block passed** (scripts/check-openspec-pin.sh, run_block)
+   - What this is: The check must make sure the install line runs as one shell command inside a run: | block.
+   - Problem: It looked for the nearest run: line above, so an install placed under
+     "with: script: |" of a later step, after an earlier run: | step, passed. Found by the mutation pass (m07 survived).
+   - Fix: Find the block's real parent, the nearest line above with less indentation, and require it to be run: |.
+     Failing test first in a4064d1, fix in 4da297c.
+   - If we skip it: An install that npm never sees as the CI install line could carry other options.
+2. **Temporary HOME existence was untested** (scripts/check-openspec-skills.sh, mkdir "$tmp/home")
+   - What this is: The skills check gives OpenSpec a scratch home folder.
+   - Problem: Deleting the mkdir passed every test (m22 survived), though npx and OpenSpec expect HOME to exist.
+   - Fix: The stub now records whether HOME exists and the test fails when it does not (a4064d1).
+   - If we skip it: A later edit could drop the folder and break the check with a real CLI only.
+
+Open findings: none in Must fix or Should fix.
+
+Nice to have:
+3. **run_block reads the workflow once per line it walks** (scripts/check-openspec-pin.sh)
+   - What this is: It calls sed for each line above the install line.
+   - Problem: That is quadratic in file length, but ci.yml has under 100 lines, so it costs milliseconds.
+   - Fix: None needed at this size.
+   - If we skip it: Nothing at the expected load.
+
+Verdict: Ship.
+Not checked: behaviour of a future OpenSpec version that restores generatedBy stamps (the all-or-none rule and the
+skills check cover it, but no such version exists to run).

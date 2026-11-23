@@ -2,9 +2,10 @@
 # Fails unless the OpenSpec-generated skill files in this checkout are exactly what the
 # OpenSpec version pinned in .github/workflows/ci.yml generates:
 #   .agents/skills/.openspec-target and every file under .agents/skills/openspec-*/
-# The reference comes from `openspec init --tools agents --profile core` run in a temporary
-# directory with a temporary OpenSpec config, so this checkout and the user's global OpenSpec
-# config are never written. Content, git mode and file type are compared: each edited, missing,
+# The reference comes from `openspec init --scope project --tools agents --profile core` run in a temporary
+# directory with a temporary OpenSpec config and a temporary HOME, so this checkout, the user's
+# global OpenSpec config and their home directory (where 2.1.x installs unscoped skills) are
+# never written. Content, git mode and file type are compared: each edited, missing,
 # extra or untracked file, symlink, or file with another mode gets its own ::error annotation
 # with the fix. .agents and .agents/skills must be real directories, not symlinks.
 # Usage: scripts/check-openspec-skills.sh
@@ -41,7 +42,8 @@ read -r -a cmd <<<"${OPENSPEC_CMD:-openspec}"
 fixcli="install it with 'npm install --global @fission-ai/openspec@$pin', or set OPENSPEC_CMD=\"npx -y @fission-ai/openspec@$pin\""
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-run_openspec() { env XDG_CONFIG_HOME="$tmp/xdg" XDG_DATA_HOME="$tmp/data" OPENSPEC_TELEMETRY=0 OPENSPEC_NO_UPDATE_CHECK=1 "${cmd[@]}" "$@"; }
+mkdir "$tmp/home"
+run_openspec() { env HOME="$tmp/home" XDG_CONFIG_HOME="$tmp/xdg" XDG_DATA_HOME="$tmp/data" OPENSPEC_TELEMETRY=0 OPENSPEC_NO_UPDATE_CHECK=1 "${cmd[@]}" "$@"; }
 if ! command -v "${cmd[0]}" >/dev/null 2>&1; then
   err "$ci" "$pin_line" "OpenSpec CLI '${cmd[*]}' not found; $fixcli"; exit 1
 fi
@@ -52,8 +54,8 @@ fi
 
 # 3. The reference, generated outside the checkout.
 mkdir "$tmp/ref"
-if ! (cd "$tmp/ref" && git init -q && run_openspec init --tools agents --profile core) >"$tmp/init.log" 2>&1; then
-  err "$ci" "$pin_line" "'${cmd[*]} init --tools agents --profile core' failed in a temporary directory"; sed 's/^/  /' "$tmp/init.log"; exit 1
+if ! (cd "$tmp/ref" && git init -q && run_openspec init --scope project --tools agents --profile core) >"$tmp/init.log" 2>&1; then
+  err "$ci" "$pin_line" "'${cmd[*]} init --scope project --tools agents --profile core' failed in a temporary directory"; sed 's/^/  /' "$tmp/init.log"; exit 1
 fi
 list() { # print the generated-skill files under the current directory, sorted
   local p
@@ -67,7 +69,7 @@ git ls-files --others -- .agents/skills | LC_ALL=C sort >"$tmp/untracked.txt"
 git -c core.quotePath=false ls-files -s -- .agents >"$tmp/index.txt"
 total=$(grep -c . "$tmp/ref.txt" || true)
 if [ "$total" -eq 0 ]; then
-  err "$ci" "$pin_line" "'${cmd[*]} init --tools agents --profile core' generated no skill files"; exit 1
+  err "$ci" "$pin_line" "'${cmd[*]} init --scope project --tools agents --profile core' generated no skill files"; exit 1
 fi
 
 # 4. Compare.
@@ -88,12 +90,12 @@ drift=0
 for d in .agents .agents/skills; do
   if [ -L "$d" ] || [ "$(idx_mode "$d")" = 120000 ]; then
     drift=$((drift + 1))
-    err "$d" 1 "symlink: this directory is a symbolic link (git mode 120000) but OpenSpec $pin generates a real directory. Fix: delete the link, run '$up init --tools agents --profile core' and commit the real directory"
+    err "$d" 1 "symlink: this directory is a symbolic link (git mode 120000) but OpenSpec $pin generates a real directory. Fix: delete the link, run '$up init --scope project --tools agents --profile core' and commit the real directory"
   fi
 done
 while IFS= read -r f; do
   drift=$((drift + 1))
-  err "$f" 1 "missing: OpenSpec $pin generates this file but it is not in the checkout. Fix: run '$up init --tools agents --profile core' and commit the result, or restore it with 'git checkout -- $f'"
+  err "$f" 1 "missing: OpenSpec $pin generates this file but it is not in the checkout. Fix: run '$up init --scope project --tools agents --profile core' and commit the result, or restore it with 'git checkout -- $f'"
 done < <(LC_ALL=C comm -23 "$tmp/ref.txt" "$tmp/work.txt")
 while IFS= read -r f; do
   drift=$((drift + 1))
@@ -107,7 +109,7 @@ while IFS= read -r f; do
   want=$(fsmode "$tmp/ref/$f"); have=$(mode_of "$f")
   if [ "$have" != "$want" ] && [ "$have" = 120000 ]; then
     drift=$((drift + 1))
-    err "$f" 1 "symlink: is a symbolic link (git mode 120000) but OpenSpec $pin generates a regular file (git mode $want). Fix: delete the link, run '$up init --tools agents --profile core' and commit the regular file"
+    err "$f" 1 "symlink: is a symbolic link (git mode 120000) but OpenSpec $pin generates a regular file (git mode $want). Fix: delete the link, run '$up init --scope project --tools agents --profile core' and commit the regular file"
   elif [ "$have" != "$want" ]; then
     drift=$((drift + 1))
     x=-x; [ "$want" != 100755 ] || x=+x

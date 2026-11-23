@@ -79,13 +79,19 @@ expect 1 "check-workflows: missing concurrency" in_repo scripts/check-workflows.
 # Each fixture edits the committed copies in the scratch repository and is undone after its case.
 mkdir -p "$repo/.agents"; cp -R "$root/.agents/skills" "$repo/.agents/"; cp "$root/TEMPLATE_SOURCE.md" "$repo/"
 git -C "$repo" add .agents TEMPLATE_SOURCE.md .github/workflows; git -C "$repo" commit -q -m "chore: pin records (#1)"
-pin() { # expected-exit description script fixture-function
-  in_repo "$4"
+pin() { # expected-exit description script fixture-function [text the output must contain...]
+  local want=$1 name=$2 script=$3 fixture=$4 got why="" t; shift 4
+  total=$((total + 1))
+  in_repo "$fixture"
   if git -C "$repo" diff --quiet -- .agents TEMPLATE_SOURCE.md .github/workflows; then
-    total=$((total + 1)); fails=$((fails + 1)); echo "FAIL $2 (fixture $4 changed nothing)"
+    why="fixture $fixture changed nothing"
   else
-    expect "$1" "$2" in_repo "scripts/$3"
+    in_repo "scripts/$script" >"$scratch/out" 2>&1; got=$?
+    [ "$got" -eq "$want" ] || why="exit $got, expected $want"
+    for t in "$@"; do [ -n "$why" ] || grep -qF -- "$t" "$scratch/out" || why="output lacks: $t"; done
   fi
+  if [ -z "$why" ]; then echo "ok   $name"; else
+    echo "FAIL $name ($why)"; sed 's/^/     /' "$scratch/out"; fails=$((fails + 1)); fi
   git -C "$repo" checkout -q -- .agents TEMPLATE_SOURCE.md .github/workflows
 }
 V='[0-9]+\.[0-9]+\.[0-9]+'
@@ -93,22 +99,116 @@ os_all_other()   { sed -Ei "s/(generatedBy: \")$V/\10.0.1/" .agents/skills/opens
                    sed -Ei "s/(\`@fission-ai\/openspec\` )$V/\10.0.1/; s/^(\| @fission-ai\/openspec \| )$V/\10.0.1/" TEMPLATE_SOURCE.md; }
 os_toolpins()    { sed -Ei "s/^(\| @fission-ai\/openspec \| )$V/\10.0.1/" TEMPLATE_SOURCE.md; }
 os_sources()     { sed -Ei "s/(\`@fission-ai\/openspec\` )$V/\10.0.1/" TEMPLATE_SOURCE.md; }
-os_stamp()       { sed -Ei "s/(generatedBy: \")$V/\10.0.1/" .agents/skills/openspec-propose/SKILL.md; }
+# Stamp fixtures first strip every generatedBy line, then add the stamps the case needs, so they
+# work whether the pinned version writes stamps (2.0.x) or not (2.1.x).
+opin=$(sed -nE 's/.*@fission-ai\/openspec@([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' "$root/.github/workflows/ci.yml" | head -n1)
+st_strip()       { sed -Ei '/^[[:space:]]+generatedBy:/d' .agents/skills/openspec-*/SKILL.md; }
+st_add()         { sed -Ei "s/^(  author: [^ ]+)$/\1\n  generatedBy: \"$1\"/" "${@:2}"; } # version file...
+os_stamp()       { st_strip; st_add "$opin" .agents/skills/openspec-*/SKILL.md; st_add 0.0.1 .agents/skills/openspec-propose/SKILL.md
+                   sed -Ei "0,/generatedBy: \"$opin\"/{/generatedBy: \"$opin\"/d}" .agents/skills/openspec-propose/SKILL.md; }
 os_ci_third()    { os_toolpins; sed -Ei "s/(@fission-ai\/openspec@)$V/\10.0.2/" .github/workflows/ci.yml; }
 os_ci_range()    { sed -Ei "s/(@fission-ai\/openspec@)/\1^/" .github/workflows/ci.yml; }
 os_no_row()      { sed -Ei '/^\| @fission-ai\/openspec \|/d' TEMPLATE_SOURCE.md; }
-os_no_stamp()    { sed -Ei '/generatedBy:/d' .agents/skills/openspec-explore/SKILL.md; }
+os_no_stamp()    { st_strip; st_add "$opin" .agents/skills/openspec-*/SKILL.md; st_strip_one .agents/skills/openspec-explore/SKILL.md; }
+st_strip_one()   { sed -Ei '/^[[:space:]]+generatedBy:/d' "$1"; }
+os_one_stamp()   { st_strip; st_add "$opin" .agents/skills/openspec-propose/SKILL.md; }
+os_two_stamps()  { st_strip; st_add "$opin" .agents/skills/openspec-*/SKILL.md; st_add "$opin" .agents/skills/openspec-apply-change/SKILL.md; }
+os_all_stamp_other() { st_strip; st_add 0.0.1 .agents/skills/openspec-*/SKILL.md; }
+os_all_stamp_pin()   { st_strip; st_add "$opin" .agents/skills/openspec-*/SKILL.md; }
+# A case for the stamp-free state itself: strip every stamp, run the check, restore.
+st_none_run()    { st_strip; scripts/check-openspec-pin.sh; local r=$?; git checkout -q -- .agents; return $r; }
 os_two_rows()    { sed -Ei '/^\| @fission-ai\/openspec \|/p' TEMPLATE_SOURCE.md; }
 expect 0 "check-openspec-pin: template records agree" in_repo scripts/check-openspec-pin.sh
-pin 0 "check-openspec-pin: all nine records at another version" check-openspec-pin.sh os_all_other
+pin 0 "check-openspec-pin: every record at another version" check-openspec-pin.sh os_all_other
 pin 1 "check-openspec-pin: Tool pins row disagrees" check-openspec-pin.sh os_toolpins
 pin 1 "check-openspec-pin: Sources row disagrees" check-openspec-pin.sh os_sources
-pin 1 "check-openspec-pin: one generatedBy disagrees" check-openspec-pin.sh os_stamp
+pin 1 "check-openspec-pin: one generatedBy disagrees" check-openspec-pin.sh os_stamp "::error file=.agents/skills/openspec-propose/SKILL.md" "disagrees with the CI pin"
+pin 0 "check-openspec-pin: every skill stamped with the pinned version" check-openspec-pin.sh os_all_stamp_pin
 pin 1 "check-openspec-pin: CI pin at a third version" check-openspec-pin.sh os_ci_third
 pin 1 "check-openspec-pin: CI pin is a range" check-openspec-pin.sh os_ci_range
 pin 1 "check-openspec-pin: Tool pins row missing" check-openspec-pin.sh os_no_row
-pin 1 "check-openspec-pin: skill without generatedBy" check-openspec-pin.sh os_no_stamp
+pin 1 "check-openspec-pin: one skill without the generatedBy stamp the others carry" check-openspec-pin.sh os_no_stamp "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::" "every generated skill or on none"
+pin 1 "check-openspec-pin: only one skill carries a stamp, even the pinned version" check-openspec-pin.sh os_one_stamp "every generated skill or on none"
+pin 1 "check-openspec-pin: two generatedBy lines in one skill" check-openspec-pin.sh os_two_stamps "::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::" "at most one generatedBy line"
+pin 1 "check-openspec-pin: every skill stamped with another version" check-openspec-pin.sh os_all_stamp_other "disagrees with the CI pin"
+expect 0 "check-openspec-pin: no skill carries a generatedBy stamp (as 2.1.x generates)" in_repo st_none_run
 pin 1 "check-openspec-pin: Tool pins row twice" check-openspec-pin.sh os_two_rows
+# The OpenSpec install line must be exactly one plain npm command with one --before=<past UTC time>
+# cutoff, and that cutoff must match the one recorded in the TEMPLATE_SOURCE.md Tool pins row.
+# Failing cases also assert the ::error annotation names the workflow file and line.
+ciline=$(grep -n '@fission-ai/openspec@' "$root/.github/workflows/ci.yml" | head -n1 | cut -d: -f1)
+ann=".github/workflows/ci.yml,line=$ciline::"
+rowline=$(grep -n '^| @fission-ai/openspec |' "$root/TEMPLATE_SOURCE.md" | head -n1 | cut -d: -f1)
+rowann="::error file=TEMPLATE_SOURCE.md,line=$rowline::"
+envline=$(( $(grep -n '^env:$' "$root/.github/workflows/ci.yml" | head -n1 | cut -d: -f1) + 1 ))
+shape="must be exactly"
+realt="is not a real UTC time"
+# ob_set drops any cutoff from the install line, then puts its arguments before the package spec
+# (sed uses % as the delimiter because the arguments contain / | and #).
+ob_set()         { sed -Ei "s/ --before=[^[:space:]]*//g; s% (@fission-ai/openspec@)% $* \1%" .github/workflows/ci.yml; }
+ob_row()         { sed -Ei "/^\| @fission-ai\/openspec \|/s/--before=[^\`[:space:]]*/--before=$1/" TEMPLATE_SOURCE.md; }
+ob_append()      { sed -Ei "/@fission-ai\/openspec@/s%\$% $*%" .github/workflows/ci.yml; }
+ob_valid()       { ob_set --before=2026-11-20T12:34:56Z; ob_row 2026-11-20T12:34:56Z; }
+ob_ci_only()     { ob_set --before=2026-11-20T12:34:56Z; }
+ob_row_only()    { ob_row 2026-11-20T12:34:56Z; }
+ob_row_none()    { sed -Ei "/^\| @fission-ai\/openspec \|/s/, dependencies resolved with \`--before=[^\`]*\`//" TEMPLATE_SOURCE.md; }
+ob_missing()     { sed -Ei 's/ --before=[^[:space:]]*//g' .github/workflows/ci.yml; }
+ob_two()         { ob_set --before=2026-11-20T12:34:56Z --before=2026-11-19T00:00:00Z; }
+ob_space_two()   { ob_set --before=2026-11-20T12:34:56Z --before 2099-01-01T00:00:00Z; }
+ob_enjoy_by()    { ob_set --before=2026-11-20T12:34:56Z --enjoy-by=2099-01-01T00:00:00Z; }
+ob_exclude()     { ob_set --before=2026-11-20T12:34:56Z --min-release-age-exclude=@inquirer/*; }
+ob_fallback()    { ob_append "|| npm install --global @fission-ai/openspec@2.0.0"; }
+ob_unprotected_first() { sed -Ei "s%^([[:space:]]*)(npm install )%\1npm install --global @fission-ai/openspec@2.0.0 || \2%" .github/workflows/ci.yml; }
+ob_comment()     { ob_missing; ob_append "# --before=2026-11-21T00:00:00Z"; }
+ob_env()         { sed -Ei 's/^env:$/env:\n  NPM_CONFIG_MIN_RELEASE_AGE_EXCLUDE: "@inquirer\/*"/' .github/workflows/ci.yml; }
+ob_env_lower()   { sed -Ei 's/^env:$/env:\n  npm_config_min_release_age_exclude: "@inquirer\/*"/' .github/workflows/ci.yml; }
+# the-ordinary-things#25: a line written before the install, a continuation, and a folded block.
+ob_before()      { sed -Ei "s%^([[:space:]]*)(npm install .*@fission-ai/openspec@.*)\$%\1$1\n\1\2%" .github/workflows/ci.yml; }
+ob_npmrc()       { ob_before 'echo "min-release-age-exclude=@inquirer/*" >> ~/.npmrc'; }
+ob_npm_set()     { ob_before 'npm config set min-release-age-exclude "@inquirer/*"'; }
+ob_continued()   { sed -Ei "$((ciline - 1))s%\$% \\\\%" .github/workflows/ci.yml; }
+ob_folded()      { sed -Ei "$((ciline - 2))s%run: \|%run: >%; ${ciline}s%\$%\n          --min-release-age-exclude=@inquirer/*%" .github/workflows/ci.yml; }
+# An install moved into another literal block (github-script's script: |) after a run: | step is
+# not in a run block, while a blank line inside the run: | block is still fine.
+ob_script_block(){ sed -Ei "${ciline}s%^.*\$%          echo moved\n      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1\n        with:\n          script: |\n            npm install --global --no-fund --no-audit --before=2026-11-21T00:00:00Z @fission-ai/openspec@$opin%" .github/workflows/ci.yml; }
+ob_blank_in_block(){ sed -Ei "$((ciline - 1))s%\$%\n%" .github/workflows/ci.yml; }
+# the-ordinary-things#26: a .yaml workflow is read too (intent-to-add so the fixture shows as a change).
+ob_yaml()        { printf 'on: [push]\njobs:\n  x:\n    runs-on: ubuntu-24.04\n    steps:\n      - run: |\n          npm install --global --no-fund --no-audit @fission-ai/openspec@%s\n' "$opin" > .github/workflows/extra.yaml
+                   git add -N .github/workflows/extra.yaml; }
+ob_date_only()   { ob_set --before=2026-11-21; }
+ob_no_z()        { ob_set --before=2026-11-21T00:00:00; }
+ob_empty()       { ob_set --before=; }
+ob_bad_date()    { ob_set --before=2026-13-45T00:00:00Z; ob_row 2026-13-45T00:00:00Z; }
+ob_future()      { ob_set --before=2099-01-01T00:00:00Z; ob_row 2099-01-01T00:00:00Z; }
+ob_year_zero()   { ob_set --before=0000-01-01T00:00:00Z; ob_row 0000-01-01T00:00:00Z; }
+pin 0 "check-openspec-pin: another valid cutoff in both records" check-openspec-pin.sh ob_valid
+pin 1 "check-openspec-pin: CI cutoff differs from the Tool pins row" check-openspec-pin.sh ob_ci_only "$rowann" "disagrees with the CI cutoff"
+pin 1 "check-openspec-pin: Tool pins row cutoff differs from CI" check-openspec-pin.sh ob_row_only "$rowann" "disagrees with the CI cutoff"
+pin 1 "check-openspec-pin: Tool pins row records no cutoff" check-openspec-pin.sh ob_row_none "$rowann" "does not record the --before cutoff"
+pin 1 "check-openspec-pin: install line without a --before cutoff" check-openspec-pin.sh ob_missing "$ann" "$shape"
+pin 1 "check-openspec-pin: install line with two --before cutoffs" check-openspec-pin.sh ob_two "$ann" "$shape"
+pin 1 "check-openspec-pin: second cutoff in space form (npm uses the last)" check-openspec-pin.sh ob_space_two "$ann" "$shape"
+pin 1 "check-openspec-pin: --enjoy-by alias overrides the cutoff" check-openspec-pin.sh ob_enjoy_by "$ann" "$shape"
+pin 1 "check-openspec-pin: min-release-age-exclude flag exempts packages" check-openspec-pin.sh ob_exclude "$ann" "$shape"
+pin 1 "check-openspec-pin: unprotected fallback after ||" check-openspec-pin.sh ob_fallback "$ann" "$shape"
+pin 1 "check-openspec-pin: unprotected install before the protected one" check-openspec-pin.sh ob_unprotected_first "$ann" "$shape"
+pin 1 "check-openspec-pin: cutoff only inside a shell comment" check-openspec-pin.sh ob_comment "$ann" "$shape"
+pin 1 "check-openspec-pin: npm config set through workflow env" check-openspec-pin.sh ob_env "::error file=.github/workflows/ci.yml,line=$envline::" "npm config"
+pin 1 "check-openspec-pin: lowercase npm_config_ in workflow env" check-openspec-pin.sh ob_env_lower "::error file=.github/workflows/ci.yml,line=$envline::" "npm config"
+pin 1 "check-openspec-pin: workflow writes ~/.npmrc before the install" check-openspec-pin.sh ob_npmrc "::error file=.github/workflows/ci.yml,line=$ciline::" "npm config"
+pin 1 "check-openspec-pin: workflow runs npm config set before the install" check-openspec-pin.sh ob_npm_set "::error file=.github/workflows/ci.yml,line=$ciline::" "npm config"
+pin 1 "check-openspec-pin: install line continued from the line before" check-openspec-pin.sh ob_continued "$ann" "continues the line before"
+pin 1 "check-openspec-pin: install inside a folded run: > block" check-openspec-pin.sh ob_folded "$ann" "literal run: |"
+pin 1 "check-openspec-pin: install inside another step's script: | block" check-openspec-pin.sh ob_script_block ".github/workflows/ci.yml,line=$((ciline + 4))::" "literal run: |"
+pin 0 "check-openspec-pin: blank line inside the run: | block before the install" check-openspec-pin.sh ob_blank_in_block
+pin 1 "check-openspec-pin: .yaml workflow installs OpenSpec without a cutoff" check-openspec-pin.sh ob_yaml "::error file=.github/workflows/extra.yaml,line=7::" "$shape"
+git -C "$repo" rm -q -f --cached .github/workflows/extra.yaml 2>/dev/null; rm -f "$repo/.github/workflows/extra.yaml"
+pin 1 "check-openspec-pin: cutoff is a date with no time" check-openspec-pin.sh ob_date_only "$ann" "$realt"
+pin 1 "check-openspec-pin: cutoff time has no Z" check-openspec-pin.sh ob_no_z "$ann" "$realt"
+pin 1 "check-openspec-pin: empty cutoff" check-openspec-pin.sh ob_empty "$ann" "$realt"
+pin 1 "check-openspec-pin: cutoff in the right shape but not a real time (npm would ignore it)" check-openspec-pin.sh ob_bad_date "$ann" "$realt"
+pin 1 "check-openspec-pin: cutoff in the future (no effective cutoff)" check-openspec-pin.sh ob_future "$ann" "later than now"
+pin 1 "check-openspec-pin: year-0000 cutoff (npm ignores it)" check-openspec-pin.sh ob_year_zero "$ann" "earlier than 2020-01-01T00:00:00Z"
 
 PROW='^\| `\.agents\/skills\/ponytail\/`'
 alt=0123456789abcdef0123456789abcdef01234567
@@ -138,8 +238,8 @@ pin 1 "check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing" check-ponyta
 # check-openspec-skills: the generated OpenSpec skill files must equal what the pinned version
 # generates. A stub openspec on PATH stands in for the CLI so these cases need no network: its
 # init copies the template's committed generated files (the reference) into its working
-# directory, drops a marker file there and logs where and how it ran, and the XDG_CONFIG_HOME and
-# XDG_DATA_HOME it saw. STUB_INIT_MODE=fail makes init exit 3; STUB_INIT_MODE=empty writes nothing.
+# directory, drops a marker file there and logs where and how it ran, and the XDG_CONFIG_HOME,
+# XDG_DATA_HOME and HOME it saw. STUB_INIT_MODE=fail makes init exit 3; STUB_INIT_MODE=empty writes nothing.
 stub="$scratch/stub"; ref="$scratch/skills-ref"; mkdir -p "$stub" "$ref/.agents/skills"
 cp "$root/.agents/skills/.openspec-target" "$ref/.agents/skills/"; cp -R "$root"/.agents/skills/openspec-* "$ref/.agents/skills/"
 cat > "$stub/openspec" <<'STUB'
@@ -148,6 +248,8 @@ case "${1:-}" in
   --version) echo "${STUB_OPENSPEC_VERSION:?}" ;;
   init) printf '%s %s\n' "$PWD" "$*" >> "${STUB_LOG:?}"; touch .stub-init-ran
         printf 'xdg %s %s\n' "${XDG_CONFIG_HOME:-}" "${XDG_DATA_HOME:-}" >> "$STUB_LOG"
+        printf 'home %s\n' "${HOME:-}" >> "$STUB_LOG"
+        [ -d "${HOME:-}" ] || printf 'home-missing\n' >> "$STUB_LOG"
         case "${STUB_INIT_MODE:-}" in
           fail) echo "stub init failed on purpose" >&2; exit 3 ;;
           empty) exit 0 ;;
@@ -183,7 +285,7 @@ skills() { # expected-exit description fixture-function expected-text...
   git -C "$repo" clean -fdq -- .agents; rm -f "$repo/.stub-init-ran"; SKENV=()
 }
 sk_edit()      { echo "local edit" >> .agents/skills/openspec-apply-change/SKILL.md; }
-sk_stamp()     { sed -Ei 's/(generatedBy: ")[0-9.]+/\10.0.1/' .agents/skills/openspec-propose/SKILL.md; }
+sk_stamp()     { sed -Ei '/^[[:space:]]+generatedBy:/d; s/^(  author: [^ ]+)$/\1\n  generatedBy: "0.0.1"/' .agents/skills/openspec-propose/SKILL.md; }
 sk_rm_file()   { rm .agents/skills/openspec-sync-specs/SKILL.md; }
 sk_rm_dir()    { rm -r .agents/skills/openspec-explore; }
 sk_rm_target() { rm .agents/skills/.openspec-target; }
@@ -194,12 +296,18 @@ sk_pin_gone()  { sed -Ei '/@fission-ai\/openspec@/d' .github/workflows/ci.yml; }
 fix="npx -y @fission-ai/openspec@$pinv"
 skills 0 "check-openspec-skills: generated skills match" none "check-openspec-skills: 7 generated file(s) match OpenSpec $pinv"
 total=$((total + 1))
-if grep -q -- " init --tools agents --profile core$" "$scratch/stub.log" && ! grep -qF -e "$repo/" -e "$repo " "$scratch/stub.log"; then
-  echo "ok   check-openspec-skills: reference from init --tools agents --profile core outside the checkout"
-else echo "FAIL check-openspec-skills: reference from init --tools agents --profile core outside the checkout"; sed 's/^/     /' "$scratch/stub.log"; fails=$((fails + 1)); fi
+if grep -q -- " init --scope project --tools agents --profile core$" "$scratch/stub.log" && ! grep -qF -e "$repo/" -e "$repo " "$scratch/stub.log"; then
+  echo "ok   check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout"
+else echo "FAIL check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout"; sed 's/^/     /' "$scratch/stub.log"; fails=$((fails + 1)); fi
+# 2.1.x init installs skills globally under $HOME unless scoped, so the check also gives it a temporary HOME.
+total=$((total + 1))
+skhome=$(sed -n 's/^home //p' "$scratch/stub.log")
+if [ -n "$skhome" ] && ! grep -q '^home-missing' "$scratch/stub.log" && [ "$skhome" != "${HOME:-}" ] && [[ "$skhome" != "$repo"* ]] && [[ "$skhome" == "${TMPDIR:-/tmp}"/* ]]; then
+  echo "ok   check-openspec-skills: init runs with a temporary HOME that exists, not the caller's"
+else echo "FAIL check-openspec-skills: init runs with a temporary HOME that exists, not the caller's (stub saw HOME='$skhome')"; fails=$((fails + 1)); fi
 skills 1 "check-openspec-skills: edited skill text" sk_edit "::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::edited" "$fix update"
-skills 1 "check-openspec-skills: edited generatedBy stamp" sk_stamp "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::edited"
-skills 1 "check-openspec-skills: deleted SKILL.md" sk_rm_file "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing" "$fix init --tools agents --profile core"
+skills 1 "check-openspec-skills: added or edited generatedBy stamp" sk_stamp "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::edited"
+skills 1 "check-openspec-skills: deleted SKILL.md" sk_rm_file "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing" "$fix init --scope project --tools agents --profile core"
 skills 1 "check-openspec-skills: deleted skill folder" sk_rm_dir "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::missing"
 skills 1 "check-openspec-skills: deleted .openspec-target" sk_rm_target "::error file=.agents/skills/.openspec-target,line=1::missing"
 skills 1 "check-openspec-skills: extra tracked file in a skill folder" sk_extra "::error file=.agents/skills/openspec-propose/notes.md,line=1::extra"
@@ -219,12 +327,12 @@ sk_link_untr() { git rm -q --cached .agents/skills/openspec-explore/SKILL.md; cp
 skills 1 "check-openspec-skills: exec bit in the index, mode 100755" sk_exec "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::mode: git mode 100755" "100644" "git update-index --chmod=-x"
 sk_exec_idx()  { git update-index --chmod=+x .agents/skills/openspec-sync-specs/SKILL.md; }
 skills 1 "check-openspec-skills: exec bit only in the index, as a Windows commit would set it" sk_exec_idx "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::mode: git mode 100755"
-skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:"
+skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:" "$fix init --scope project --tools agents --profile core"
 skills 1 "check-openspec-skills: untracked symlink at a generated path" sk_link_untr "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:"
 # Linked parent directories (#41 E1): init writes real directories.
 sk_skills_link() { mv .agents/skills .agents/skills-real; ln -s skills-real .agents/skills; git add -A .agents; }
 sk_agents_link() { mv .agents .agents-real; ln -s .agents-real .agents; git add -A .agents .agents-real; }
-skills 1 "check-openspec-skills: .agents/skills committed as a symlink to an identical copy" sk_skills_link "::error file=.agents/skills,line=1::symlink:" "real directory"
+skills 1 "check-openspec-skills: .agents/skills committed as a symlink to an identical copy" sk_skills_link "::error file=.agents/skills,line=1::symlink:" "real directory" "$fix init --scope project --tools agents --profile core"
 skills 1 "check-openspec-skills: .agents committed as a symlink to an identical copy" sk_agents_link "::error file=.agents,line=1::symlink:" "real directory"
 # Each half of that check on its own (#44): a link only on disk (not staged), and a link only in the
 # index (mode 120000) with the real directory still on disk, as an unstaged swap of a committed link leaves it.
@@ -252,9 +360,9 @@ SKENV=(STUB_OPENSPEC_VERSION=2.0.0-rc.1)
 skills 1 "check-openspec-skills: inexact pin even when the CLI reports it" sk_pin_rc "::error file=.github/workflows/ci.yml" "not an exact MAJOR.MINOR.PATCH"
 skills 1 "check-openspec-skills: openspec-* folder replaced by a symlink" sk_dir_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing" "::error file=.agents/skills/openspec-propose,line=1::extra"
 SKENV=(STUB_INIT_MODE=fail)
-skills 1 "check-openspec-skills: init fails" none "::error file=.github/workflows/ci.yml" "init --tools agents --profile core' failed" "stub init failed on purpose"
+skills 1 "check-openspec-skills: init fails" none "::error file=.github/workflows/ci.yml" "init --scope project --tools agents --profile core' failed" "stub init failed on purpose"
 SKENV=(STUB_INIT_MODE=empty)
-skills 1 "check-openspec-skills: init writes nothing" none "::error file=.github/workflows/ci.yml" "generated no skill files"
+skills 1 "check-openspec-skills: init writes nothing" none "::error file=.github/workflows/ci.yml" "init --scope project --tools agents --profile core' generated no skill files"
 # A dedicated TMPDIR must be empty after a passing and a failing run, and the stub must see
 # temporary XDG directories inside it, never the caller's.
 sktmp="$scratch/sk-tmp"; skuser="$scratch/sk-user"; mkdir -p "$sktmp" "$skuser/config" "$skuser/data"
@@ -263,6 +371,7 @@ sk_tmp_check() { # description
   [ -z "$(ls -A "$sktmp")" ] || why="left in TMPDIR: $(ls -A "$sktmp" | tr '\n' ' ')"
   [ -n "$why" ] || [ -z "$(find "$skuser" -mindepth 2 -print -quit)" ] || why="wrote the caller's XDG directories"
   [ -n "$why" ] || grep -qE "^xdg $sktmp/[^ ]+ $sktmp/[^ ]+\$" "$scratch/stub.log" || why="stub did not see temporary XDG directories: $(grep '^xdg' "$scratch/stub.log")"
+  [ -n "$why" ] || grep -qE "^home $sktmp/[^ ]+\$" "$scratch/stub.log" || why="stub did not see a temporary HOME: $(grep '^home' "$scratch/stub.log")"
   total=$((total + 1))
   if [ -z "$why" ]; then echo "ok   $1"; else echo "FAIL $1 ($why)"; fails=$((fails + 1)); fi
 }

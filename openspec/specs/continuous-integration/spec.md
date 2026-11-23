@@ -44,11 +44,19 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 - **THEN** CI fails
 
 #### Scenario: OpenSpec version records disagree
-- **WHEN** the `generatedBy` value in any `.agents/skills/openspec-*/SKILL.md`, the `@fission-ai/openspec` install pin in `.github/workflows/ci.yml`, or the OpenSpec row in the Sources or Tool pins table of `TEMPLATE_SOURCE.md` names a different version from the others
+- **WHEN** a `generatedBy` value present in any `.agents/skills/openspec-*/SKILL.md`, an `@fission-ai/openspec` install pin in `.github/workflows/*.yml` or `*.yaml`, or the OpenSpec row in the Sources or Tool pins table of `TEMPLATE_SOURCE.md` names a different version from the others
 - **THEN** CI fails and prints the file, line and version of each record
 
+#### Scenario: Generated skills carry no version stamp
+- **WHEN** the pinned OpenSpec version writes no `generatedBy` line (2.1.x) and none of the six generated skills carries one
+- **THEN** the pin check passes on the install pin and the two `TEMPLATE_SOURCE.md` rows, and the generated-skills check is what proves the skills come from that version
+
+#### Scenario: Stamps on only some generated skills
+- **WHEN** some `.agents/skills/openspec-*/SKILL.md` files carry a `generatedBy` line and others do not, even with the pinned version
+- **THEN** CI fails with an annotation naming each skill that differs from the first skill's stamp state
+
 #### Scenario: OpenSpec version record missing or not exact
-- **WHEN** one of those records is missing, appears more than once, or is not an exact `MAJOR.MINOR.PATCH` version (for example `^1.17.0` or `latest`)
+- **WHEN** an install pin or `TEMPLATE_SOURCE.md` row is missing, a record appears more than once (including two `generatedBy` lines in one skill), or a record is not an exact `MAJOR.MINOR.PATCH` version (for example `^1.17.0` or `latest`)
 - **THEN** CI fails and names the file of that record
 
 #### Scenario: Ponytail pin records disagree
@@ -60,16 +68,16 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 - **THEN** CI fails and names the file with both values
 
 #### Scenario: Generated skills match the pinned OpenSpec version
-- **WHEN** every file under `.agents/skills/openspec-*/` and `.agents/skills/.openspec-target` is byte-identical to what `openspec init --tools agents --profile core` writes at the version pinned in `.github/workflows/ci.yml`, with no other file in those paths
+- **WHEN** every file under `.agents/skills/openspec-*/` and `.agents/skills/.openspec-target` is byte-identical to what `openspec init --scope project --tools agents --profile core` writes at the version pinned in `.github/workflows/ci.yml`, with no other file in those paths
 - **THEN** the generated-skills check passes and prints how many generated files matched and the version
 
 #### Scenario: Generated skill edited
-- **WHEN** a generated skill file differs from what the pinned version generates (a hand edit to its text or its `generatedBy` stamp)
-- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says it was edited and gives the fix: run `npx -y @fission-ai/openspec@<pin> update` (or `init --tools agents --profile core`) and commit the result, or revert the hand edit
+- **WHEN** a generated skill file differs from what the pinned version generates (a hand edit to its text, or an added, removed or edited `generatedBy` stamp)
+- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for that file that says it was edited and gives the fix: run `npx -y @fission-ai/openspec@<pin> update` (or `init --scope project --tools agents --profile core`) and commit the result, or revert the hand edit
 
 #### Scenario: Generated skill file missing
 - **WHEN** a file the pinned version generates is missing from the checkout, including a whole deleted `openspec-*` skill folder
-- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for each missing file that says it is missing and gives the fix: run `npx -y @fission-ai/openspec@<pin> init --tools agents --profile core` and commit the result, or restore it from git
+- **THEN** CI fails with a `::error file=<path>,line=1::` annotation for each missing file that says it is missing and gives the fix: run `npx -y @fission-ai/openspec@<pin> init --scope project --tools agents --profile core` and commit the result, or restore it from git
 
 #### Scenario: Extra or untracked file in generated skills
 - **WHEN** a file the pinned version does not generate exists under `.agents/skills/openspec-*/`, including a new `openspec-*` folder, whether tracked or untracked
@@ -93,10 +101,10 @@ The CI workflow SHALL run template checks on every run: `openspec validate --all
 
 #### Scenario: Check leaves the checkout unchanged
 - **WHEN** the generated-skills check runs, whether it passes or fails
-- **THEN** it generates the reference only in a temporary directory outside the checkout with temporary OpenSpec config and data directories (never the caller's `XDG_CONFIG_HOME` or `XDG_DATA_HOME`), removes that temporary directory when it exits, and `git status --porcelain --untracked-files=all` of the checkout is the same before and after, so later CI steps see the files as committed
+- **THEN** it generates the reference only in a temporary directory outside the checkout with temporary OpenSpec config and data directories and a temporary `HOME` (never the caller's `XDG_CONFIG_HOME`, `XDG_DATA_HOME` or `HOME`, so a global skills install cannot land in the caller's home directory), removes that temporary directory when it exits, and `git status --porcelain --untracked-files=all` of the checkout is the same before and after, so later CI steps see the files as committed
 
 #### Scenario: Reference generation fails
-- **WHEN** `openspec init --tools agents --profile core` exits non-zero in the temporary directory, or exits zero but writes no generated skill files
+- **WHEN** `openspec init --scope project --tools agents --profile core` exits non-zero in the temporary directory, or exits zero but writes no generated skill files
 - **THEN** CI fails with a `::error file=` annotation naming `.github/workflows/ci.yml` that says the generation failed (with its output) or generated no skill files, and never reports a match
 
 ### Requirement: Stack steps are marked slots

@@ -1,0 +1,49 @@
+Archive of update-template-openspec-2-1-1, 2026-11-23 08:44 MST, on top of 1f13ad6, OpenSpec 2.1.1 (temporary HOME), after CI run 45208414784 and qa-gate run 45208416165 were green on 1f13ad6
+
+$ printf "y\n" | openspec archive update-template-openspec-2-1-1
+Task status: ✓ Complete
+
+Specs to update:
+  agent-guidance: update
+  continuous-integration: update
+  supply-chain-security: update
+Proceed with spec updates? (Y/n)
+Applying changes to openspec/specs/agent-guidance/spec.md:
+  ~ 2 modified
+Applying changes to openspec/specs/continuous-integration/spec.md:
+  ~ 1 modified
+Applying changes to openspec/specs/supply-chain-security/spec.md:
+  ~ 1 modified
+Totals: + 0, ~ 4, - 0, → 0
+Specs updated successfully.
+Change 'update-template-openspec-2-1-1' archived as '2026-11-23-update-template-openspec-2-1-1'.
+exit 0
+
+$ grep -c "^- \[x\]" tasks.md; grep -c "^- \[ \]" tasks.md
+12
+0
+
+$ openspec validate --all --strict --no-interactive
+✓ spec/agent-guidance
+✓ spec/branch-governance
+✓ spec/change-traceability
+✓ spec/continuous-integration
+✓ spec/preview-deploys
+✓ spec/release-management
+✓ spec/supply-chain-security
+✓ spec/template-lifecycle
+Totals: 8 passed, 0 failed (8 items)
+
+$ grep -n merged requirement and scenario headers
+90:#### Scenario: Re-vendor at a commit that changes no vendored file
+95:OpenSpec-generated skills SHALL live in `.agents/skills/openspec-*/` as produced by `openspec init --scope project --tools agents` and refreshed with `openspec update` at the pinned OpenSpec version, and `AGENTS.md` SHALL name the skill for each workflow step that has one. The skills SHALL stay in the repository (`skillsScope: project` in `openspec/config.yaml`), SHALL be invoked by skill name, and the repository SHALL carry no OpenSpec slash-command files.
+109:#### Scenario: Skills stay in the repository
+111:- **THEN** OpenSpec reads `skillsScope: project` from `openspec/config.yaml`, does not offer to switch the skills to a global install, and refreshes them in `.agents/skills/`
+50:#### Scenario: Generated skills carry no version stamp
+54:#### Scenario: Stamps on only some generated skills
+71:- **WHEN** every file under `.agents/skills/openspec-*/` and `.agents/skills/.openspec-target` is byte-identical to what `openspec init --scope project --tools agents --profile core` writes at the version pinned in `.github/workflows/ci.yml`, with no other file in those paths
+104:- **THEN** it generates the reference only in a temporary directory outside the checkout with temporary OpenSpec config and data directories and a temporary `HOME` (never the caller's `XDG_CONFIG_HOME`, `XDG_DATA_HOME` or `HOME`, so a global skills install cannot land in the caller's home directory), removes that temporary directory when it exits, and `git status --porcelain --untracked-files=all` of the checkout is the same before and after, so later CI steps see the files as committed
+53:Every third-party tool the template uses SHALL be pinned to an exact version or commit SHA, and its license SHALL be recorded in design.md or `TEMPLATE_SOURCE.md`. A tool installed from npm without a lockfile SHALL also be installed with a recorded `--before=<UTC timestamp>` cutoff so its transitive dependencies resolve only to versions published before that time.
+59:#### Scenario: Node.js minimum recorded
+71:#### Scenario: Install line spread over several lines
+87:#### Scenario: npm config written by a workflow

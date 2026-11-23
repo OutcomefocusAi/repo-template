@@ -1,0 +1,28 @@
+# 5.2 mutation pass 2 on 4da297c (after the run-block fix and the survivor tests), 2026-11-23 08:43 MST
+# Same driver; m06 rewritten as a valid mutant, m07 replaced by three mutants of the new parent rule (m07, m07b, m07c).
+('m01 npm_config env check case-sensitive (drop -i)', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: npm config set through workflow env (exit 0, expected 1)')
+('m02 npm_config env check uppercase only', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: lowercase npm_config_ in workflow env (exit 0, expected 1)')
+('m03 npmrc writes allowed', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: workflow writes ~/.npmrc before the install (exit 0, expected 1)')
+('m04 npm config set allowed', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: workflow runs npm config set before the install (exit 0, expected 1)')
+('m05 continuation check disabled', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: install line continued from the line before (exit 0, expected 1)')
+('m06 folded run: > accepted', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: install inside a folded run: > block (exit 0, expected 1)')
+('m07 parent line may have the same indentation', 'KILLED', 'test-template-scripts: 157/163 passed | first: FAIL check-openspec-pin: template records agree (exit 1, expected 0)')
+('m07b blank lines not skipped', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: blank line inside the run: | block before the install (exit 1, expected 0)')
+('m07c any parent key accepted', 'KILLED', "test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: install inside another step's script: | block (exit 0, expected 1)")
+('m08 run_block never called', 'KILLED', 'test-template-scripts: 160/163 passed | first: FAIL check-openspec-pin: install line continued from the line before (exit 0, expected 1)')
+('m09 .yaml workflows not scanned', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: .yaml workflow installs OpenSpec without a cutoff (exit 0, expected 1)')
+('m10 two stamps in one skill allowed', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: two generatedBy lines in one skill (exit 0, expected 1)')
+('m11 mixed stamp state allowed', 'KILLED', 'test-template-scripts: 161/163 passed | first: FAIL check-openspec-pin: one skill without the generatedBy stamp the others carry (exit 0, expected 1)')
+('m12 present stamp not recorded', 'KILLED', 'test-template-scripts: 161/163 passed | first: FAIL check-openspec-pin: one generatedBy disagrees (exit 0, expected 1)')
+('m13 install pattern not anchored at line start', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: unprotected install before the protected one (exit 0, expected 1)')
+('m14 cutoff date round trip removed', 'KILLED', 'test-template-scripts: 159/163 passed | first: FAIL check-openspec-pin: cutoff is a date with no time (output lacks: .github/workflows/ci.yml,line=41::)')
+('m15 2020 floor removed', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: year-0000 cutoff (npm ignores it) (exit 0, expected 1)')
+('m16 future cutoff allowed', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: cutoff in the future (no effective cutoff) (exit 0, expected 1)')
+('m17 row cutoff comparison removed', 'KILLED', 'test-template-scripts: 161/163 passed | first: FAIL check-openspec-pin: CI cutoff differs from the Tool pins row (exit 0, expected 1)')
+('m18 row without cutoff allowed', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-pin: Tool pins row records no cutoff (output lacks: does not record the --before cutoff)')
+('m19 skills check keeps the caller HOME', 'KILLED', "test-template-scripts: 160/163 passed | first: FAIL check-openspec-skills: init runs with a temporary HOME that exists, not the caller's (stub saw HOME='/home/box')")
+('m20 skills reference init without --scope project', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout')
+('m21 missing-file fix hint without --scope project', 'KILLED', 'test-template-scripts: 162/163 passed | first: FAIL check-openspec-skills: deleted SKILL.md (output lacks: npx -y @fission-ai/openspec@2.1.1 init --scope project --too')
+('m22 temporary HOME not created', 'KILLED', "test-template-scripts: 162/163 passed | first: FAIL check-openspec-skills: init runs with a temporary HOME that exists, not the caller's (stub saw HOME='/tmp/tmp.y6kLm")
+
+24/24 mutants killed

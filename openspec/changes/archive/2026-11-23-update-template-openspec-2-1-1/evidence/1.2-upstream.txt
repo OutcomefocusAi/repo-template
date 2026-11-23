@@ -1,0 +1,18 @@
+# 1.2 upstream re-check, 2026-11-23 08:27 MST (box clock, America/Phoenix)
+$ git show -s --format=%H ad71d50 -- (approval records commit)
+ad71d504ceeec5d8ac3fc94f38ae0f566290b9c9
+1
+$ npm view @fission-ai/openspec dist-tags.latest
+2.1.1
+$ npm view @fission-ai/openspec@2.1.1 time.2.1.1 engines.node (publish time from time map)
+  "2.1.1": "2026-11-19T22:29:03.224Z"
+>=22.20.0
+$ git ls-remote https://github.com/DietrichGebert/ponytail HEAD
+ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10	HEAD
+$ npm install --global --no-fund --no-audit --before=2026-11-21T00:00:00Z @fission-ai/openspec@2.1.1 (empty --prefix and --cache under /tmp/npmt)
+
+added 66 packages in 3s
+$ openspec --version
+2.1.1
+$ npm install ... --before=2026-11-19T00:00:00Z @fission-ai/openspec@2.1.1 (cutoff before the publish)
+npm error code ETARGET
