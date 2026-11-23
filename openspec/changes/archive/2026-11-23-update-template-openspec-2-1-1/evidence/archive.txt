@@ -7,7 +7,7 @@ Specs to update:
   agent-guidance: update
   continuous-integration: update
   supply-chain-security: update
-Proceed with spec updates? (Y/n) 
+Proceed with spec updates? (Y/n)
 Applying changes to openspec/specs/agent-guidance/spec.md:
   ~ 2 modified
 Applying changes to openspec/specs/continuous-integration/spec.md:
