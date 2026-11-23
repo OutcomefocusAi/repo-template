@@ -1,0 +1,12 @@
+# 3.1 failing-first run: new generated-skills self-tests against the unchanged scripts/check-openspec-skills.sh (2c4bc3b24c6ea9b1750ffdc9c9819c0d9389a7bc + test edits), 2026-11-23 08:31 MST
+$ scripts/test-template-scripts.sh  (exit 1)
+FAIL check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout
+FAIL check-openspec-skills: init runs with a temporary HOME, not the caller's (stub saw HOME='/home/box')
+FAIL check-openspec-skills: deleted SKILL.md (output lacks: npx -y @fission-ai/openspec@2.0.0 init --scope project --tools agents --profile core)
+FAIL check-openspec-skills: SKILL.md as a symlink to an identical copy (output lacks: npx -y @fission-ai/openspec@2.0.0 init --scope project --tools agents --profile core)
+FAIL check-openspec-skills: .agents/skills committed as a symlink to an identical copy (output lacks: npx -y @fission-ai/openspec@2.0.0 init --scope project --tools agents --profile core)
+FAIL check-openspec-skills: init fails (output lacks: init --scope project --tools agents --profile core' failed)
+FAIL check-openspec-skills: init writes nothing (output lacks: init --scope project --tools agents --profile core' generated no skill files)
+FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a passing run (stub did not see a temporary HOME: home /home/box)
+FAIL check-openspec-skills: temporary dir removed and caller XDG unused after a failing run (stub did not see a temporary HOME: home /home/box)
+test-template-scripts: 152/161 passed

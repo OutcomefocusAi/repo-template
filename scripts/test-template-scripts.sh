@@ -232,8 +232,8 @@ pin 1 "check-ponytail-pin: TEMPLATE_SOURCE.md Ponytail row missing" check-ponyta
 # check-openspec-skills: the generated OpenSpec skill files must equal what the pinned version
 # generates. A stub openspec on PATH stands in for the CLI so these cases need no network: its
 # init copies the template's committed generated files (the reference) into its working
-# directory, drops a marker file there and logs where and how it ran, and the XDG_CONFIG_HOME and
-# XDG_DATA_HOME it saw. STUB_INIT_MODE=fail makes init exit 3; STUB_INIT_MODE=empty writes nothing.
+# directory, drops a marker file there and logs where and how it ran, and the XDG_CONFIG_HOME,
+# XDG_DATA_HOME and HOME it saw. STUB_INIT_MODE=fail makes init exit 3; STUB_INIT_MODE=empty writes nothing.
 stub="$scratch/stub"; ref="$scratch/skills-ref"; mkdir -p "$stub" "$ref/.agents/skills"
 cp "$root/.agents/skills/.openspec-target" "$ref/.agents/skills/"; cp -R "$root"/.agents/skills/openspec-* "$ref/.agents/skills/"
 cat > "$stub/openspec" <<'STUB'
@@ -242,6 +242,7 @@ case "${1:-}" in
   --version) echo "${STUB_OPENSPEC_VERSION:?}" ;;
   init) printf '%s %s\n' "$PWD" "$*" >> "${STUB_LOG:?}"; touch .stub-init-ran
         printf 'xdg %s %s\n' "${XDG_CONFIG_HOME:-}" "${XDG_DATA_HOME:-}" >> "$STUB_LOG"
+        printf 'home %s\n' "${HOME:-}" >> "$STUB_LOG"
         case "${STUB_INIT_MODE:-}" in
           fail) echo "stub init failed on purpose" >&2; exit 3 ;;
           empty) exit 0 ;;
@@ -277,7 +278,7 @@ skills() { # expected-exit description fixture-function expected-text...
   git -C "$repo" clean -fdq -- .agents; rm -f "$repo/.stub-init-ran"; SKENV=()
 }
 sk_edit()      { echo "local edit" >> .agents/skills/openspec-apply-change/SKILL.md; }
-sk_stamp()     { sed -Ei 's/(generatedBy: ")[0-9.]+/\10.0.1/' .agents/skills/openspec-propose/SKILL.md; }
+sk_stamp()     { sed -Ei '/^[[:space:]]+generatedBy:/d; s/^(  author: [^ ]+)$/\1\n  generatedBy: "0.0.1"/' .agents/skills/openspec-propose/SKILL.md; }
 sk_rm_file()   { rm .agents/skills/openspec-sync-specs/SKILL.md; }
 sk_rm_dir()    { rm -r .agents/skills/openspec-explore; }
 sk_rm_target() { rm .agents/skills/.openspec-target; }
@@ -288,12 +289,18 @@ sk_pin_gone()  { sed -Ei '/@fission-ai\/openspec@/d' .github/workflows/ci.yml; }
 fix="npx -y @fission-ai/openspec@$pinv"
 skills 0 "check-openspec-skills: generated skills match" none "check-openspec-skills: 7 generated file(s) match OpenSpec $pinv"
 total=$((total + 1))
-if grep -q -- " init --tools agents --profile core$" "$scratch/stub.log" && ! grep -qF -e "$repo/" -e "$repo " "$scratch/stub.log"; then
-  echo "ok   check-openspec-skills: reference from init --tools agents --profile core outside the checkout"
-else echo "FAIL check-openspec-skills: reference from init --tools agents --profile core outside the checkout"; sed 's/^/     /' "$scratch/stub.log"; fails=$((fails + 1)); fi
+if grep -q -- " init --scope project --tools agents --profile core$" "$scratch/stub.log" && ! grep -qF -e "$repo/" -e "$repo " "$scratch/stub.log"; then
+  echo "ok   check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout"
+else echo "FAIL check-openspec-skills: reference from init --scope project --tools agents --profile core outside the checkout"; sed 's/^/     /' "$scratch/stub.log"; fails=$((fails + 1)); fi
+# 2.1.x init installs skills globally under $HOME unless scoped, so the check also gives it a temporary HOME.
+total=$((total + 1))
+skhome=$(sed -n 's/^home //p' "$scratch/stub.log")
+if [ -n "$skhome" ] && [ "$skhome" != "${HOME:-}" ] && [[ "$skhome" != "$repo"* ]] && [[ "$skhome" == "${TMPDIR:-/tmp}"/* ]]; then
+  echo "ok   check-openspec-skills: init runs with a temporary HOME, not the caller's"
+else echo "FAIL check-openspec-skills: init runs with a temporary HOME, not the caller's (stub saw HOME='$skhome')"; fails=$((fails + 1)); fi
 skills 1 "check-openspec-skills: edited skill text" sk_edit "::error file=.agents/skills/openspec-apply-change/SKILL.md,line=1::edited" "$fix update"
-skills 1 "check-openspec-skills: edited generatedBy stamp" sk_stamp "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::edited"
-skills 1 "check-openspec-skills: deleted SKILL.md" sk_rm_file "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing" "$fix init --tools agents --profile core"
+skills 1 "check-openspec-skills: added or edited generatedBy stamp" sk_stamp "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::edited"
+skills 1 "check-openspec-skills: deleted SKILL.md" sk_rm_file "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::missing" "$fix init --scope project --tools agents --profile core"
 skills 1 "check-openspec-skills: deleted skill folder" sk_rm_dir "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::missing"
 skills 1 "check-openspec-skills: deleted .openspec-target" sk_rm_target "::error file=.agents/skills/.openspec-target,line=1::missing"
 skills 1 "check-openspec-skills: extra tracked file in a skill folder" sk_extra "::error file=.agents/skills/openspec-propose/notes.md,line=1::extra"
@@ -313,12 +320,12 @@ sk_link_untr() { git rm -q --cached .agents/skills/openspec-explore/SKILL.md; cp
 skills 1 "check-openspec-skills: exec bit in the index, mode 100755" sk_exec "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::mode: git mode 100755" "100644" "git update-index --chmod=-x"
 sk_exec_idx()  { git update-index --chmod=+x .agents/skills/openspec-sync-specs/SKILL.md; }
 skills 1 "check-openspec-skills: exec bit only in the index, as a Windows commit would set it" sk_exec_idx "::error file=.agents/skills/openspec-sync-specs/SKILL.md,line=1::mode: git mode 100755"
-skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:"
+skills 1 "check-openspec-skills: SKILL.md as a symlink to an identical copy" sk_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::symlink:" "$fix init --scope project --tools agents --profile core"
 skills 1 "check-openspec-skills: untracked symlink at a generated path" sk_link_untr "::error file=.agents/skills/openspec-explore/SKILL.md,line=1::symlink:"
 # Linked parent directories (#41 E1): init writes real directories.
 sk_skills_link() { mv .agents/skills .agents/skills-real; ln -s skills-real .agents/skills; git add -A .agents; }
 sk_agents_link() { mv .agents .agents-real; ln -s .agents-real .agents; git add -A .agents .agents-real; }
-skills 1 "check-openspec-skills: .agents/skills committed as a symlink to an identical copy" sk_skills_link "::error file=.agents/skills,line=1::symlink:" "real directory"
+skills 1 "check-openspec-skills: .agents/skills committed as a symlink to an identical copy" sk_skills_link "::error file=.agents/skills,line=1::symlink:" "real directory" "$fix init --scope project --tools agents --profile core"
 skills 1 "check-openspec-skills: .agents committed as a symlink to an identical copy" sk_agents_link "::error file=.agents,line=1::symlink:" "real directory"
 # Each half of that check on its own (#44): a link only on disk (not staged), and a link only in the
 # index (mode 120000) with the real directory still on disk, as an unstaged swap of a committed link leaves it.
@@ -346,9 +353,9 @@ SKENV=(STUB_OPENSPEC_VERSION=2.0.0-rc.1)
 skills 1 "check-openspec-skills: inexact pin even when the CLI reports it" sk_pin_rc "::error file=.github/workflows/ci.yml" "not an exact MAJOR.MINOR.PATCH"
 skills 1 "check-openspec-skills: openspec-* folder replaced by a symlink" sk_dir_link "::error file=.agents/skills/openspec-propose/SKILL.md,line=1::missing" "::error file=.agents/skills/openspec-propose,line=1::extra"
 SKENV=(STUB_INIT_MODE=fail)
-skills 1 "check-openspec-skills: init fails" none "::error file=.github/workflows/ci.yml" "init --tools agents --profile core' failed" "stub init failed on purpose"
+skills 1 "check-openspec-skills: init fails" none "::error file=.github/workflows/ci.yml" "init --scope project --tools agents --profile core' failed" "stub init failed on purpose"
 SKENV=(STUB_INIT_MODE=empty)
-skills 1 "check-openspec-skills: init writes nothing" none "::error file=.github/workflows/ci.yml" "generated no skill files"
+skills 1 "check-openspec-skills: init writes nothing" none "::error file=.github/workflows/ci.yml" "init --scope project --tools agents --profile core' generated no skill files"
 # A dedicated TMPDIR must be empty after a passing and a failing run, and the stub must see
 # temporary XDG directories inside it, never the caller's.
 sktmp="$scratch/sk-tmp"; skuser="$scratch/sk-user"; mkdir -p "$sktmp" "$skuser/config" "$skuser/data"
@@ -357,6 +364,7 @@ sk_tmp_check() { # description
   [ -z "$(ls -A "$sktmp")" ] || why="left in TMPDIR: $(ls -A "$sktmp" | tr '\n' ' ')"
   [ -n "$why" ] || [ -z "$(find "$skuser" -mindepth 2 -print -quit)" ] || why="wrote the caller's XDG directories"
   [ -n "$why" ] || grep -qE "^xdg $sktmp/[^ ]+ $sktmp/[^ ]+\$" "$scratch/stub.log" || why="stub did not see temporary XDG directories: $(grep '^xdg' "$scratch/stub.log")"
+  [ -n "$why" ] || grep -qE "^home $sktmp/[^ ]+\$" "$scratch/stub.log" || why="stub did not see a temporary HOME: $(grep '^home' "$scratch/stub.log")"
   total=$((total + 1))
   if [ -z "$why" ]; then echo "ok   $1"; else echo "FAIL $1 ($why)"; fails=$((fails + 1)); fi
 }
